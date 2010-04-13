@@ -30,6 +30,7 @@ class Pusher
 		$this->settings['api_key'] = $api_key;
 		$this->settings['channel'] = $channel;
 		$this->settings['url']     = $this->settings['server'].'/app/'.$this->settings['api_key'].'/channel/'.$this->settings['channel'];
+		$this->settings['debug']   = $debug;
 
 	}
 
