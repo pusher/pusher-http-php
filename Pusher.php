@@ -19,7 +19,7 @@ class Pusher
 	public function __construct($api_key, $channel, $debug = false, $host = 'http://api.pusherapp.com', $port = '80')
 	{
 		
-		// Check for dependent PHP extensions (SimpleXML, curl, pcre, xml, zlib)
+		// Check for dependent PHP extensions (JSON, cURL)
 		if(!extension_loaded('curl') || !extension_loaded('json'))
 		{
 			die("There is missing dependant extensions - please ensure both cURL and JSON modules are installed");
