@@ -38,7 +38,7 @@ class Pusher
 	{
 		if($ch = curl_init())
 		{
-			$payload = array(event => $event, data => $data);
+			$payload = array('event' => $event, 'data' => $data);
 
 			curl_setopt($ch, CURLOPT_URL, $this->settings['url']);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -48,7 +48,7 @@ class Pusher
 			$response = curl_exec($ch);
 			curl_close($ch);
 
-			if($response = 'OK')
+			if($response == 'OK')
 			{ 
 			 	return true;
 			}
