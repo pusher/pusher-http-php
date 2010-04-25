@@ -6,7 +6,7 @@ Using it is easy as pie:
 
     require('Pusher.php');
 
-    $pusher = new Pusher($your_pusher_api_key, $channel);
+    $pusher = new Pusher($key, $secret, $app_id, $channel);
     $pusher->trigger('my_event', 'test_channel');
 
 Debugging
@@ -17,7 +17,7 @@ You can either turn on debugging by setting the third argument like so, to true:
 
 or with all requests:
 
-    $pusher = new Pusher($key, $channel, true);
+    $pusher = new Pusher($key, $secret, $app_id, $channel, true);
 
 On failed requests, this will return the server's response, instead of false.
 
