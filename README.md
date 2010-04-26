@@ -7,7 +7,7 @@ Using it is easy as pie:
     require('Pusher.php');
 
     $pusher = new Pusher($key, $secret, $app_id, $channel);
-    $pusher->trigger('my_event', 'test_channel');
+    $pusher->trigger('my_event', 'hello world');
 
 Debugging
 ---------
