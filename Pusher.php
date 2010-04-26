@@ -56,7 +56,7 @@ class Pusher
 			$time 		= time();
 			$signature      = "POST\n".$this->settings['url']."\n";
 			$query          = "auth_key=".$this->settings['auth_key']. "&auth_timestamp=".$time."&auth_version=1.0&body_md5=".md5(json_encode($payload))."&name=".$event;
-			$auth_signature = urlencode( base64_encode(hash_hmac('sha256', $signature.$query, $this->settings['secret'], true)) );
+			$auth_signature = hash_hmac('sha256', $signature.$query, $this->settings['secret'], false);
 			$signed_query   = $query."&auth_signature=".$auth_signature;
 			$full_url = $this->settings['server'].':'.$this->settings['port'].$this->settings['url'].'?'.$signed_query;
 
