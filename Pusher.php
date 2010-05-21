@@ -7,6 +7,7 @@
 
 		$pusher = new Pusher(APIKEY, SECRET, APP_ID, CHANNEL, [Debug: true/false, HOST, PORT]);
 		$pusher->trigger('my_event', 'test_channel', [Debug: true/false]);
+		$pusher->socket_auth('socket_id');
 
 	Copyright 2010, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 	
@@ -89,6 +90,15 @@ class Pusher
 		}
 		
 	}
+
+
+	public function socket_auth($socket_id)
+	{
+		$signature = hash_hmac('sha256', $this->settings['channel'].':'.$socket_id, $this->settings['secret'], false);
+		$signature = array('auth' => $this->settings['auth_key'].':'.$signature);
+		return json_encode($signature);
+	}
+
 
 }
 
