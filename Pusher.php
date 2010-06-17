@@ -46,12 +46,12 @@ class Pusher
 
 		// Setup defaults
 		$this->settings['server']	= $host;
-		$this->settings['port']	= $port;
+		$this->settings['port']		= $port;
 		$this->settings['auth_key']	= $auth_key;
 		$this->settings['secret']	= $secret;
 		$this->settings['app_id']	= $app_id;
 		$this->settings['channel']	= $channel;
-		$this->settings['url']	= '/apps/' . $this->settings['app_id'];
+		$this->settings['url']		= '/apps/' . $this->settings['app_id'];
 		$this->settings['debug']	= $debug;
 		$this->settings['timeout']	= $timeout;
 
@@ -66,13 +66,13 @@ class Pusher
 		// Check for dependent PHP extensions (JSON, cURL)
 		if ( ! extension_loaded( 'curl' ) || ! extension_loaded( 'json' ) )
 		{
-		die( 'There is missing dependant extensions - please ensure both cURL and JSON modules are installed' );
+			die( 'There is missing dependant extensions - please ensure both cURL and JSON modules are installed' );
 		}
 
 		# Supports SHA256?
 		if ( ! in_array( 'sha256', hash_algos() ) )
 		{
-		die( 'SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.' );
+			die( 'SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.' );
 		}
 
 	}
