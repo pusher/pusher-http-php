@@ -1,23 +1,23 @@
 <?php
 
 /* 
-    Pusher PHP Library
-  /////////////////////////////////
-  This was a very simple PHP library to the Pusher API.
+		Pusher PHP Library
+	/////////////////////////////////
+	This was a very simple PHP library to the Pusher API.
 
-    $pusher = new Pusher(APIKEY, SECRET, APP_ID, CHANNEL, [Debug: true/false, HOST, PORT]);
-    $pusher->trigger('my_event', 'test_channel', [socket_id, Debug: true/false]);
-    $pusher->socket_auth('socket_id');
+		$pusher = new Pusher(APIKEY, SECRET, APP_ID, CHANNEL, [Debug: true/false, HOST, PORT]);
+		$pusher->trigger('my_event', 'test_channel', [socket_id, Debug: true/false]);
+		$pusher->socket_auth('socket_id');
 
-  Copyright 2010, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
-  
-  Modified 14-06-10 by Mastercoding (http://www.mastercoding.nl)
-  	- fixed socket_auth function
-  	- added timeout param to constructor, channel name is optional now. Can also be set when triggering an event
-  	- moved compatibility check to a seperate function to allow for easy disabling (also improved the checking)
-  	- added socket_id and channel to trigger function
-  
+	Copyright 2010, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
+
+	Contrbutors:
+		+ Paul44 (http://github.com/Paul44)
+		+ Ben Pickles (http://github.com/benpickles)
+		+ Mastercoding (http://www.mastercoding.nl)
+
 */
+
 class Pusher {
 
   private $settings = array ();
@@ -25,7 +25,7 @@ class Pusher {
   /**
    * PHP5 Constructor. 
    * 
-   * Initializes a new Pusher instance with key, secret , app id and channel. 
+   * Initializes a new Pusher instance with key, secret , app ID and channel. 
    * You can optionally turn on debugging for all requests by setting debug to true.
    * 
    * @param string $auth_key
@@ -76,7 +76,7 @@ class Pusher {
 
   /**
    * Trigger an event by providing event name and payload. 
-   * Optionally provide a socket id to exclude a client (most likely the sender).
+   * Optionally provide a socket ID to exclude a client (most likely the sender).
    * 
    * @param string $event
    * @param mixed $payload
@@ -108,12 +108,12 @@ class Pusher {
 	$query .= "&socket_id=" . $socket_id;
     }
 
-    # Create signed signature...
+    # Create the signed signature...
     $auth_signature = hash_hmac( 'sha256', $signature . $query, $this->settings['secret'], false );
     $signed_query = $query . "&auth_signature=" . $auth_signature;
     $full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
     
-    # Set curl opts and execute request
+    # Set cURL opts and execute request
     curl_setopt( $ch, CURLOPT_URL, $full_url );
     curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json" ) );
     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
