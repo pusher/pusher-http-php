@@ -25,13 +25,13 @@ Channels
 ---------
 You can specify the channel either while constructing the Pusher object as described above, or while triggering an event:
 
-$pusher->trigger('event', 'data', null, 'channel');
+    $pusher->trigger('event', 'data', null, 'channel');
 
 Socket id
 ---------
 In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event (http://pusherapp.com/docs/duplicates):
 
-$pusher->trigger('event','data','socket_id');
+    $pusher->trigger('event','data','socket_id');
 
 License
 -------
