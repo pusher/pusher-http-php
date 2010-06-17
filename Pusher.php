@@ -39,7 +39,7 @@ class Pusher {
    */
   public function __construct( $auth_key, $secret, $app_id, $channel = '', $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 ) {
 
-    // check compatibility, disable for speed improvement
+    // Check compatibility, disable for speed improvement
     $this->check_compatibility();
     
     // Setup defaults
@@ -66,7 +66,7 @@ class Pusher {
 	die( 'There is missing dependant extensions - please ensure both cURL and JSON modules are installed' );
     }
 
-    # supports sha256?
+    # Supports SHA256?
     if ( ! in_array( 'sha256', hash_algos() ) )
     {
 	die( 'SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.' );
@@ -87,31 +87,31 @@ class Pusher {
    */
   public function trigger( $event, $payload, $socket_id = null, $channel = '', $debug = false ) {
 
-    # check if we can initialize a curl connection
+    # Check if we can initialize a cURL connection
     $ch = curl_init();
     if ( $ch === false )
       die( 'Could not initialise cURL!' );
       
-    # add channel to url..
+    # Add channel to URL..
     $sURL = $this->settings['url'] . '/channels/' . ($channel != '' ? $channel : $this->settings['channel']) . '/events';
     
-    # build request
+    # Build the request
     $signature = "POST\n" . $sURL . "\n";
     $payload_encoded = json_encode( $payload );
     $query = "auth_key=" . $this->settings['auth_key'] . "&auth_timestamp=" . time() . "&auth_version=1.0&body_md5=" . md5( $payload_encoded ) . "&name=" . $event;
     
-    # socket id set?
+    # Socket ID set?
     if ( $socket_id !== null )
     {
 	$query .= "&socket_id=" . $socket_id;
     }
 
-    # create signed signature...
+    # Create signed signature...
     $auth_signature = hash_hmac( 'sha256', $signature . $query, $this->settings['secret'], false );
     $signed_query = $query . "&auth_signature=" . $auth_signature;
     $full_url = $this->settings['server'] . ':' . $this->settings['port'] . $sURL . '?' . $signed_query;
     
-    # set curl opts and execute request
+    # Set curl opts and execute request
     curl_setopt( $ch, CURLOPT_URL, $full_url );
     curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json" ) );
     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
@@ -144,7 +144,6 @@ class Pusher {
    */
   public function socket_auth( $socket_id ) {
 
-    # socket_id <> channel swapped, wrong in documentation
     $signature = hash_hmac( 'sha256', $socket_id . ':' . $this->settings['channel'], $this->settings['secret'], false );
     $signature = array ( 'auth' => $this->settings['auth_key'] . ':' . $signature );
     return json_encode( $signature );
