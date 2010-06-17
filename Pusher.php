@@ -40,7 +40,7 @@ class Pusher {
   public function __construct( $auth_key, $secret, $app_id, $channel = '', $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 ) {
 
     // check compatibility, disable for speed improvement
-    $this->checkCompatibility();
+    $this->check_compatibility();
     
     // Setup defaults
     $this->settings['server'] = $host;
@@ -58,15 +58,19 @@ class Pusher {
   /**
    * Check if the current PHP setup is sufficient to run this class
    */
-  private function checkCompatibility() {
+  private function check_compatibility() {
 
     // Check for dependent PHP extensions (JSON, cURL)
     if ( ! extension_loaded( 'curl' ) || ! extension_loaded( 'json' ) )
-      die( 'There is missing dependant extensions - please ensure both cURL and JSON modules are installed' );
-      
+    {
+	die( 'There is missing dependant extensions - please ensure both cURL and JSON modules are installed' );
+    }
+
     # supports sha256?
     if ( ! in_array( 'sha256', hash_algos() ) )
-      die( 'SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.' );
+    {
+	die( 'SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.' );
+    }
   
   }
 
@@ -98,8 +102,10 @@ class Pusher {
     
     # socket id set?
     if ( $socket_id !== null )
-      $query .= "&socket_id=" . $socket_id;
-      
+    {
+	$query .= "&socket_id=" . $socket_id;
+    }
+
     # create signed signature...
     $auth_signature = hash_hmac( 'sha256', $signature . $query, $this->settings['secret'], false );
     $signed_query = $query . "&auth_signature=" . $auth_signature;
@@ -116,11 +122,17 @@ class Pusher {
     curl_close( $ch );
     
     if ( $response == "202 ACCEPTED\n" && $debug == false )
+    {
       return true;
+    }
     elseif ( $debug == true || $this->settings['debug'] == true )
+    {
       return $response;
+    }
     else
+    {
       return false;
+    }
   
   }
 
