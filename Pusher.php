@@ -43,15 +43,15 @@ class Pusher {
     $this->check_compatibility();
     
     // Setup defaults
-    $this->settings['server'] = $host;
-    $this->settings['port'] = $port;
-    $this->settings['auth_key'] = $auth_key;
-    $this->settings['secret'] = $secret;
-    $this->settings['app_id'] = $app_id;
-    $this->settings['channel'] = $channel;
-    $this->settings['url'] = '/apps/' . $this->settings['app_id'];
-    $this->settings['debug'] = $debug;
-    $this->settings['timeout'] = $timeout;
+    $this->settings['server']	= $host;
+    $this->settings['port']	= $port;
+    $this->settings['auth_key']	= $auth_key;
+    $this->settings['secret']	= $secret;
+    $this->settings['app_id']	= $app_id;
+    $this->settings['channel']	= $channel;
+    $this->settings['url']	= '/apps/' . $this->settings['app_id'];
+    $this->settings['debug']	= $debug;
+    $this->settings['timeout']	= $timeout;
   
   }
 
@@ -90,13 +90,15 @@ class Pusher {
     # Check if we can initialize a cURL connection
     $ch = curl_init();
     if ( $ch === false )
-      die( 'Could not initialise cURL!' );
-      
+    {
+	die( 'Could not initialise cURL!' );
+    }
+
     # Add channel to URL..
-    $sURL = $this->settings['url'] . '/channels/' . ($channel != '' ? $channel : $this->settings['channel']) . '/events';
+    $s_url = $this->settings['url'] . '/channels/' . ($channel != '' ? $channel : $this->settings['channel']) . '/events';
     
     # Build the request
-    $signature = "POST\n" . $sURL . "\n";
+    $signature = "POST\n" . $s_url . "\n";
     $payload_encoded = json_encode( $payload );
     $query = "auth_key=" . $this->settings['auth_key'] . "&auth_timestamp=" . time() . "&auth_version=1.0&body_md5=" . md5( $payload_encoded ) . "&name=" . $event;
     
@@ -109,7 +111,7 @@ class Pusher {
     # Create signed signature...
     $auth_signature = hash_hmac( 'sha256', $signature . $query, $this->settings['secret'], false );
     $signed_query = $query . "&auth_signature=" . $auth_signature;
-    $full_url = $this->settings['server'] . ':' . $this->settings['port'] . $sURL . '?' . $signed_query;
+    $full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
     
     # Set curl opts and execute request
     curl_setopt( $ch, CURLOPT_URL, $full_url );
@@ -118,7 +120,9 @@ class Pusher {
     curl_setopt( $ch, CURLOPT_POST, 1 );
     curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload_encoded );
     curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
+
     $response = curl_exec( $ch );
+
     curl_close( $ch );
     
     if ( $response == "202 ACCEPTED\n" && $debug == false )
@@ -149,6 +153,7 @@ class Pusher {
     return json_encode( $signature );
     
   }
+
 
 }
 
