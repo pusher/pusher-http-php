@@ -148,15 +148,44 @@ class Pusher
 	* Creates a socket signature
 	* 
 	* @param int $socket_id
+	* @param string $custom_data
 	* @return string
 	*/
-	public function socket_auth( $socket_id )
+	public function socket_auth( $socket_id, $custom_data = false )
 	{
 
-		$signature = hash_hmac( 'sha256', $socket_id . ':' . $this->settings['channel'], $this->settings['secret'], false );
+		if($custom_data == true)
+		{
+			$signature = hash_hmac( 'sha256', $socket_id . ':' . $this->settings['channel'] . ':' . $custom_data, $this->settings['secret'], false );
+		}
+		else
+		{
+			$signature = hash_hmac( 'sha256', $socket_id . ':' . $this->settings['channel'], $this->settings['secret'], false );
+		}
+
 		$signature = array ( 'auth' => $this->settings['auth_key'] . ':' . $signature );
 		return json_encode( $signature );
 
+	}
+
+	/**
+	* Creates a presence signature (an extension of socket signing)
+	*
+	* @param int $socket_id
+	* @param string $user_id
+	* @param mixed $user_info
+	* @return string
+	*/
+	public function presence_auth( $socket_id, $user_id, $user_info = false )
+	{
+
+		$user_data = array( 'user_id' => $user_id );
+		if($user_info == true)
+		{
+			$user_data['user_info'] = $user_info;
+		}
+
+		return $this->socket_auth($socket_id, json_encode($user_data) );
 	}
 
 
