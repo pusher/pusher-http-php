@@ -44,24 +44,24 @@ Presence example
 
 First set this variable in your JS app:
 
-  Pusher.auth_url = '/presence_auth.php';
+    Pusher.auth_url = '/presence_auth.php';
 
 Next, create the following in presence_auth.php:
 
-<?php
-header('Content-Type: application/json');
-if ($_SESSION['user_id']){
-  $sql = "SELECT * FROM `users` WHERE id='$_SESSION[user_id]'";
-  $result = mysql_query($sql,$mysql);
-  $user = mysql_fetch_assoc($result);
-} else {
-  die('aaargh, no-one is logged in')
-}
-
-$pusher = new Pusher($key, $secret, $app_id);
-$presence_data = array('name' => $user['name']);
-echo $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
-?>
+    <?php
+    header('Content-Type: application/json');
+    if ($_SESSION['user_id']){
+      $sql = "SELECT * FROM `users` WHERE id='$_SESSION[user_id]'";
+      $result = mysql_query($sql,$mysql);
+      $user = mysql_fetch_assoc($result);
+    } else {
+      die('aaargh, no-one is logged in')
+    }
+    
+    $pusher = new Pusher($key, $secret, $app_id);
+    $presence_data = array('name' => $user['name']);
+    echo $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
+    ?>
 
 Note: this assumes that you store your users in a table called `users` and that those users have a `name` column. It also assumes that you have a login mechanism that stores the `user_id` of the logged in user in the session.
   
