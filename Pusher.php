@@ -32,13 +32,12 @@ class Pusher
 	* @param string $auth_key
 	* @param string $secret
 	* @param int $app_id
-	* @param string $channel [optional]
 	* @param bool $debug [optional]
 	* @param string $host [optional]
 	* @param int $port [optional]
 	* @param int $timeout [optional]
 	*/
-	public function __construct( $auth_key, $secret, $app_id, $channel = '', $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
+	public function __construct( $auth_key, $secret, $app_id, $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
 	{
 
 		// Check compatibility, disable for speed improvement
@@ -50,7 +49,6 @@ class Pusher
 		$this->settings['auth_key']	= $auth_key;
 		$this->settings['secret']	= $secret;
 		$this->settings['app_id']	= $app_id;
-		$this->settings['channel']	= $channel;
 		$this->settings['url']		= '/apps/' . $this->settings['app_id'];
 		$this->settings['debug']	= $debug;
 		$this->settings['timeout']	= $timeout;
@@ -88,7 +86,7 @@ class Pusher
 	* @param bool $debug [optional]
 	* @return bool|string
 	*/
-	public function trigger( $event, $payload, $socket_id = null, $channel = '', $debug = false )
+	public function trigger( $channel, $event, $payload, $socket_id = null, $debug = false )
 	{
 
 		# Check if we can initialize a cURL connection
@@ -99,7 +97,7 @@ class Pusher
 		}
 
 		# Add channel to URL..
-		$s_url = $this->settings['url'] . '/channels/' . ($channel != '' ? $channel : $this->settings['channel']) . '/events';
+		$s_url = $this->settings['url'] . '/channels/' . $channel . '/events';
 
 		# Build the request
 		$signature = "POST\n" . $s_url . "\n";
@@ -151,16 +149,16 @@ class Pusher
 	* @param string $custom_data
 	* @return string
 	*/
-	public function socket_auth( $socket_id, $custom_data = false )
+	public function socket_auth( $channel, $socket_id, $custom_data = false )
 	{
 
 		if($custom_data == true)
 		{
-			$signature = hash_hmac( 'sha256', $socket_id . ':' . $this->settings['channel'] . ':' . $custom_data, $this->settings['secret'], false );
+			$signature = hash_hmac( 'sha256', $socket_id . ':' . $channel . ':' . $custom_data, $this->settings['secret'], false );
 		}
 		else
 		{
-			$signature = hash_hmac( 'sha256', $socket_id . ':' . $this->settings['channel'], $this->settings['secret'], false );
+			$signature = hash_hmac( 'sha256', $socket_id . ':' . $channel, $this->settings['secret'], false );
 		}
 
 		$signature = array ( 'auth' => $this->settings['auth_key'] . ':' . $signature );
@@ -176,7 +174,7 @@ class Pusher
 	* @param mixed $user_info
 	* @return string
 	*/
-	public function presence_auth( $socket_id, $user_id, $user_info = false )
+	public function presence_auth( $channel, $socket_id, $user_id, $user_info = false )
 	{
 
 		$user_data = array( 'user_id' => $user_id );
@@ -185,7 +183,7 @@ class Pusher
 			$user_data['user_info'] = $user_info;
 		}
 
-		return $this->socket_auth($socket_id, json_encode($user_data) );
+		return $this->socket_auth($channel, $socket_id, json_encode($user_data) );
 	}
 
 
