@@ -18,12 +18,12 @@
 	require_ok('lib/Pusher.php');
 
 	$pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true);
-	is_ok($pusher);
+	ok($pusher, 'Created new Pusher object');
 
 	$string_trigger = $pusher->trigger('test_channel', 'my_event', date('l jS \of F Y h:i:s A'));
-	is($string_trigger, true, 'Trigger with string payload');
+	ok($string_trigger, 'Trigger with string payload');
 
-	$structure_trigger = $pusher->trigger('test_channel', 'my_event', array('time' => time));
-	is($structure_trigger, true, 'Trigger with structured payload');
+	$structure_trigger = $pusher->trigger('test_channel', 'my_event', array('time' => date('U') ));
+	ok($structure_trigger, 'Trigger with structured payload');
 
 ?>
