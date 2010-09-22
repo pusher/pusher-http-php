@@ -162,6 +162,10 @@ class Pusher
 		}
 
 		$signature = array ( 'auth' => $this->settings['auth_key'] . ':' . $signature );
+		// add the custom data if it has been supplied
+		if($custom_data){
+		  $signature['channel_data'] = $custom_data;
+		}
 		return json_encode( $signature );
 
 	}
