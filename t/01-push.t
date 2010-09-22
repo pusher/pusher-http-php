@@ -20,7 +20,7 @@
 	$pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true);
 	is_ok($pusher);
 
-	$string_trigger = $pusher->trigger('test_channel', 'my_event', date('l jS \of F Y h:i:s A'););
+	$string_trigger = $pusher->trigger('test_channel', 'my_event', date('l jS \of F Y h:i:s A'));
 	is($string_trigger, true, 'Trigger with string payload');
 
 	$structure_trigger = $pusher->trigger('test_channel', 'my_event', array('time' => time));
