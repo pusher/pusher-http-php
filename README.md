@@ -2,7 +2,7 @@ Pusher PHP Library
 ==================
 
 This is a very simple PHP library to the Pusher API (http://pusherapp.com).
-Using it is easy as pie:
+Using it is easy as pie:<br />
 NOTE: you don't need to perform your own JSON encoding, the library will handle it for you.
 
     require('Pusher.php');
