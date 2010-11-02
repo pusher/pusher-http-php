@@ -2,13 +2,14 @@ Pusher PHP Library
 ==================
 
 This is a very simple PHP library to the Pusher API (http://pusherapp.com).
-Using it is easy as pie:<br />
-NOTE: you don't need to perform your own JSON encoding, the library will handle it for you.
+Using it is easy as pie:
 
     require('Pusher.php');
 
     $pusher = new Pusher($key, $secret, $app_id);
     $pusher->trigger('my-channel', 'my_event', 'hello world');
+
+NOTE: If you pass an array to the data variable it will automatically be converted to JSON.
 
 Debugging
 ---------
