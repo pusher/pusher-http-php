@@ -9,7 +9,18 @@ Using it is easy as pie:
     $pusher = new Pusher($key, $secret, $app_id);
     $pusher->trigger('my-channel', 'my_event', 'hello world');
 
-NOTE: If you pass an array to the data variable it will automatically be converted to JSON.
+Arrays
+------
+Objects are automatically converted to JSON format:
+
+    $array['name'] = 'joe';
+    $array['message_count'] = 23;
+
+    $pusher->trigger('my_channel', 'my_event', $array);
+
+The output of this will be:
+
+    "{'name': 'joe', 'message_count': 23}"
 
 Debugging
 ---------
