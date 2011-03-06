@@ -9,6 +9,16 @@ Using it is easy as pie:
     $pusher = new Pusher($key, $secret, $app_id);
     $pusher->trigger('my-channel', 'my_event', 'hello world');
 
+
+If you prefer to use the Singleton pattern usage is similiar, but like this:
+
+    require('Pusher.php');
+    $pusher = PusherInstance::get_pusher();
+
+    $pusher->trigger('my-channel', 'my_event', 'hello world');
+
+Note: You need to set your API information in Pusher.php
+
 Arrays
 ------
 Objects are automatically converted to JSON format:
