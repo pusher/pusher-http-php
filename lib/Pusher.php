@@ -9,12 +9,15 @@
 		$pusher->trigger('my_event', 'test_channel', [socket_id, Debug: true/false]);
 		$pusher->socket_auth('socket_id');
 
-	Copyright 2010, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
+	Copyright 2011, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 
-	Contrbutors:
+	Contributors:
 		+ Paul44 (http://github.com/Paul44)
 		+ Ben Pickles (http://github.com/benpickles)
 		+ Mastercoding (http://www.mastercoding.nl)
+		+ Alias14 (mali0037@gmail.com)
+		+ Max Williams (max@pusher.com)
+		+ Zack Kitzmiller (delicious@zackisamazing.com)
 
 */
 
