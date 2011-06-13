@@ -113,7 +113,7 @@ class Pusher
 	* @param bool $debug [optional]
 	* @return bool|string
 	*/
-	public function trigger( $channel, $event, $payload, $socket_id = null, $debug = false )
+	public function trigger( $channel, $event, $payload, $socket_id = null, $debug = false, $already_encoded = false )
 	{
 
 		# Check if we can initialize a cURL connection
@@ -128,7 +128,7 @@ class Pusher
 
 		# Build the request
 		$signature = "POST\n" . $s_url . "\n";
-		$payload_encoded = json_encode( $payload );
+		$payload_encoded = $already_encoded ? $payload : json_encode( $payload );
 		$query = "auth_key=" . $this->settings['auth_key'] . "&auth_timestamp=" . time() . "&auth_version=1.0&body_md5=" . md5( $payload_encoded ) . "&name=" . $event;
 
 		# Socket ID set?
