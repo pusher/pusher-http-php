@@ -32,11 +32,17 @@ The output of this will be:
 
     "{'name': 'joe', 'message_count': 23}"
 
+Socket id
+---------
+In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event (http://pusherapp.com/docs/duplicates):
+
+    $pusher->trigger('my-channel','event','data','socket_id');
+
 Debugging
 ---------
-You can either turn on debugging by setting the third argument like so, to true:
+You can either turn on debugging by setting the fifth argument to true, like so:
 
-    $pusher->trigger('my-channel', 'event', 'data', true)
+    $pusher->trigger('my-channel', 'event', 'data', null, true)
 
 or with all requests:
 
@@ -44,11 +50,12 @@ or with all requests:
 
 On failed requests, this will return the server's response, instead of false.
 
-Socket id
----------
-In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event (http://pusherapp.com/docs/duplicates):
+JSON format
+-----------
 
-    $pusher->trigger('my-channel','event','data','socket_id');
+If your data is already encoded in JSON format, you can avoid a second encoding step by setting the sixth argument true, like so:
+
+	$pusher->trigger('my-channel', 'event', 'data', null, false, true)
 
 Private channels
 ----------------
