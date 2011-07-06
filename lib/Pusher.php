@@ -21,6 +21,8 @@
 
 */
 
+namespace Pusher;
+
 class PusherInstance {
 	
 	private static $instance = null;
