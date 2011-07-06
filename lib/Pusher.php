@@ -18,7 +18,7 @@
 		+ Alias14 (mali0037@gmail.com)
 		+ Max Williams (max@pusher.com)
 		+ Zack Kitzmiller (delicious@zackisamazing.com)
-
+		+ Andrew Bender (igothelp@gmail.com)
 */
 
 namespace Pusher;
