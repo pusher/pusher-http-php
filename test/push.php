@@ -6,6 +6,8 @@
 
 	require_once('../lib/Pusher.php');
 	
+	use Pusher\Pusher;
+
 	class PusherPushTest extends PHPUnit_Framework_TestCase
 	{
 
