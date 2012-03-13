@@ -10,7 +10,7 @@ Using it is easy as pie:
     $pusher->trigger('my-channel', 'my_event', 'hello world');
 
 
-If you prefer to use the Singleton pattern usage is similiar, but like this:
+If you prefer to use the Singleton pattern usage is similar, but like this:
 
     require('Pusher.php');
     $pusher = PusherInstance::get_pusher();
