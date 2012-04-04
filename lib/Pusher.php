@@ -265,7 +265,7 @@ class Pusher
 		return $response;
 	}
 	
-	public function get_channel_list()
+	public function get_channels_list()
 	{
 		$s_url = $this->settings['url'] . '/channels';	
 
@@ -297,6 +297,7 @@ class Pusher
 		if($http_status == 200)
 		{
 		  $response = json_decode($response);
+		  $response = $response->channels;
 		}
 		else
 		{

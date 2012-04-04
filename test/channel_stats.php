@@ -31,10 +31,9 @@
 		
 		public function testChannelList()
 		{
-			$response = $this->pusher->get_channel_list();
+			$channels = $this->pusher->get_channels_list();
 			
-			$this->assertObjectHasAttribute('channels', $response, 'class has channels attribute');
-			$this->assertTrue( is_array($response->channels), 'channels is an array' );
+			$this->assertTrue( is_array($channels), 'channels is an array' );
 		}
 		
 	}
