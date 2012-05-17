@@ -74,7 +74,7 @@ Presence example
 
 First set this variable in your JS app:
 
-    Pusher.auth_url = '/presence_auth.php';
+    Pusher.channel_auth_endpoint = '/presence_auth.php';
 
 Next, create the following in presence_auth.php:
 
