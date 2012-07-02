@@ -31,7 +31,7 @@
 		
 		public function testChannelList()
 		{
-			$channels = $this->pusher->get_channels_list();
+			$channels = $this->pusher->get_channels();
 			
 			$this->assertTrue( is_array($channels), 'channels is an array' );
 		}

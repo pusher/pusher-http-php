@@ -102,11 +102,11 @@ It's also possible to get statistics about a channel from the Pusher REST API.
     $stats = $pusher->get_channel_stats('channel-name');
     $channel_occupied = $stats->occupied;
     
-## Channels List
+## Channels list
 
 It's also possible to get a list of channels for an application from the Pusher REST API.
 
-    $channels = $pusher->get_channels_list();
+    $channels = $pusher->get_channels();
     $channel_count = count($channels); // $channels is an Array
 
 ## License

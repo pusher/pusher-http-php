@@ -265,7 +265,7 @@ class Pusher
 		return $response;
 	}
 	
-	public function get_channels_list()
+	public function get_channels()
 	{
 		$s_url = $this->settings['url'] . '/channels';	
 
