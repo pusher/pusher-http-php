@@ -108,7 +108,23 @@ It's also possible to get a list of channels for an application from the Pusher 
 
     $channels = $pusher->get_channels();
     $channel_count = count($channels); // $channels is an Array
+    
+  
+## Presence channels list
 
+It's also possible to get a list of presence channels and there associated stats for an application from the Pusher REST API.
+
+    $channels = $pusher->get_presence_channels();
+    $channel_count = count($channels); // $channels is an Array
+    
+## Running the tests
+
+Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
+
+* Got to the `tests` directory
+* Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
+* Execute `phpunit .` to run all the tests.
+    
 ## License
 
 Copyright 2010, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php 
