@@ -1,6 +1,6 @@
 <?php
 
-  if(file_exists('push.php') === true)
+  if(file_exists('config.php') === true)
   {
     require_once('config.php');
   }
@@ -45,7 +45,7 @@
 		  
 		  print_r( $presence_channels );
 		  
-		  $this->assertNotNull( $presence_channels, 'presence channels should be a lookup of channel names to stats' );
+			$this->assertTrue( is_array($presence_channels), 'channels is an array' );
 		}
 		
 	}

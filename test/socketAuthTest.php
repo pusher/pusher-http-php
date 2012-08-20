@@ -2,7 +2,7 @@
 
 	require_once('../lib/Pusher.php');
 	
-	class PusherPushTest extends PHPUnit_Framework_TestCase
+	class PusherSocketAuthTest extends PHPUnit_Framework_TestCase
 	{
 
 		protected function setUp()

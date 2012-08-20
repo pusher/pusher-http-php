@@ -3,11 +3,15 @@
 /* 
 		Pusher PHP Library
 	/////////////////////////////////
-	This was a very simple PHP library to the Pusher API.
+	PHP library for the Pusher API.
 
 		$pusher = new Pusher(APIKEY, SECRET, APP_ID, CHANNEL, [Debug: true/false, HOST, PORT]);
 		$pusher->trigger('my_event', 'test_channel', [socket_id, Debug: true/false]);
 		$pusher->socket_auth('socket_id');
+		$pusher->presence_auth($channel, $socket_id, $user_id, [$user_info]);
+		$pusher->get_channels();
+		$pusher->get_presence_channels();
+		$pusher->get_channel_stats('test_channel');
 
 	Copyright 2011, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 
@@ -19,7 +23,12 @@
 		+ Max Williams (max@pusher.com)
 		+ Zack Kitzmiller (delicious@zackisamazing.com)
 		+ Andrew Bender (igothelp@gmail.com)
+		+ Phil Leggetter (phil@leggetter.co.uk)
 */
+
+class PusherException extends Exception
+{
+}
 
 class PusherInstance {
 	
@@ -66,7 +75,6 @@ class Pusher
 	*/
 	public function __construct( $auth_key, $secret, $app_id, $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
 	{
-
 		// Check compatibility, disable for speed improvement
 		$this->check_compatibility();
 
@@ -87,29 +95,30 @@ class Pusher
 	*/
 	private function check_compatibility()
 	{
-
-		// Check for dependent PHP extensions (JSON, cURL)
 		if ( ! extension_loaded( 'curl' ) || ! extension_loaded( 'json' ) )
 		{
-			die( 'There is missing dependant extensions - please ensure both cURL and JSON modules are installed' );
+		  throw new PusherException('There is missing dependant extensions - please ensure both cURL and JSON modules are installed');
 		}
 
-		# Supports SHA256?
 		if ( ! in_array( 'sha256', hash_algos() ) )
 		{
-			die( 'SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.' );
+		  throw new PusherException('SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.');
 		}
 
 	}
 	
-	private function create_curl($s_url)
+	/**
+	 * Utility function used to create the curl object with common settings
+	 */
+	private function create_curl($s_url, $request_method = 'GET', $query_params = array() )
 	{
 	  # Create the signed signature...
 		$signed_query = Pusher::build_auth_query_string(
 		  $this->settings['auth_key'],
 		  $this->settings['secret'],
-		  'GET',
-		  $s_url);
+		  $request_method,
+		  $s_url,
+		  $query_params);
 
 		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
 		
@@ -117,7 +126,7 @@ class Pusher
 		$ch = curl_init();
 		if ( $ch === false )
 		{
-			die( 'Could not initialise cURL!' );
+			throw new PusherException('Could not initialise cURL!');
 		}
 		
 		curl_setopt( $ch, CURLOPT_URL, $full_url );
@@ -128,9 +137,17 @@ class Pusher
 		return $ch;
 	}
 	
-	/**
-	 *
-	 */
+  /**
+   *  Build the required HMAC'd auth string
+   *
+   *  @param string $auth_key
+   *  @param string $auth_secret
+   *  @param string $request_path
+   *  @param array $query_params
+   *  @param string $auth_version [optional]
+   *  @param string $auth_timestamp [optional]
+   *  @return string
+   */
 	public static function build_auth_query_string($auth_key, $auth_secret, $request_method, $request_path,
 	  $query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
 	{	
@@ -143,6 +160,8 @@ class Pusher
 		ksort($params);
 		
 		$string_to_sign = "$request_method\n" . $request_path . "\n" . Pusher::array_implode( '=', '&', $params );
+		
+		echo( $string_to_sign );
 
 		$auth_signature = hash_hmac( 'sha256', $string_to_sign, $auth_secret, false );
 		
@@ -195,14 +214,14 @@ class Pusher
 	  
 		$s_url = $this->settings['url'] . '/channels/' . $channel . '/events';		
 
-		$ch = $this->create_curl( $s_url );
-		
 		$query_params = array();
 		
 		$payload_encoded = $already_encoded ? $payload : json_encode( $payload );
 		$query_params['body_md5'] = md5( $payload_encoded );
 		
 		$query_params['name'] = $event;
+
+		$ch = $this->create_curl( $s_url, 'POST', $query_params );
 
 		curl_setopt( $ch, CURLOPT_POST, 1 );
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload_encoded );
@@ -226,6 +245,12 @@ class Pusher
 
 	}
 	
+	/**
+   *  Fetch channel statistics
+   *
+   *  @param string $channel name
+   *  @return object
+   */
 	public function get_channel_stats($channel)
 	{
 		$s_url = $this->settings['url'] . '/channels/' . $channel . '/stats';	
@@ -250,6 +275,11 @@ class Pusher
 		return $response;
 	}
 	
+	/**
+   *  Fetch a list containing all channels
+   *
+   *  @return array
+   */
 	public function get_channels()
 	{
 		$s_url = $this->settings['url'] . '/channels';	
@@ -275,6 +305,11 @@ class Pusher
 		return $response;
 	}
 	
+	/**
+   *  Fetch presence channels and their associated statistics
+   *
+   *  @return array
+   */
 	public function get_presence_channels()
 	{
 	  $s_url = $this->settings['url'] . '/channels/presence';	
@@ -289,6 +324,7 @@ class Pusher
 		{
 		  $response = json_decode($response);
 		  $response = $response->channels;
+		  $response = get_object_vars( $response );
 		}
 		else
 		{
@@ -348,7 +384,4 @@ class Pusher
 		return $this->socket_auth($channel, $socket_id, json_encode($user_data) );
 	}
 
-
 }
-
-?>

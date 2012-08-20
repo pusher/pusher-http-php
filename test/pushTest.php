@@ -1,6 +1,6 @@
 <?php
 
-  if(file_exists('push.php') === true)
+  if(file_exists('config.php') === true)
   {
     require_once('config.php');
   }
