@@ -25,15 +25,27 @@
 		{
 			$response = $this->pusher->get_channel_stats('channel-test');
 			
+			print_r( $response );
+			
 			$this->assertObjectHasAttribute('occupied', $response, 'class has occupied attribute');
 		}
-		
 		
 		public function testChannelList()
 		{
 			$channels = $this->pusher->get_channels();
 			
+			print_r( $channels );
+			
 			$this->assertTrue( is_array($channels), 'channels is an array' );
+		}
+		
+		public function testPresenceChannelsList()
+		{
+		  $presence_channels = $this->pusher->get_presence_channels();
+		  
+		  print_r( $presence_channels );
+		  
+		  $this->assertNotNull( $presence_channels, 'presence channels should be a lookup of channel names to stats' );
 		}
 		
 	}

@@ -102,6 +102,32 @@ class Pusher
 
 	}
 	
+	private function create_curl($s_url)
+	{
+	  # Create the signed signature...
+		$signed_query = Pusher::build_auth_query_string(
+		  $this->settings['auth_key'],
+		  $this->settings['secret'],
+		  'GET',
+		  $s_url);
+
+		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
+		
+		# Set cURL opts and execute request
+		$ch = curl_init();
+		if ( $ch === false )
+		{
+			die( 'Could not initialise cURL!' );
+		}
+		
+		curl_setopt( $ch, CURLOPT_URL, $full_url );
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json" ) );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
+		
+		return $ch;
+	}
+	
 	/**
 	 *
 	 */
@@ -162,8 +188,14 @@ class Pusher
 	*/
 	public function trigger( $channel, $event, $payload, $socket_id = null, $debug = false, $already_encoded = false )
 	{
-		# Add channel to URL..
-		$s_url = $this->settings['url'] . '/channels/' . $channel . '/events';
+	  if ( $socket_id !== null )
+		{
+			$query_params['socket_id'] = $socket_id;
+		}
+	  
+		$s_url = $this->settings['url'] . '/channels/' . $channel . '/events';		
+
+		$ch = $this->create_curl( $s_url );
 		
 		$query_params = array();
 		
@@ -171,37 +203,9 @@ class Pusher
 		$query_params['body_md5'] = md5( $payload_encoded );
 		
 		$query_params['name'] = $event;
-		
-		# Socket ID set?
-		if ( $socket_id !== null )
-		{
-			$query_params['socket_id'] = $socket_id;
-		}		
 
-		# Create the signed signature...
-		$signed_query = Pusher::build_auth_query_string(
-		  $this->settings['auth_key'],
-		  $this->settings['secret'],
-		  'POST',
-		  $s_url,
-		  $query_params);
-
-		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
-
-		# Check if we can initialize a cURL connection
-		$ch = curl_init();
-		if ( $ch === false )
-		{
-			die( 'Could not initialise cURL!' );
-		}
-
-		# Set cURL opts and execute request
-		curl_setopt( $ch, CURLOPT_URL, $full_url );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json" ) );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt( $ch, CURLOPT_POST, 1 );
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload_encoded );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
 
 		$response = curl_exec( $ch );
 
@@ -226,26 +230,7 @@ class Pusher
 	{
 		$s_url = $this->settings['url'] . '/channels/' . $channel . '/stats';	
 
-		# Create the signed signature...
-		$signed_query = Pusher::build_auth_query_string(
-		  $this->settings['auth_key'],
-		  $this->settings['secret'],
-		  'GET',
-		  $s_url);
-
-		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
-		
-		# Set cURL opts and execute request
-		$ch = curl_init();
-		if ( $ch === false )
-		{
-			die( 'Could not initialise cURL!' );
-		}
-		
-		curl_setopt( $ch, CURLOPT_URL, $full_url );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json" ) );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
+		$ch = $this->create_curl( $s_url );
 
 		$response = curl_exec( $ch );
 		
@@ -269,26 +254,32 @@ class Pusher
 	{
 		$s_url = $this->settings['url'] . '/channels';	
 
-		# Create the signed signature...
-		$signed_query = Pusher::build_auth_query_string(
-		  $this->settings['auth_key'],
-		  $this->settings['secret'],
-		  'GET',
-		  $s_url);
+		$ch = $this->create_curl( $s_url );
 
-		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
+		$response = curl_exec( $ch );
 		
-		# Set cURL opts and execute request
-		$ch = curl_init();
-		if ( $ch === false )
+		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		
+		if($http_status == 200)
 		{
-			die( 'Could not initialise cURL!' );
+		  $response = json_decode($response);
+		  $response = $response->channels;
 		}
+		else
+		{
+		  $response = false;
+		}
+
+		curl_close( $ch );
 		
-		curl_setopt( $ch, CURLOPT_URL, $full_url );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json" ) );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
+		return $response;
+	}
+	
+	public function get_presence_channels()
+	{
+	  $s_url = $this->settings['url'] . '/channels/presence';	
+
+		$ch = $this->create_curl( $s_url );
 
 		$response = curl_exec( $ch );
 		
