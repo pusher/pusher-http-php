@@ -36,6 +36,10 @@
 			
 			print_r( $channels );
 			
+			foreach( $channels as $channel ) {
+        echo( $channel->name );
+      }
+			
 			$this->assertTrue( is_array($channels), 'channels is an array' );
 		}
 		
@@ -44,6 +48,12 @@
 		  $presence_channels = $this->pusher->get_presence_channels();
 		  
 		  print_r( $presence_channels );
+		  
+		  foreach( $presence_channels as $name => $stats ) {
+        echo( $name );
+        print_r( $stats );
+        echo( $stats->user_count );
+      }
 		  
 			$this->assertTrue( is_array($presence_channels), 'channels is an array' );
 		}
