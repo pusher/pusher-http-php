@@ -160,8 +160,6 @@ class Pusher
 		ksort($params);
 		
 		$string_to_sign = "$request_method\n" . $request_path . "\n" . Pusher::array_implode( '=', '&', $params );
-		
-		echo( $string_to_sign );
 
 		$auth_signature = hash_hmac( 'sha256', $string_to_sign, $auth_secret, false );
 		
