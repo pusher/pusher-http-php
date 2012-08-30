@@ -56,6 +56,7 @@ class PusherInstance {
 
 class Pusher
 {
+	public static $VERSION = '2.0.0';
 
 	private $settings = array ();
 
@@ -291,7 +292,6 @@ class Pusher
 		if($http_status == 200)
 		{
 		  $response = json_decode($response);
-		  $response = $response->channels;
 		}
 		else
 		{
@@ -321,8 +321,7 @@ class Pusher
 		if($http_status == 200)
 		{
 		  $response = json_decode($response);
-		  $response = $response->channels;
-		  $response = get_object_vars( $response );
+		  $response->channels = get_object_vars( $response->channels );
 		}
 		else
 		{
