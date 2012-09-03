@@ -1,7 +1,6 @@
-
 {
     "name": "pusher/pusher-php-server",
-    "vesrion": "2.0.0",
+    "version": "2.0.0",
     "description" : "Library for interacting with the Pusher REST API",
     "keywords": ["php-pusher-server", "pusher", "rest", "realtime", "trigger", "publish", "events"],
     "homepage": "https://github.com/pusher/pusher-php-server"
