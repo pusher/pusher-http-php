@@ -245,6 +245,58 @@ class Pusher
 	}
 	
 	/**
+	* Trigger an event asynchronously without waiting for the server response.
+	* Debug is not provided.
+	*
+	* @param string $event
+	* @param mixed $payload
+	* @param int $socket_id [optional]
+	* @param string $channel [optional]
+	* @return bool|string
+	*/
+	public function trigger_async( $channel, $event, $payload, $socket_id = null, $already_encoded = false )
+	{
+		$query_params = array();
+
+	  if ( $socket_id !== null )
+		{
+			$query_params['socket_id'] = $socket_id;
+		}
+
+		$s_url = $this->settings['url'] . '/channels/' . $channel . '/events';
+
+		$payload_encoded = $already_encoded ? $payload : json_encode( $payload );
+		$query_params['body_md5'] = md5( $payload_encoded );
+
+		$query_params['name'] = $event;
+
+		$signed_query = Pusher::build_auth_query_string(
+		  $this->settings['auth_key'],
+		  $this->settings['secret'],
+		  'POST',
+		  $s_url,
+		  $query_params);
+		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
+
+		$parts = parse_url($full_url);
+	  $fp = fsockopen($parts['host'],
+			isset($parts['port']) ? $parts['port'] : 80,
+	    $errno, $errstr, 30);
+
+    $out = "POST ".$s_url . '?' . $signed_query." HTTP/1.1\r\n";
+    $out .= "Host: ".$parts['host']."\r\n";
+    $out .= "Content-Type: application/json\r\n";
+    $out .= "Content-Length: ".strlen($payload_encoded)."\r\n";
+    $out .= "Connection: Close\r\n\r\n";
+    $out .= $payload_encoded;
+
+    fwrite($fp, $out);
+    fclose($fp);
+
+	  return true;
+	}
+	
+	/**
 	 *	Fetch channel statistics
 	 *
 	 *	@param string $channel name
