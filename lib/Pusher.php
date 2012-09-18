@@ -206,14 +206,14 @@ class Pusher
 	*/
 	public function trigger( $channel, $event, $payload, $socket_id = null, $debug = false, $already_encoded = false )
 	{
+		$query_params = array();
+		
 		if ( $socket_id !== null )
 		{
 			$query_params['socket_id'] = $socket_id;
 		}
 		
 		$s_url = $this->settings['url'] . '/channels/' . $channel . '/events';		
-
-		$query_params = array();
 		
 		$payload_encoded = $already_encoded ? $payload : json_encode( $payload );
 		$query_params['body_md5'] = md5( $payload_encoded );
