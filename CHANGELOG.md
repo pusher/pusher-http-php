@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 (2012-09-18)
+
+[FIXED] Overwritten socket_id parameter in trigger: https://github.com/pusher/pusher-php-server/pull/3
+
 ## 2.0.0 (2012-08-30)
 
 [NEW] Versioning introduced at 2.0.0

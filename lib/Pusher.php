@@ -33,8 +33,8 @@ class PusherException extends Exception
 class PusherInstance {
 	
 	private static $instance = null;
-	private static $app_id  = '';
-	private static $secret  = '';
+	private static $app_id	= '';
+	private static $secret	= '';
 	private static $api_key = '';
 	
 	private function __construct() { }
@@ -80,11 +80,11 @@ class Pusher
 		$this->check_compatibility();
 
 		// Setup defaults
-		$this->settings['server']	= $host;
+		$this->settings['server'] = $host;
 		$this->settings['port']		= $port;
-		$this->settings['auth_key']	= $auth_key;
-		$this->settings['secret']	= $secret;
-		$this->settings['app_id']	= $app_id;
+		$this->settings['auth_key'] = $auth_key;
+		$this->settings['secret'] = $secret;
+		$this->settings['app_id'] = $app_id;
 		$this->settings['url']		= '/apps/' . $this->settings['app_id'];
 		$this->settings['debug']	= $debug;
 		$this->settings['timeout']	= $timeout;
@@ -98,12 +98,12 @@ class Pusher
 	{
 		if ( ! extension_loaded( 'curl' ) || ! extension_loaded( 'json' ) )
 		{
-		  throw new PusherException('There is missing dependant extensions - please ensure both cURL and JSON modules are installed');
+			throw new PusherException('There is missing dependant extensions - please ensure both cURL and JSON modules are installed');
 		}
 
 		if ( ! in_array( 'sha256', hash_algos() ) )
 		{
-		  throw new PusherException('SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.');
+			throw new PusherException('SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.');
 		}
 
 	}
@@ -113,13 +113,13 @@ class Pusher
 	 */
 	private function create_curl($s_url, $request_method = 'GET', $query_params = array() )
 	{
-	  # Create the signed signature...
+		# Create the signed signature...
 		$signed_query = Pusher::build_auth_query_string(
-		  $this->settings['auth_key'],
-		  $this->settings['secret'],
-		  $request_method,
-		  $s_url,
-		  $query_params);
+			$this->settings['auth_key'],
+			$this->settings['secret'],
+			$request_method,
+			$s_url,
+			$query_params);
 
 		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
 		
@@ -138,20 +138,20 @@ class Pusher
 		return $ch;
 	}
 	
-  /**
-   *  Build the required HMAC'd auth string
-   *
-   *  @param string $auth_key
-   *  @param string $auth_secret
-   *  @param string $request_path
-   *  @param array $query_params
-   *  @param string $auth_version [optional]
-   *  @param string $auth_timestamp [optional]
-   *  @return string
-   */
+	/**
+	 *	Build the required HMAC'd auth string
+	 *
+	 *	@param string $auth_key
+	 *	@param string $auth_secret
+	 *	@param string $request_path
+	 *	@param array $query_params
+	 *	@param string $auth_version [optional]
+	 *	@param string $auth_timestamp [optional]
+	 *	@return string
+	 */
 	public static function build_auth_query_string($auth_key, $auth_secret, $request_method, $request_path,
-	  $query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
-	{	
+		$query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
+	{ 
 		$params = array();
 		$params['auth_key'] = $auth_key;
 		$params['auth_timestamp'] = (is_null($auth_timestamp)?time() : $auth_timestamp);
@@ -173,25 +173,25 @@ class Pusher
 	}
 	
 	/**
-   * Implode an array with the key and value pair giving
-   * a glue, a separator between pairs and the array
-   * to implode.
-   * @param string $glue The glue between key and value
-   * @param string $separator Separator between pairs
-   * @param array $array The array to implode
-   * @return string The imploded array
-   */
-  public static function array_implode( $glue, $separator, $array ) {
-      if ( ! is_array( $array ) ) return $array;
-      $string = array();
-      foreach ( $array as $key => $val ) {
-          if ( is_array( $val ) )
-              $val = implode( ',', $val );
-          $string[] = "{$key}{$glue}{$val}";
+	 * Implode an array with the key and value pair giving
+	 * a glue, a separator between pairs and the array
+	 * to implode.
+	 * @param string $glue The glue between key and value
+	 * @param string $separator Separator between pairs
+	 * @param array $array The array to implode
+	 * @return string The imploded array
+	 */
+	public static function array_implode( $glue, $separator, $array ) {
+			if ( ! is_array( $array ) ) return $array;
+			$string = array();
+			foreach ( $array as $key => $val ) {
+					if ( is_array( $val ) )
+							$val = implode( ',', $val );
+					$string[] = "{$key}{$glue}{$val}";
 
-      }    
-      return implode( $separator, $string );
-  }
+			}		 
+			return implode( $separator, $string );
+	}
 
 	/**
 	* Trigger an event by providing event name and payload. 
@@ -206,11 +206,11 @@ class Pusher
 	*/
 	public function trigger( $channel, $event, $payload, $socket_id = null, $debug = false, $already_encoded = false )
 	{
-	  if ( $socket_id !== null )
+		if ( $socket_id !== null )
 		{
 			$query_params['socket_id'] = $socket_id;
 		}
-	  
+		
 		$s_url = $this->settings['url'] . '/channels/' . $channel . '/events';		
 
 		$query_params = array();
@@ -245,14 +245,14 @@ class Pusher
 	}
 	
 	/**
-   *  Fetch channel statistics
-   *
-   *  @param string $channel name
-   *  @return object
-   */
+	 *	Fetch channel statistics
+	 *
+	 *	@param string $channel name
+	 *	@return object
+	 */
 	public function get_channel_stats($channel)
 	{
-		$s_url = $this->settings['url'] . '/channels/' . $channel . '/stats';	
+		$s_url = $this->settings['url'] . '/channels/' . $channel . '/stats'; 
 
 		$ch = $this->create_curl( $s_url );
 
@@ -262,11 +262,11 @@ class Pusher
 		
 		if($http_status == 200)
 		{
-		  $response = json_decode($response);
+			$response = json_decode($response);
 		}
 		else
 		{
-		  $response = false;
+			$response = false;
 		}
 
 		curl_close( $ch );
@@ -275,10 +275,10 @@ class Pusher
 	}
 	
 	/**
-   *  Fetch a list containing all channels
-   *
-   *  @return array
-   */
+	 *	Fetch a list containing all channels
+	 *
+	 *	@return array
+	 */
 	public function get_channels()
 	{
 		$s_url = $this->settings['url'] . '/channels';	
@@ -291,11 +291,11 @@ class Pusher
 		
 		if($http_status == 200)
 		{
-		  $response = json_decode($response);
+			$response = json_decode($response);
 		}
 		else
 		{
-		  $response = false;
+			$response = false;
 		}
 
 		curl_close( $ch );
@@ -304,13 +304,13 @@ class Pusher
 	}
 	
 	/**
-   *  Fetch presence channels and their associated statistics
-   *
-   *  @return array
-   */
+	 *	Fetch presence channels and their associated statistics
+	 *
+	 *	@return array
+	 */
 	public function get_presence_channels()
 	{
-	  $s_url = $this->settings['url'] . '/channels/presence';	
+		$s_url = $this->settings['url'] . '/channels/presence'; 
 
 		$ch = $this->create_curl( $s_url );
 
@@ -320,12 +320,12 @@ class Pusher
 		
 		if($http_status == 200)
 		{
-		  $response = json_decode($response);
-		  $response->channels = get_object_vars( $response->channels );
+			$response = json_decode($response);
+			$response->channels = get_object_vars( $response->channels );
 		}
 		else
 		{
-		  $response = false;
+			$response = false;
 		}
 
 		curl_close( $ch );
@@ -355,7 +355,7 @@ class Pusher
 		$signature = array ( 'auth' => $this->settings['auth_key'] . ':' . $signature );
 		// add the custom data if it has been supplied
 		if($custom_data){
-		  $signature['channel_data'] = $custom_data;
+			$signature['channel_data'] = $custom_data;
 		}
 		return json_encode( $signature );
 
