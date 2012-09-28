@@ -9,6 +9,8 @@
 	  define('PUSHERAPP_AUTHKEY', getenv('PUSHERAPP_AUTHKEY'));
 	  define('PUSHERAPP_SECRET' , getenv('PUSHERAPP_SECRET'));
 	  define('PUSHERAPP_APPID'  , getenv('PUSHERAPP_APPID'));
+
+	  define('PUSHERAPP_HOST', 'http://api.pusherapp.com');
   }
 
 	require_once('../lib/Pusher.php');
@@ -26,7 +28,7 @@
 			}
 			else
 			{
-				$this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true);
+				$this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true, PUSHERAPP_HOST);
 			}
 		}
 

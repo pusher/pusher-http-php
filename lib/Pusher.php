@@ -245,18 +245,19 @@ class Pusher
 	}
 	
 	/**
-	 *	Fetch channel statistics
+	 *	Fetch channel information for a specific channel.
 	 *
 	 *	@param string $channel name
 	 *	@return object
 	 */
-	public function get_channel_stats($channel)
+	public function get_channel_info($channel)
 	{
 		$s_url = $this->settings['url'] . '/channels/' . $channel . '/stats'; 
 
 		$ch = $this->create_curl( $s_url );
 
 		$response = curl_exec( $ch );
+
 		
 		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		
@@ -279,40 +280,11 @@ class Pusher
 	 *
 	 *	@return array
 	 */
-	public function get_channels()
+	public function get_channels($options = array())
 	{
 		$s_url = $this->settings['url'] . '/channels';	
 
-		$ch = $this->create_curl( $s_url );
-
-		$response = curl_exec( $ch );
-		
-		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		
-		if($http_status == 200)
-		{
-			$response = json_decode($response);
-		}
-		else
-		{
-			$response = false;
-		}
-
-		curl_close( $ch );
-		
-		return $response;
-	}
-	
-	/**
-	 *	Fetch presence channels and their associated statistics
-	 *
-	 *	@return array
-	 */
-	public function get_presence_channels()
-	{
-		$s_url = $this->settings['url'] . '/channels/presence'; 
-
-		$ch = $this->create_curl( $s_url );
+		$ch = $this->create_curl( $s_url, 'GET', $options );
 
 		$response = curl_exec( $ch );
 		

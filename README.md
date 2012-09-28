@@ -95,27 +95,35 @@ Next, create the following in presence_auth.php:
 
 Note: this assumes that you store your users in a table called `users` and that those users have a `name` column. It also assumes that you have a login mechanism that stores the `user_id` of the logged in user in the session.
 
-## Channel Stats
+## Channel Queries
 
-It's also possible to get statistics about a channel from the Pusher REST API.
+### Get information about a channel
 
-    $stats = $pusher->get_channel_stats('channel-name');
-    $channel_occupied = $stats->occupied;
+    get_channel_info( $name )
+
+It's also possible to get information about a channel from the Pusher REST API.
+
+    $info = $pusher->get_channel_info('channel-name');
+    $channel_occupied = $info->occupied;
     
-## Channels list
+### Get a list of application channels
+
+    get_channels()
 
 It's also possible to get a list of channels for an application from the Pusher REST API.
 
-    $channels = $pusher->get_channels();
-    $channel_count = count($channels); // $channels is an Array
+    $result = $pusher->get_channels();
+    $channel_count = count($result->channels); // $channels is an Array
     
   
-## Presence channels list
+### Get a filtered list of application channels
 
-It's also possible to get a list of presence channels and there associated stats for an application from the Pusher REST API.
+    get_channels( array( 'filter_by_prefix' => 'some_filter' )
 
-    $channels = $pusher->get_presence_channels();
-    $channel_count = count($channels); // $channels is an Array
+It's also possible to get a list of channels based on their name prefix. To do this you need to supply an $options parameter to the call. In the following example the call will return a list of all channels with a 'presence-' prefix. This is idea for fetching a list of all presence channels.
+
+    $results = $pusher->get_channels( array( 'filter_by_prefix' => 'presence-') );
+    $channel_count = count($result->channels); // $channels is an Array
     
 ## Running the tests
 
