@@ -245,16 +245,17 @@ class Pusher
 	}
 	
 	/**
-	 *	Fetch channel information for a specific channel.
-	 *
-	 *	@param string $channel name
-	 *	@return object
-	 */
-	public function get_channel_info($channel)
+	  *	Fetch channel information for a specific channel.
+	  *
+	  * @param string $channel The name of the channel
+	  * @param array $options Options for the query e.g. $options = array( 'info' => 'connection_count' )
+	  *	@return object
+	  */
+	public function get_channel_info($channel, $options = array() )
 	{
 		$s_url = $this->settings['url'] . '/channels/' . $channel . '/stats'; 
 
-		$ch = $this->create_curl( $s_url );
+		$ch = $this->create_curl( $s_url, 'GET', $options );
 
 		$response = curl_exec( $ch );
 

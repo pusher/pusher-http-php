@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1 (2012-10-07)
+
+[CHANGED] Added optional $options parameter to get_channel_info. get_channel_info($channel, $options = array() )
+
 ## 2.1.0 (2012-09-28)
 
 [CHANGED] Renamed get_channel_stats to get_channel_info
