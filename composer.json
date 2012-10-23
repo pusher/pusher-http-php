@@ -6,7 +6,8 @@
     "keywords": ["php-pusher-server", "pusher", "rest", "realtime", "trigger", "publish", "events"],
     "homepage": "https://github.com/pusher/pusher-php-server",
     "require": {
-        "php": ">=5.2"
+        "php": ">=5.2",
+        "composer/installers": "*"
     },
     "autoload": {
         "psr-0": { "Pusher": "lib/" }
