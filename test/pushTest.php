@@ -48,6 +48,13 @@
 			$structure_trigger = $this->pusher->trigger('test_channel', 'my_event', array( 'test' => 1 ));
 			$this->assertTrue($structure_trigger, 'Trigger with structured payload');
 		}
+
+		public function testSendingOver10kBMessageReturns413() {
+			$data = str_pad( '' , 11 * 1024, 'a' );
+			echo( 'sending data of size: ' . mb_strlen( $data, '8bit' ) );
+			$response = $this->pusher->trigger('test_channel', 'my_event', $data, null, true );
+			$this->assertEquals( 413, $response[ 'status' ] , '413 HTTP status response expected');
+		}
 	}
 
 ?>

@@ -137,6 +137,20 @@ class Pusher
 		
 		return $ch;
 	}
+
+	/**
+	 * Utility function to execute curl and create capture response information.
+	 */
+	private function exec_curl( $ch ) {
+		$response = array();
+
+		$response[ 'body' ] = curl_exec( $ch );
+		$response[ 'status' ] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		curl_close( $ch );
+
+		return $response;
+	}
 	
 	/**
 	 *	Build the required HMAC'd auth string
@@ -225,11 +239,9 @@ class Pusher
 		curl_setopt( $ch, CURLOPT_POST, 1 );
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload_encoded );
 
-		$response = curl_exec( $ch );
+		$response = $this->exec_curl( $ch );
 
-		curl_close( $ch );
-
-		if ( $response == "202 ACCEPTED\n" && $debug == false )
+		if ( $response[ 'status' ] == 202 && $debug == false )
 		{
 			return true;
 		}
@@ -257,21 +269,16 @@ class Pusher
 
 		$ch = $this->create_curl( $s_url, 'GET', $options );
 
-		$response = curl_exec( $ch );
-
+		$response = $this->exec_curl( $ch );
 		
-		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		
-		if($http_status == 200)
+		if( $response[ 'status' ] == 200)
 		{
-			$response = json_decode($response);
+			$response = json_decode( $response[ 'body' ] );
 		}
 		else
 		{
 			$response = false;
 		}
-
-		curl_close( $ch );
 		
 		return $response;
 	}
@@ -287,21 +294,17 @@ class Pusher
 
 		$ch = $this->create_curl( $s_url, 'GET', $options );
 
-		$response = curl_exec( $ch );
+		$response = $this->exec_curl( $ch );
 		
-		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		
-		if($http_status == 200)
+		if( $response[ 'status' ] == 200)
 		{
-			$response = json_decode($response);
+			$response = json_decode( $response[ 'body' ] );
 			$response->channels = get_object_vars( $response->channels );
 		}
 		else
 		{
 			$response = false;
 		}
-
-		curl_close( $ch );
 		
 		return $response;
 	}
