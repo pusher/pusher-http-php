@@ -1,15 +1,15 @@
 {
     "name": "pusher/pusher-php-server",
     "type": "library",
-    "version": "2.1.2",
     "description" : "Library for interacting with the Pusher REST API",
     "keywords": ["php-pusher-server", "pusher", "rest", "realtime", "trigger", "publish", "events"],
     "homepage": "https://github.com/pusher/pusher-php-server",
+    "license": "MIT",
     "require": {
         "php": ">=5.2",
-        "composer/installers": "*"
+        "ext-curl": "*"
     },
     "autoload": {
-        "psr-0": { "Pusher": "lib/" }
+        "classmap": [ "lib/" ]
     }
 }
