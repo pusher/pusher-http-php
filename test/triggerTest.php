@@ -15,6 +15,8 @@
 
 	require_once('../lib/Pusher.php');
 
+	require_once( 'TestLogger.php' );
+
 	class PusherPushTest extends PHPUnit_Framework_TestCase
 	{
 
@@ -29,6 +31,7 @@
 			else
 			{
 				$this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true, PUSHERAPP_HOST);
+				$this->pusher->set_logger( new TestLogger() );
 			}
 		}
 
@@ -54,6 +57,26 @@
 			echo( 'sending data of size: ' . mb_strlen( $data, '8bit' ) );
 			$response = $this->pusher->trigger('test_channel', 'my_event', $data, null, true );
 			$this->assertEquals( 413, $response[ 'status' ] , '413 HTTP status response expected');
+		}
+
+		/**
+     * @expectedException PusherException
+     */
+		public function test_triggering_event_on_over_100_channels_throws_exception() {
+			$channels = array();
+			while( count( $channels ) <= 101 ) {
+				$channels[] = ( 'channel-' . count( $channels ) );
+			}
+			$data = array( 'event_name' => 'event_data' );
+			$response = $this->pusher->trigger( $channels, 'my_event', $data );
+		}
+
+		public function test_triggering_event_on_multiple_channels() {
+			$data = array( 'event_name' => 'event_data' );
+			$channels = array( 'test_channel_1', 'test_channel_2' );
+			$response = $this->pusher->trigger( $channels, 'my_event', $data );
+
+			$this->assertTrue( $response );
 		}
 	}
 

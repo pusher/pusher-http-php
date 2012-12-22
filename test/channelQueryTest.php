@@ -15,11 +15,7 @@
 
   require_once('../lib/Pusher.php');
 
-  class TestLogger {
-		public function log( $msg ) {
-			print_r( "\n" . $msg  );
-		}
-	}
+  require_once( 'TestLogger.php' );
 	
 	class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 	{

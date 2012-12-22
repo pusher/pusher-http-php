@@ -231,40 +231,55 @@ class Pusher
 	/**
 	* Trigger an event by providing event name and payload. 
 	* Optionally provide a socket ID to exclude a client (most likely the sender).
-	* 
+	*
+	* @param array $channel An array of channel names to publish the event on.
 	* @param string $event
-	* @param mixed $payload
+	* @param mixed $data Event data
 	* @param int $socket_id [optional]
-	* @param string $channel [optional]
 	* @param bool $debug [optional]
 	* @return bool|string
 	*/
-	public function trigger( $channel, $event, $payload, $socket_id = null, $debug = false, $already_encoded = false )
+	public function trigger( $channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false )
 	{
+		if( is_string( $channels ) === true ) {
+			$this->log( '->trigger received string channel "' . $channels . '". Converting to array.' );
+			$channels = array( $channels );
+		}
+
+		if( count( $channels ) > 100 ) {
+			throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
+		}
+
 		$query_params = array();
 		
+		$s_url = $this->settings['url'] . '/events';		
+		
+		$data_encoded = $already_encoded ? $data : json_encode( $data );
+
+		$post_params = array();
+		$post_params[ 'name' ] = $event;
+		$post_params[ 'data' ] = $data_encoded;
+		$post_params[ 'channels' ] = $channels;
+
 		if ( $socket_id !== null )
 		{
-			$query_params['socket_id'] = $socket_id;
+			$post_params[ 'socket_id' ] = $socket_id;
 		}
-		
-		$s_url = $this->settings['url'] . '/channels/' . $channel . '/events';		
-		
-		$payload_encoded = $already_encoded ? $payload : json_encode( $payload );
-		$query_params['body_md5'] = md5( $payload_encoded );
-		
-		$query_params['name'] = $event;
+
+		$post_value = json_encode( $post_params );
+
+		$query_params['body_md5'] = md5( $post_value );
 
 		$ch = $this->create_curl( $s_url, 'POST', $query_params );
 
-		$this->log( 'trigger JSON: ' . $payload_encoded );
+		$this->log( 'trigger POST: ' . $post_value );
 
 		curl_setopt( $ch, CURLOPT_POST, 1 );
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload_encoded );
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_value );
 
 		$response = $this->exec_curl( $ch );
 
-		if ( $response[ 'status' ] == 202 && $debug == false )
+		if ( $response[ 'status' ] == 200 && $debug == false )
 		{
 			return true;
 		}

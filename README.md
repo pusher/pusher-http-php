@@ -29,11 +29,15 @@ By default calls will be made over a non-encrypted connection. To change this to
 
 ## Publishing/Triggering events
 
-To trigger an event on a channel use the `trigger` function.
+To trigger an event on one or more channels use the `trigger` function.
+
+### A single channel
     
     $pusher->trigger( 'my-channel', 'my_event', 'hello world' );
 
-Note: You need to set your API information in Pusher.php
+### Multiple channels
+
+    $pusher->trigger( [ 'channel-1', 'channel-2' ], 'my_event', 'hello world' );
 
 ### Arrays
 
@@ -75,6 +79,7 @@ You can pass an object with a `log` function to the `pusher->set_logger` functio
             print_r( $msg . "\n" );
         }
     }
+    
     $pusher->set_logger( new MyLogger() );
 
 ### JSON format
@@ -159,7 +164,19 @@ It's also possible to get a list of channels based on their name prefix. To do t
 
 This can also be achieved using the generic `pusher->get` function:
 
-    pusher->get( '/channels', 'filter_by_prefix' => 'presence-') );    
+    pusher->get( '/channels', 'filter_by_prefix' => 'presence-') );
+
+## Generic get function
+
+    pusher-get( $path, $params ) 
+
+Used to make `GET` queries against the Pusher REST API. Handles authentication.
+
+Response is an associative array with a `result` index. The contents of this index is dependent on the REST method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
+
+    $response = $pusher->get( '/channels' );
+    $http_status_code = $response[ 'status' ];
+    $result = $response[ 'result' ];
     
 ## Running the tests
 
