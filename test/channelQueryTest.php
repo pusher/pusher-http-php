@@ -14,6 +14,12 @@
   }
 
   require_once('../lib/Pusher.php');
+
+  class TestLogger {
+		public function log( $msg ) {
+			print_r( "\n" . $msg  );
+		}
+	}
 	
 	class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 	{
@@ -21,6 +27,7 @@
 		protected function setUp()
 		{
 			$this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true, PUSHERAPP_HOST);
+			$this->pusher->set_logger( new TestLogger() );
 		}
 
 		public function testChannelInfo()
@@ -37,7 +44,7 @@
 			$result = $this->pusher->get_channels();
 			$channels = $result->channels;
 			
-			 print_r( $channels );
+			 // print_r( $channels );
 			
 			foreach( $channels as $channel_name => $channel_info ) {
         echo( "channel_name: $channel_name\n");
@@ -56,11 +63,11 @@
 			);
 		  $result = $this->pusher->get_channels( $options );
 
-print_r( $result );
+// print_r( $result );
 
 		  $channels = $result->channels;
 		  
-		  print_r( $channels );
+		  // print_r( $channels );
 		  
 			$this->assertTrue( is_array($channels), 'channels is an array' );
 			$this->assertEquals( 0, count( $channels ), 'should be an empty array' );
@@ -73,11 +80,11 @@ print_r( $result );
 			);
 		  $result = $this->pusher->get_channels( $options );
 
-print_r( $result );
+// print_r( $result );
 
 		  $channels = $result->channels;
 		  
-		  print_r( $channels );
+		  // print_r( $channels );
 		  
 			$this->assertEquals( 1, count( $channels ), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against' );
 		}
@@ -92,6 +99,49 @@ print_r( $result );
 		  $result = $this->pusher->get_channels( $options );
 		  
 			$this->assertFalse( $result, 'query should fail' );
+		}
+
+		public function test_channel_list_using_generic_get() {
+			$response = $this->pusher->get( '/channels' );
+
+			$this->assertEquals( $response[ 'status' ], 200 );
+
+			$result = $response[ 'result' ];
+
+			$channels = $result[ 'channels' ];
+
+			$this->assertEquals( 1, count( $channels ), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against' );
+
+			$test_channel = $channels[ 'test_channel' ];
+
+			$this->assertEquals( 0, count( $test_channel ) );
+		}
+
+		public function test_channel_list_using_generic_get_and_prefix_param() {
+			$response = $this->pusher->get( '/channels', array( 'filter_by_prefix' => 'test_' ) );
+
+			$this->assertEquals( $response[ 'status' ], 200 );
+
+			$result = $response[ 'result' ];
+
+			$channels = $result[ 'channels' ];
+
+			$this->assertEquals( 1, count( $channels ), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against' );
+
+			$test_channel = $channels[ 'test_channel' ];
+
+			$this->assertEquals( 0, count( $test_channel ) );
+		}
+
+		public function test_single_channel_info_using_generic_get()
+		{
+			$response = $this->pusher->get( '/channels/channel-test' );
+
+			$this->assertEquals( $response[ 'status' ], 200 );
+
+			$result = $response[ 'result' ];
+			
+			$this->assertArrayHasKey('occupied', $result, 'class has occupied attribute');
 		}
 		
 	}

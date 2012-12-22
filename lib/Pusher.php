@@ -59,6 +59,7 @@ class Pusher
 	public static $VERSION = '2.0.0';
 
 	private $settings = array ();
+	private $logger = null;
 
 	/**
 	* PHP5 Constructor. 
@@ -92,6 +93,22 @@ class Pusher
 	}
 
 	/**
+	 * Set a logger to be informed of interal log messages.
+	 */
+	public function set_logger( $logger ) {
+		$this->logger = $logger;
+	}
+
+	/**
+	 *
+	 */
+	private function log( $msg ) {
+		if( is_null( $this->logger ) == false ) {
+			$this->logger->log( 'Pusher: ' . $msg );
+		}
+	}
+
+	/**
 	* Check if the current PHP setup is sufficient to run this class
 	*/
 	private function check_compatibility()
@@ -122,6 +139,8 @@ class Pusher
 			$query_params);
 
 		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
+
+		$this->log( 'curl_init( ' . $full_url . ' )' );
 		
 		# Set cURL opts and execute request
 		$ch = curl_init();
@@ -146,6 +165,8 @@ class Pusher
 
 		$response[ 'body' ] = curl_exec( $ch );
 		$response[ 'status' ] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		$this->log( 'exec_curl response: ' . print_r( $response, true ) );
 
 		curl_close( $ch );
 
@@ -236,6 +257,8 @@ class Pusher
 
 		$ch = $this->create_curl( $s_url, 'POST', $query_params );
 
+		$this->log( 'trigger JSON: ' . $payload_encoded );
+
 		curl_setopt( $ch, CURLOPT_POST, 1 );
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload_encoded );
 
@@ -260,16 +283,12 @@ class Pusher
 	  *	Fetch channel information for a specific channel.
 	  *
 	  * @param string $channel The name of the channel
-	  * @param array $options Options for the query e.g. $options = array( 'info' => 'connection_count' )
+	  * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
 	  *	@return object
 	  */
-	public function get_channel_info($channel, $options = array() )
+	public function get_channel_info($channel, $params = array() )
 	{
-		$s_url = $this->settings['url'] . '/channels/' . $channel . '/stats'; 
-
-		$ch = $this->create_curl( $s_url, 'GET', $options );
-
-		$response = $this->exec_curl( $ch );
+		$response = $this->get( '/channels/' . $channel, $params );
 		
 		if( $response[ 'status' ] == 200)
 		{
@@ -284,22 +303,48 @@ class Pusher
 	}
 	
 	/**
-	 *	Fetch a list containing all channels
+	 * Fetch a list containing all channels
+	 * 
+	 * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
 	 *
-	 *	@return array
+	 * @return array
 	 */
-	public function get_channels($options = array())
+	public function get_channels($params = array())
 	{
-		$s_url = $this->settings['url'] . '/channels';	
-
-		$ch = $this->create_curl( $s_url, 'GET', $options );
-
-		$response = $this->exec_curl( $ch );
+		$response = $this->get( '/channels', $params );
 		
 		if( $response[ 'status' ] == 200)
 		{
 			$response = json_decode( $response[ 'body' ] );
 			$response->channels = get_object_vars( $response->channels );
+		}
+		else
+		{
+			$response = false;
+		}
+		
+		return $response;
+	}
+
+	/**
+	 * GET arbitrary REST API resource using a synchronous http client.
+   * All request signing is handled automatically.
+   *  
+   * @param string path Path excluding /apps/APP_ID
+   * @param params array API params (see http://pusher.com/docs/rest_api)
+   *
+   * @return See Pusher API docs
+	 */
+	public function get( $path, $params = array() ) {
+		$s_url = $this->settings['url'] . $path;	
+
+		$ch = $this->create_curl( $s_url, 'GET', $params );
+
+		$response = $this->exec_curl( $ch );
+		
+		if( $response[ 'status' ] == 200)
+		{
+			$response[ 'result' ] = json_decode( $response[ 'body' ], true );
 		}
 		else
 		{
@@ -318,7 +363,6 @@ class Pusher
 	*/
 	public function socket_auth( $channel, $socket_id, $custom_data = false )
 	{
-
 		if($custom_data == true)
 		{
 			$signature = hash_hmac( 'sha256', $socket_id . ':' . $channel . ':' . $custom_data, $this->settings['secret'], false );

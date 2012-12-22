@@ -1,23 +1,37 @@
 # Pusher PHP Library
 
-This is a very simple PHP library to the Pusher API (http://pusher.com).
-Using it is easy as pie:
+This is a PHP library to the Pusher API (http://pusher.com).
+
+## Basic Usage Example
 
     require('Pusher.php');
-    $pusher = new Pusher($key, $secret, $app_id);
-    
-If you prefer to use the Singleton pattern usage is similar, but like this:
+    $pusher = new Pusher( $key, $secret, $app_id );
 
-    require('Pusher.php');
-    $pusher = PusherInstance::get_pusher();
+    $pusher->trigger( 'my-channel', 'my-event', array( 'message' => 'hello world' ) );
     
-Then call the appropriate function.
+## Configuration
 
-## Trigger
+After registering at <http://pusher.com> configure your app with the security credentials.
+
+## Pusher constructor
+
+Use the credentials from your Pusher application to create a new `Pusher` instance.
+
+    $app_id = 'YOUR_APP_ID';
+    $app_key = 'YOUR_APP_KEY';
+    $app_secret = 'YOUR_APP_SECRET';
+
+    $pusher = new Pusher( $app_key, $app_secret, $app_id );
+
+By default calls will be made over a non-encrypted connection. To change this to make calls over HTTPS:
+
+    $pusher = new Pusher( $app_key, $app_secret, $app_id, false, 'https://api.pusherapp.com', 443 );
+
+## Publishing/Triggering events
 
 To trigger an event on a channel use the `trigger` function.
     
-    $pusher->trigger('my-channel', 'my_event', 'hello world');
+    $pusher->trigger( 'my-channel', 'my_event', 'hello world' );
 
 Note: You need to set your API information in Pusher.php
 
@@ -51,6 +65,17 @@ or with all requests:
     $pusher = new Pusher($key, $secret, $app_id, true);
 
 On failed requests, this will return the server's response, instead of false.
+
+### Logging
+
+You can pass an object with a `log` function to the `pusher->set_logger` function so that you can log information from the library.
+
+    class MyLogger {
+        public function log( $msg ) {
+            print_r( $msg . "\n" );
+        }
+    }
+    $pusher->set_logger( new MyLogger() );
 
 ### JSON format
 
@@ -95,7 +120,7 @@ Next, create the following in presence_auth.php:
 
 Note: this assumes that you store your users in a table called `users` and that those users have a `name` column. It also assumes that you have a login mechanism that stores the `user_id` of the logged in user in the session.
 
-## Channel Queries
+## Application State Queries
 
 ### Get information about a channel
 
@@ -105,6 +130,10 @@ It's also possible to get information about a channel from the Pusher REST API.
 
     $info = $pusher->get_channel_info('channel-name');
     $channel_occupied = $info->occupied;
+
+This can also be achieved using the generic `pusher->get` function:
+
+    pusher->get( '/channels/channel-name' );    
     
 ### Get a list of application channels
 
@@ -114,7 +143,10 @@ It's also possible to get a list of channels for an application from the Pusher 
 
     $result = $pusher->get_channels();
     $channel_count = count($result->channels); // $channels is an Array
-    
+
+This can also be achieved using the generic `pusher->get` function:
+
+    pusher->get( '/channels' );
   
 ### Get a filtered list of application channels
 
@@ -124,6 +156,10 @@ It's also possible to get a list of channels based on their name prefix. To do t
 
     $results = $pusher->get_channels( array( 'filter_by_prefix' => 'presence-') );
     $channel_count = count($result->channels); // $channels is an Array
+
+This can also be achieved using the generic `pusher->get` function:
+
+    pusher->get( '/channels', 'filter_by_prefix' => 'presence-') );    
     
 ## Running the tests
 
