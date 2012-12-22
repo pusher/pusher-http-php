@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.3 (2012-12-22)
+
+[NEW] `$pusher->trigger` can now take an `array` of channel names as a first parameter to allow the same event to be published on multiple channels.
+[NEW] `$pusher->get` generic function can be used to make `GET` calls to the REST API
+[NEW] `$pusher->set_logger` to allow internal logging to be exposed and logged in your own logs.
+
 ## 2.1.2 (2012-11-18)
 
 [CHANGED] Debug response from `$pusher->trigger` call is now an associative array in the form `array( 'body' => '{String} body text of response', 'status' => '{Number} http status of the response' )`

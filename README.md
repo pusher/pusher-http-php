@@ -1,17 +1,8 @@
 # Pusher PHP Library
 
-This is a PHP library to the Pusher API (http://pusher.com).
+This is a PHP library for interacting with the Pusher REST API.
 
-## Basic Usage Example
-
-    require('Pusher.php');
-    $pusher = new Pusher( $key, $secret, $app_id );
-
-    $pusher->trigger( 'my-channel', 'my-event', array( 'message' => 'hello world' ) );
-    
-## Configuration
-
-After registering at <http://pusher.com> configure your app with the security credentials.
+Registering at <http://pusher.com> and use the application credentails within your app as shown below.
 
 ## Pusher constructor
 
@@ -155,7 +146,7 @@ This can also be achieved using the generic `pusher->get` function:
   
 ### Get a filtered list of application channels
 
-    get_channels( array( 'filter_by_prefix' => 'some_filter' )
+    get_channels( array( 'filter_by_prefix' => 'some_filter' ) )
 
 It's also possible to get a list of channels based on their name prefix. To do this you need to supply an $options parameter to the call. In the following example the call will return a list of all channels with a 'presence-' prefix. This is idea for fetching a list of all presence channels.
 
@@ -164,11 +155,11 @@ It's also possible to get a list of channels based on their name prefix. To do t
 
 This can also be achieved using the generic `pusher->get` function:
 
-    pusher->get( '/channels', 'filter_by_prefix' => 'presence-') );
+    pusher->get( '/channels', array( 'filter_by_prefix' => 'presence-' ) );
 
 ## Generic get function
 
-    pusher-get( $path, $params ) 
+    pusher->get( $path, $params ) 
 
 Used to make `GET` queries against the Pusher REST API. Handles authentication.
 
