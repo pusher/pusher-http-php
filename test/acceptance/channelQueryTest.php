@@ -1,21 +1,6 @@
 <?php
 
-  if(file_exists('config.php') === true)
-  {
-    require_once('config.php');
-  }
-  else
-  {
-    define('PUSHERAPP_AUTHKEY', getenv('PUSHERAPP_AUTHKEY'));
-    define('PUSHERAPP_SECRET' , getenv('PUSHERAPP_SECRET'));
-    define('PUSHERAPP_APPID'  , getenv('PUSHERAPP_APPID'));
-
-    define('PUSHERAPP_HOST', 'http://api.pusherapp.com');
-  }
-
-  require_once('../lib/Pusher.php');
-
-  require_once( 'TestLogger.php' );
+  require_once( dirname(__FILE__) . '/../test_includes.php' );
 	
 	class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 	{

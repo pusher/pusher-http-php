@@ -1,6 +1,6 @@
 <?php
 
-	require_once('../lib/Pusher.php');
+	require_once( dirname(__FILE__) . '/../test_includes.php' );
 	
 	class PusherAuthQueryString extends PHPUnit_Framework_TestCase
 	{
