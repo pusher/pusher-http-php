@@ -118,6 +118,18 @@ Note: this assumes that you store your users in a table called `users` and that 
 
 ## Application State Queries
 
+## Generic get function
+
+    pusher->get( $path, $params ) 
+
+Used to make `GET` queries against the Pusher REST API. Handles authentication.
+
+Response is an associative array with a `result` index. The contents of this index is dependent on the REST method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
+
+    $response = $pusher->get( '/channels' );
+    $http_status_code = $response[ 'status' ];
+    $result = $response[ 'result' ];
+
 ### Get information about a channel
 
     get_channel_info( $name )
@@ -155,19 +167,32 @@ It's also possible to get a list of channels based on their name prefix. To do t
 
 This can also be achieved using the generic `pusher->get` function:
 
-    pusher->get( '/channels', array( 'filter_by_prefix' => 'presence-' ) );
+    $pusher->get( '/channels', array( 'filter_by_prefix' => 'presence-' ) );
 
-## Generic get function
+### Get user information from a presence channel
 
-    pusher->get( $path, $params ) 
+    $response = $pusher->get( '/channels/presence-channel-name/users' )
 
-Used to make `GET` queries against the Pusher REST API. Handles authentication.
+The `$response` is in the format:
 
-Response is an associative array with a `result` index. The contents of this index is dependent on the REST method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
-
-    $response = $pusher->get( '/channels' );
-    $http_status_code = $response[ 'status' ];
-    $result = $response[ 'result' ];
+```
+Array
+(
+    [body] => {"users":[{"id":"a_user_id"}]}
+    [status] => 200
+    [result] => Array
+        (
+            [users] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => a_user_id
+                        )
+                    /* Additional users */    
+                )
+        )
+)
+```
     
 ## Running the tests
 
