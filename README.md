@@ -4,6 +4,15 @@ This is a PHP library for interacting with the Pusher REST API.
 
 Registering at <http://pusher.com> and use the application credentails within your app as shown below.
 
+## Installation
+
+You can get the Pusher PHP library via a composer package called `pusher-php-server`. See <https://packagist.org/packages/pusher/pusher-php-server>
+
+Or you can clone or download the library files.
+
+**We recommend you [use composer](http://getcomposer.org/).**
+
+
 ## Pusher constructor
 
 Use the credentials from your Pusher application to create a new `Pusher` instance.
