@@ -52,7 +52,12 @@ class Pusher
 {
 	public static $VERSION = '2.0.0';
 
-	private $settings = array ();
+	private $settings = array(
+		'host' => 'http://api.pusherapp.com',
+		'port' => 80,
+		'timeout' => 30,
+		'debug' => false
+	);
 	private $logger = null;
 
 	/**
@@ -64,26 +69,58 @@ class Pusher
 	* @param string $auth_key
 	* @param string $secret
 	* @param int $app_id
-	* @param bool $debug [optional]
-	* @param string $host [optional]
-	* @param int $port [optional]
-	* @param int $timeout [optional]
+	* @param bool $options [optional]
+	*		Options to configure the Pusher instance.
+	* 	Was previously a debug flag. Legacy support for this exists if a boolean is passed.
+	* 	host - the host including the http/https scheme. No trailing forward slash.
+	* 	port - the http port
+	* 	timeout - the http timout
+	* @param string $host [optional] - deprecated
+	* @param int $port [optional] - deprecated
+	* @param int $timeout [optional] - deprecated
 	*/
-	public function __construct( $auth_key, $secret, $app_id, $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
+	public function __construct( $auth_key, $secret, $app_id, $options = array(), $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
 	{
-		// Check compatibility, disable for speed improvement
 		$this->check_compatibility();
 
-		// Setup defaults
-		$this->settings['server'] = $host;
-		$this->settings['port']		= $port;
-		$this->settings['auth_key'] = $auth_key;
-		$this->settings['secret'] = $secret;
-		$this->settings['app_id'] = $app_id;
-		$this->settings['url']		= '/apps/' . $this->settings['app_id'];
-		$this->settings['debug']	= $debug;
-		$this->settings['timeout']	= $timeout;
+		if( is_bool( $options ) === true ) {
+			$options = array(
+				'debug' => $options
+			);
+		}
 
+		if( $host !== $this->settings[ 'host' ] ) {
+			$this->settings[ 'host' ] = $host;
+		}
+
+		if( $port !== $this->settings[ 'port' ] ) {
+			$this->settings[ 'port' ] = $port;
+		}
+
+		if( $port !== $this->settings[ 'timeout' ] ) {
+			$this->settings[ 'timeout' ] = $port;
+		}
+
+		$this->settings['auth_key'] 	= $auth_key;
+		$this->settings['secret'] 		= $secret;
+		$this->settings['app_id'] 		= $app_id;
+		$this->settings['base_path']	= '/apps/' . $this->settings['app_id'];
+
+		foreach( $options as $key => $value ) {
+			// only set if valid setting/option
+			if( isset( $this->settings[ $key ] ) ) {
+				$this->settings[ $key ] = $value;
+			}
+		}
+
+	}
+
+	/**
+	 * Fetch the settings.
+	 * @return array
+	 */
+	public function getSettings() {
+		return $this->settings;
 	}
 
 	/**
@@ -132,7 +169,7 @@ class Pusher
 			$s_url,
 			$query_params);
 
-		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
+		$full_url = $this->settings['host'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
 
 		$this->log( 'curl_init( ' . $full_url . ' )' );
 		
@@ -246,7 +283,7 @@ class Pusher
 
 		$query_params = array();
 		
-		$s_url = $this->settings['url'] . '/events';		
+		$s_url = $this->settings['base_path'] . '/events';		
 		
 		$data_encoded = $already_encoded ? $data : json_encode( $data );
 
@@ -345,7 +382,7 @@ class Pusher
    * @return See Pusher API docs
 	 */
 	public function get( $path, $params = array() ) {
-		$s_url = $this->settings['url'] . $path;	
+		$s_url = $this->settings['base_path'] . $path;	
 
 		$ch = $this->create_curl( $s_url, 'GET', $params );
 
