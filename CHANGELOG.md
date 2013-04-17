@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0
+
+Complete rewrite
+
 ## 2.1.3 (2012-12-22)
 
 [NEW] `$pusher->trigger` can now take an `array` of channel names as a first parameter to allow the same event to be published on multiple channels.

@@ -1,15 +1,28 @@
 {
     "name": "pusher/pusher-php-server",
     "type": "library",
-    "description" : "Library for interacting with the Pusher REST API",
-    "keywords": ["php-pusher-server", "pusher", "rest", "realtime", "trigger", "publish", "events"],
-    "homepage": "https://github.com/pusher/pusher-php-server",
     "license": "MIT",
+    "description" : "Library for interacting with the Pusher REST API",
+    "keywords": [
+        "pusher",
+        "rest",
+        "realtime",
+        "trigger",
+        "publish",
+        "events"
+    ],
+    "homepage": "https://github.com/pusher/pusher-php-server",
     "require": {
-        "php": ">=5.2",
-        "ext-curl": "*"
+        "php": ">=5.3.3",
+        "guzzle/guzzle": ">=3.4,<=3.6"
     },
     "autoload": {
-        "classmap": [ "lib/" ]
+        "psr-0": {
+            "Pusher\\": "src/",
+            "PusherTest\\": "tests/"
+        },
+        "classmap": [
+            "./"
+        ]
     }
 }
