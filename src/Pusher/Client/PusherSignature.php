@@ -46,10 +46,8 @@ class PusherSignature
             $queryParameters['body_md5'] = $body->getContentLength() ? $body->getContentMd5() : '';
         }
 
-        // We need to traverse each Query parameter to make sure the key is lowercased
-        foreach ($request->getQuery() as $key => $value) {
-            $queryParameters[strtolower($key)] = $value;
-        }
+        // The signature algorithm asks that keys are all lowercased
+        $queryParameters = array_change_key_case($request->getQuery()->toArray()) + $queryParameters;
 
         ksort($queryParameters);
 
