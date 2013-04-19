@@ -78,8 +78,7 @@ class PusherClient extends Client
         $this->signature = new PusherSignature();
 
         // Add a listener to sign each requests
-        $dispatcher = $this->getEventDispatcher();
-        $dispatcher->addSubscriber(new SignatureListener($credentials, $this->signature));
+        $this->addSubscriber(new SignatureListener($credentials, $this->signature));
     }
 
     /**

@@ -19,6 +19,7 @@
 namespace Pusher\Service;
 
 use Guzzle\Http\Exception\BadResponseException;
+use Guzzle\Plugin\Async\AsyncPlugin;
 use Pusher\Client\PusherClient;
 
 /**
@@ -55,11 +56,12 @@ class PusherService
      * @link http://pusher.com/docs/rest_api#method-post-event
      * @param  string        $event    Event name
      * @param  array|string  $channels Single or list of channels
-     * @param  string        $socketId Exclude a specific socket id from the event
      * @param  array         $data     Event data (limited to 10 Kb)
+     * @param  string        $socketId Exclude a specific socket id from the event
+     * @param  bool          $async    If true, the request is performed asynchronously
      * @return void
      */
-    public function trigger($event, $channels, array $data = array(), $socketId = '')
+    public function trigger($event, $channels, array $data = array(), $socketId = '', $async = false)
     {
         $parameters = array(
             'event'     => $event,
@@ -74,6 +76,10 @@ class PusherService
             $parameters['channel'] = $channels;
         } elseif (is_array($channels)) {
             $parameters['channels'] = $channels;
+        }
+
+        if ($async) {
+            $this->client->addSubscriber(new AsyncPlugin());
         }
 
         try {
@@ -100,7 +106,7 @@ class PusherService
     public function getChannelsInfo($prefix = '', array $info = array())
     {
         try {
-            return $this->client->getChannelsInfo(compact('prefix', 'info'));
+            return $this->client->getChannelsInfo(compact('prefix', 'info'))->toArray();
         } catch (BadResponseException $exception) {
             $this->handleException($exception);
         }
@@ -140,7 +146,7 @@ class PusherService
     public function getPresenceUsers($channel)
     {
         try {
-            return $this->client->getPresenceUsers(compact('channel'));
+            return $this->client->getPresenceUsers(compact('channel'))->toArray();
         } catch (BadResponseException $exception) {
             $this->handleException($exception);
         }
