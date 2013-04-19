@@ -35,18 +35,16 @@ class PusherSignature
      */
     public function signRequest(RequestInterface $request, Credentials $credentials)
     {
-        if (!$request instanceof EntityEnclosingRequestInterface) {
-            return;
-        }
-
-        $body = $request->getBody();
-
         $queryParameters = array(
             'auth_key'       => $credentials->getAccessKey(),
             'auth_timestamp' => time(),
-            'auth_version'   => '1.0',
-            'body_md5'       => $body->getContentLength() ? $body->getContentMd5() : ''
+            'auth_version'   => '1.0'
         );
+
+        if ($request instanceof EntityEnclosingRequestInterface) {
+            $body                        = $request->getBody();
+            $queryParameters['body_md5'] = $body->getContentLength() ? $body->getContentMd5() : '';
+        }
 
         // We need to traverse each Query parameter to make sure the key is lowercased
         foreach ($request->getQuery() as $key => $value) {

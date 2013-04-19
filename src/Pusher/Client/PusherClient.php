@@ -27,6 +27,11 @@ use Pusher\Version;
 /**
  * Client to interact with Pusher REST API
  *
+ * @method Model authenticatePresence(array $args = array()) {@command Pusher AuthenticatePresence}
+ * @method Model authenticatePrivate(array $args = array()) {@command Pusher AuthenticatePrivate}
+ * @method Model getChannelInfo(array $args = array()) {@command Pusher GetChannelInfo}
+ * @method Model getChannelsInfo(array $args = array()) {@command Pusher GetChannelsInfo}
+ * @method Model getPresenceUsers(array $args = array()) {@command Pusher GetPresenceUsers}
  * @method Model trigger(array $args = array()) {@command Pusher Trigger}
  *
  * @licence MIT
