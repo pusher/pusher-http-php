@@ -65,6 +65,52 @@ class PusherSignature
     }
 
     /**
+     * Authenticate a user (identified by its socket identifier) to a presence channel. This method returns
+     * an array whose key is "auth" and value is the signature. It's up to the user to return this correctly
+     * into a JSON string (typically in a controller)
+     *
+     * @link http://pusher.com/docs/auth_signatures#presence
+     * @param  string $channel
+     * @param  string $socketId
+     * @param  array $data
+     * @param  Credentials $credentials
+     * @return array
+     */
+    public function signPresenceChannel($channel, $socketId, array $data, Credentials $credentials)
+    {
+        $data = json_encode($data);
+
+        $stringToSign = $socketId . ':' . $channel . ':' . $data;
+        $signature    = $this->signString($stringToSign, $credentials);
+
+        return array(
+            'auth'         => $credentials->getAccessKey() . ':' . $signature,
+            'channel_data' => $data
+        );
+    }
+
+    /**
+     * Authenticate a user (identified by its socket identifier) to a private channel. This method returns
+     * an array whose key is "auth" and value is the signature. It's up to the user to return this correctly
+     * into a JSON string (typically in a controller)
+     *
+     * @link http://pusher.com/docs/auth_signatures#worked-example
+     * @param  string $channel
+     * @param  string $socketId
+     * @param  Credentials $credentials
+     * @return array
+     */
+    public function signPrivateChannel($channel, $socketId, Credentials $credentials)
+    {
+        $stringToSign = $socketId . ':' . $channel;
+        $signature    = $this->signString($stringToSign, $credentials);
+
+        return array(
+            'auth' => $credentials->getAccessKey() . ':' . $signature
+        );
+    }
+
+    /**
      * Sign the authentication string
      *
      * @param  string $string

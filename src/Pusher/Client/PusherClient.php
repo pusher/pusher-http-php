@@ -27,8 +27,6 @@ use Pusher\Version;
 /**
  * Client to interact with Pusher REST API
  *
- * @method Model authenticatePresence(array $args = array()) {@command Pusher AuthenticatePresence}
- * @method Model authenticatePrivate(array $args = array()) {@command Pusher AuthenticatePrivate}
  * @method Model getChannelInfo(array $args = array()) {@command Pusher GetChannelInfo}
  * @method Model getChannelsInfo(array $args = array()) {@command Pusher GetChannelsInfo}
  * @method Model getPresenceUsers(array $args = array()) {@command Pusher GetPresenceUsers}
@@ -47,6 +45,11 @@ class PusherClient extends Client
      * @var Credentials
      */
     protected $credentials;
+
+    /**
+     * @var PusherSignature
+     */
+    protected $signature;
 
     /**
      * Constructor
@@ -72,9 +75,11 @@ class PusherClient extends Client
         // Prefix the User-Agent by SDK version
         $this->setUserAgent('pusher-php/' . Version::VERSION, true);
 
+        $this->signature = new PusherSignature();
+
         // Add a listener to sign each requests
         $dispatcher = $this->getEventDispatcher();
-        $dispatcher->addSubscriber(new SignatureListener($credentials, new PusherSignature()));
+        $dispatcher->addSubscriber(new SignatureListener($credentials, $this->signature));
     }
 
     /**
@@ -83,6 +88,26 @@ class PusherClient extends Client
     public function __call($method, $args = array())
     {
         return parent::__call(ucfirst($method), $args);
+    }
+
+    /**
+     * Get the Pusher Credentials
+     *
+     * @return Credentials
+     */
+    public function getCredentials()
+    {
+        return $this->credentials;
+    }
+
+    /**
+     * Get the Pusher Signature
+     *
+     * @return PusherSignature
+     */
+    public function getSignature()
+    {
+        return $this->signature;
     }
 
     /**

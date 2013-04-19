@@ -147,6 +147,49 @@ class PusherService
     }
 
     /**
+     * ----------------------------------------------------------------------------------------------------
+     * AUTHENTICATION FOR PRESENCE AND PRIVATE CHANNELS
+     * ----------------------------------------------------------------------------------------------------
+     */
+
+    /**
+     * Authenticate a user (identified by its socket identifier) to a presence channel. This method returns
+     * an array whose key is "auth" and value is the signature. It's up to the user to return this correctly
+     * into a JSON string (typically in a controller)
+     *
+     * @link http://pusher.com/docs/auth_signatures#presence
+     * @param  string $channel
+     * @param  string $socketId
+     * @param  array $data
+     * @return array
+     */
+    public function authenticatePresence($channel, $socketId, array $data)
+    {
+        $credentials = $this->client->getCredentials();
+        $signature   = $this->client->getSignature();
+
+        return $signature->signPresenceChannel($channel, $socketId, $data, $credentials);
+    }
+
+    /**
+     * Authenticate a user (identified by its socket identifier) to a private channel. This method returns
+     * an array whose key is "auth" and value is the signature. It's up to the user to return this correctly
+     * into a JSON string (typically in a controller)
+     *
+     * @link http://pusher.com/docs/auth_signatures#worked-example
+     * @param  string $channel
+     * @param  string $socketId
+     * @return array
+     */
+    public function authenticatePrivate($channel, $socketId)
+    {
+        $credentials = $this->client->getCredentials();
+        $signature   = $this->client->getSignature();
+
+        return $signature->signPrivateChannel($channel, $socketId, $credentials);
+    }
+
+    /**
      * Throw specific Pusher exceptions according to the status code
      *
      * @param  BadResponseException $exception
