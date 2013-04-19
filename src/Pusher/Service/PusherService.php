@@ -90,6 +90,21 @@ class PusherService
     }
 
     /**
+     * Trigger a new event asynchronously (it just aliases to trigger with last parameter set to true)
+     *
+     * @link http://pusher.com/docs/rest_api#method-post-event
+     * @param  string        $event    Event name
+     * @param  array|string  $channels Single or list of channels
+     * @param  array         $data     Event data (limited to 10 Kb)
+     * @param  string        $socketId Exclude a specific socket id from the event
+     * @return void
+     */
+    public function triggerAsync($event, $channels, array $data = array(), $socketId = '')
+    {
+        $this->trigger($event, $channels, $data, $socketId, true);
+    }
+
+    /**
      * ----------------------------------------------------------------------------------------------------
      * CHANNELS
      * ----------------------------------------------------------------------------------------------------
