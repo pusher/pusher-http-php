@@ -25,16 +25,32 @@ use Pusher\Client\PusherSignature;
 
 class PusherSignatureTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var PusherSignature
+     */
+    protected $pusherSignature;
+
+    /**
+     * @var Credentials
+     */
+    protected $credentials;
+
+    public function setUp()
+    {
+        $this->pusherSignature = new PusherSignature();
+        $this->credentials     = new Credentials('3', '278d425bdf160c739803', '7ad3773142a6692b25b8');
+    }
+
+    /**
+     * @covers PusherSignature::signRequest
+     */
     public function testCanSignRequest()
     {
-        $credentials = new Credentials('3', '278d425bdf160c739803', '7ad3773142a6692b25b8');
         $request     = new HttpRequest('POST', '/apps/3/events');
-
-        $pusherSignature = new PusherSignature();
 
         // We set variables in query to have always the same result
         $request->getQuery()->replace(array(
-            'auth_key'       => $credentials->getAccessKey(),
+            'auth_key'       => $this->credentials->getAccessKey(),
             'auth_timestamp' => '1353088179',
             'auth_version'   => '1.0',
             'body_md5'       => 'ec365a775a4cd0599faeb73354201b6f'
@@ -42,8 +58,38 @@ class PusherSignatureTest extends PHPUnit_Framework_TestCase
 
         $request->setResponseBody('{"name":"foo","channels":["project-3"],"data":"{\"some\":\"data\"}"}');
 
-        $pusherSignature->signRequest($request, $credentials);
+        $this->pusherSignature->signRequest($request, $this->credentials);
 
         $this->assertEquals('auth_key=278d425bdf160c739803&auth_timestamp=1353088179&auth_version=1.0&body_md5=ec365a775a4cd0599faeb73354201b6f&auth_signature=da454824c97ba181a32ccc17a72625ba02771f50b50e1e7430e47a1f3f457e6c', $request->getQuery('auth_signature'));
+    }
+
+    /**
+     * @covers PusherSignature::signPresenceChannel
+     */
+    public function testCanSignPresenceChannel()
+    {
+        $data   = array('user_id' => 10, 'user_info' => array('name' => 'Mr. Pusher'));
+        $result = $this->pusherSignature->signPresenceChannel('presence-foobar', '1234.1234', $data, $this->credentials);
+
+        $expectedResult = array(
+            'auth'         => '278d425bdf160c739803:afaed3695da2ffd16931f457e338e6c9f2921fa133ce7dac49f529792be6304c',
+            'channel_data' => '{"user_id":10,"user_info":{"name":"Mr. Pusher"}}'
+        );
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    /**
+     * @covers PusherSignature::signPrivateChannel
+     */
+    public function testCanSignPrivateChannel()
+    {
+        $result = $this->pusherSignature->signPrivateChannel('private-foobar', '1234.1234', $this->credentials);
+
+        $expectedResult = array(
+            'auth' => '278d425bdf160c739803:58df8b0c36d6982b82c3ecf6b4662e34fe8c25bba48f5369f135bf843651c3a4'
+        );
+
+        $this->assertEquals($expectedResult, $result);
     }
 }

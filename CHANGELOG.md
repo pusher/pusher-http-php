@@ -1,8 +1,15 @@
 # Changelog
 
-## 3.0.0
+## 3.0.0 (2013-04-20)
 
-Complete rewrite
+[NEW] Complete rewrite. Here what is new:
+
+* It now uses Guzzle internally as a HTTP/REST library.
+* Cleaner architecture for easier dependencies management
+* Automatically filter and validate data
+* Completely unit-tested
+
+[NEW] Allow asynchronous triggers
 
 ## 2.1.3 (2012-12-22)
 

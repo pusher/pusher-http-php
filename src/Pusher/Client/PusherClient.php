@@ -75,9 +75,8 @@ class PusherClient extends Client
         // Prefix the User-Agent by SDK version
         $this->setUserAgent('pusher-php/' . Version::VERSION, true);
 
-        $this->signature = new PusherSignature();
-
         // Add a listener to sign each requests
+        $this->signature = new PusherSignature();
         $this->addSubscriber(new SignatureListener($credentials, $this->signature));
     }
 

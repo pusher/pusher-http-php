@@ -30,9 +30,18 @@ use Pusher\Client\PusherClient;
 class PusherService
 {
     /**
+     * Pusher client
+     *
      * @var PusherClient
      */
     protected $client;
+
+    /**
+     * Guzzle plugin used to perform asynchronous requests
+     *
+     * @var AsyncPlugin
+     */
+    protected $asyncPlugin;
 
     /**
      * Constructor
@@ -42,6 +51,16 @@ class PusherService
     public function __construct(PusherClient $client)
     {
         $this->client = $client;
+    }
+
+    /**
+     * Get the Pusher client object
+     *
+     * @return PusherClient
+     */
+    public function getClient()
+    {
+        return $this->client;
     }
 
     /**
@@ -79,7 +98,7 @@ class PusherService
         }
 
         if ($async) {
-            $this->client->addSubscriber(new AsyncPlugin());
+            $this->client->addSubscriber($this->getAsyncPlugin());
         }
 
         try {
@@ -87,6 +106,9 @@ class PusherService
         } catch (BadResponseException $exception) {
             $this->handleException($exception);
         }
+
+        // We need to remove the async plugin in case the user call other functions from the client
+        $this->client->getEventDispatcher()->removeSubscriber($this->getAsyncPlugin());
     }
 
     /**
@@ -261,5 +283,19 @@ class PusherService
                     $message
                 ), $response->getStatusCode());
         }
+    }
+
+    /**
+     * Get Guzzle Async plugin
+     *
+     * @return AsyncPlugin
+     */
+    private function getAsyncPlugin()
+    {
+        if (null === $this->asyncPlugin) {
+            $this->asyncPlugin = new AsyncPlugin();
+        }
+
+        return $this->asyncPlugin;
     }
 }
