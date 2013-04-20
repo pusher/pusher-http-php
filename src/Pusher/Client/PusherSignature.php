@@ -48,12 +48,13 @@ class PusherSignature
 
         // The signature algorithm asks that keys are all lowercased
         $queryParameters = array_change_key_case($request->getQuery()->toArray()) + $queryParameters;
+        $queryParameters = array_filter($queryParameters);
 
         ksort($queryParameters);
 
         $method      = strtoupper($request->getMethod());
         $requestPath = $request->getPath();
-        $query       = urldecode(http_build_query(array_filter($queryParameters)));
+        $query       = urldecode(http_build_query($queryParameters));
 
         $signature = $this->signString(implode(PHP_EOL, array($method, $requestPath, $query)), $credentials);
 

@@ -46,7 +46,7 @@ class PusherSignatureTest extends PHPUnit_Framework_TestCase
      */
     public function testCanSignRequest()
     {
-        $request     = new HttpRequest('POST', '/apps/3/events');
+        $request = new HttpRequest('POST', '/apps/3/events');
 
         // We set variables in query to have always the same result
         $request->getQuery()->replace(array(
@@ -61,6 +61,27 @@ class PusherSignatureTest extends PHPUnit_Framework_TestCase
         $this->pusherSignature->signRequest($request, $this->credentials);
 
         $this->assertEquals('auth_key=278d425bdf160c739803&auth_timestamp=1353088179&auth_version=1.0&body_md5=ec365a775a4cd0599faeb73354201b6f&auth_signature=da454824c97ba181a32ccc17a72625ba02771f50b50e1e7430e47a1f3f457e6c', $request->getQuery('auth_signature'));
+    }
+
+    /**
+     * @covers PusherSignature::signRequest
+     */
+    public function testAssertEmptyParametersAreStrippedWhenSignRequest()
+    {
+        $request = new HttpRequest('POST', '/apps/3/events');
+
+        // We set variables in query to have always the same result
+        $request->getQuery()->replace(array(
+            'key-with-value'    => 'value',
+            'key-without-value' => ''
+        ));
+
+        $this->pusherSignature->signRequest($request, $this->credentials);
+
+        $queryParameters = $request->getQuery()->toArray();
+
+        $this->assertArrayHasKey('key-with-value', $queryParameters);
+        $this->assertArrayNotHasKey('key-without-value', $queryParameters);
     }
 
     /**
