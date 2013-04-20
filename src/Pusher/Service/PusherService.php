@@ -160,7 +160,7 @@ class PusherService
     public function getChannelInfo($channel, array $info = array())
     {
         try {
-            return $this->client->getChannelInfo(compact('channel', 'info'));
+            return $this->client->getChannelInfo(compact('channel', 'info'))->toArray();
         } catch (BadResponseException $exception) {
             $this->handleException($exception);
         }
