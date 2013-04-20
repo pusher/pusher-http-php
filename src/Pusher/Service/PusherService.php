@@ -25,6 +25,7 @@ use Pusher\Client\PusherClient;
 /**
  * Simple wrapper around PusherClient to simplify its use
  *
+ * @author Michaël Gallego <mic.gallego@gmail.com>
  * @licence MIT
  */
 class PusherService
@@ -47,10 +48,12 @@ class PusherService
      * Constructor
      *
      * @param PusherClient $client
+     * @param AsyncPlugin  $async
      */
-    public function __construct(PusherClient $client)
+    public function __construct(PusherClient $client, AsyncPlugin $async = null)
     {
-        $this->client = $client;
+        $this->client      = $client;
+        $this->asyncPlugin = $async ?: new AsyncPlugin();
     }
 
     /**
@@ -98,7 +101,7 @@ class PusherService
         }
 
         if ($async) {
-            $this->client->addSubscriber($this->getAsyncPlugin());
+            $this->client->addSubscriber($this->asyncPlugin);
         }
 
         try {
@@ -108,7 +111,7 @@ class PusherService
         }
 
         // We need to remove the async plugin in case the user call other functions from the client
-        $this->client->getEventDispatcher()->removeSubscriber($this->getAsyncPlugin());
+        $this->client->getEventDispatcher()->removeSubscriber($this->asyncPlugin);
     }
 
     /**
@@ -283,19 +286,5 @@ class PusherService
                     $message
                 ), $response->getStatusCode());
         }
-    }
-
-    /**
-     * Get Guzzle Async plugin
-     *
-     * @return AsyncPlugin
-     */
-    private function getAsyncPlugin()
-    {
-        if (null === $this->asyncPlugin) {
-            $this->asyncPlugin = new AsyncPlugin();
-        }
-
-        return $this->asyncPlugin;
     }
 }

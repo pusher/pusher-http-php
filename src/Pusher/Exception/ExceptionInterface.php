@@ -21,6 +21,7 @@ namespace Pusher\Exception;
 /**
  * Interface implemented by all Pusher exceptions, for easy filtering
  *
+ * @author Michaël Gallego <mic.gallego@gmail.com>
  * @licence MIT
  */
 interface ExceptionInterface

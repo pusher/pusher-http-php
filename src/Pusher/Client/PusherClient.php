@@ -32,6 +32,7 @@ use Pusher\Version;
  * @method Model getPresenceUsers(array $args = array()) {@command Pusher GetPresenceUsers}
  * @method Model trigger(array $args = array()) {@command Pusher Trigger}
  *
+ * @author Michaël Gallego <mic.gallego@gmail.com>
  * @licence MIT
  */
 class PusherClient extends Client

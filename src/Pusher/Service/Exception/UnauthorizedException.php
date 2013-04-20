@@ -22,6 +22,7 @@ use RuntimeException as BaseRuntimeException;
 use Pusher\Exception\ExceptionInterface;
 
 /**
+ * @author Michaël Gallego <mic.gallego@gmail.com>
  * @licence MIT
  */
 class UnauthorizedException extends BaseRuntimeException implements ExceptionInterface

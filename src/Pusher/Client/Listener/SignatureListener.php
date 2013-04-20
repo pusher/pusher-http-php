@@ -23,6 +23,10 @@ use Pusher\Client\Credentials;
 use Pusher\Client\PusherSignature;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @author Michaël Gallego <mic.gallego@gmail.com>
+ * @licence MIT
+ */
 class SignatureListener implements EventSubscriberInterface
 {
     /**

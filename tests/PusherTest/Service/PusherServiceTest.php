@@ -26,6 +26,7 @@ use PHPUnit_Framework_TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Pusher\Service\PusherService;
 use ReflectionMethod;
+use ReflectionProperty;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class PusherServiceTest extends PHPUnit_Framework_TestCase
@@ -58,12 +59,12 @@ class PusherServiceTest extends PHPUnit_Framework_TestCase
      */
     public function testAsyncPluginCanBeAdded()
     {
-        $method = new ReflectionMethod('Pusher\Service\PusherService', 'getAsyncPlugin');
-        $method->setAccessible(true);
+        $property = new ReflectionProperty('Pusher\Service\PusherService', 'asyncPlugin');
+        $property->setAccessible(true);
 
         $this->client->expects($this->once())
                      ->method('addSubscriber')
-                     ->with($method->invoke($this->service));
+                     ->with($property->getValue($this->service));
 
         $this->service->trigger('my-event', 'my-channel', array(), '', true);
     }
@@ -73,9 +74,6 @@ class PusherServiceTest extends PHPUnit_Framework_TestCase
      */
     public function testTriggerDoesNotAddAsyncPluginByDefault()
     {
-        $method = new ReflectionMethod('Pusher\Service\PusherService', 'getAsyncPlugin');
-        $method->setAccessible(true);
-
         $this->client->expects($this->never())
                      ->method('addSubscriber');
 
@@ -87,12 +85,12 @@ class PusherServiceTest extends PHPUnit_Framework_TestCase
      */
     public function testTriggerAsyncAddAsyncPlugin()
     {
-        $method = new ReflectionMethod('Pusher\Service\PusherService', 'getAsyncPlugin');
-        $method->setAccessible(true);
+        $property = new ReflectionProperty('Pusher\Service\PusherService', 'asyncPlugin');
+        $property->setAccessible(true);
 
         $this->client->expects($this->once())
                      ->method('addSubscriber')
-                     ->with($method->invoke($this->service));
+                     ->with($property->getValue($this->service));
 
         $this->service->triggerAsync('my-event', 'my-channel', array(), '');
     }

@@ -18,6 +18,10 @@
 
 namespace Pusher\Client;
 
+/**
+ * @author Michaël Gallego <mic.gallego@gmail.com>
+ * @licence MIT
+ */
 class Credentials
 {
     /**

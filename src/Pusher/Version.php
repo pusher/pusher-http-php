@@ -19,6 +19,7 @@
 namespace Pusher;
 
 /**
+ * @author Michaël Gallego <mic.gallego@gmail.com>
  * @licence MIT
  */
 class Version

@@ -22,10 +22,16 @@ use Guzzle\Http\Message\EntityEnclosingRequestInterface;
 use Guzzle\Http\Message\RequestInterface;
 
 /**
+ * @author Michaël Gallego <mic.gallego@gmail.com>
  * @licence MIT
  */
 class PusherSignature
 {
+    /**
+     * Constant for AUTH_VERSION
+     */
+    const AUTH_VERSION = '1.0';
+
     /**
      * Sign the Pusher request
      *
@@ -38,7 +44,7 @@ class PusherSignature
         $queryParameters = array(
             'auth_key'       => $credentials->getAccessKey(),
             'auth_timestamp' => time(),
-            'auth_version'   => '1.0'
+            'auth_version'   => self::AUTH_VERSION
         );
 
         if ($request instanceof EntityEnclosingRequestInterface) {
@@ -56,7 +62,7 @@ class PusherSignature
         $requestPath = $request->getPath();
         $query       = urldecode(http_build_query($queryParameters));
 
-        $signature = $this->signString(implode(PHP_EOL, array($method, $requestPath, $query)), $credentials);
+        $signature   = $this->signString(implode(PHP_EOL, array($method, $requestPath, $query)), $credentials);
 
         $queryParameters['auth_signature'] = $signature;
 
@@ -77,8 +83,7 @@ class PusherSignature
      */
     public function signPresenceChannel($channel, $socketId, array $data, Credentials $credentials)
     {
-        $data = json_encode($data);
-
+        $data         = json_encode($data);
         $stringToSign = $socketId . ':' . $channel . ':' . $data;
         $signature    = $this->signString($stringToSign, $credentials);
 
