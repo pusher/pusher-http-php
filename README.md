@@ -37,7 +37,7 @@ use Pusher\Client\Credentials;
 use Pusher\Client\PusherClient;
 use Pusher\Service\PusherService;
 
-$credentials = new Credentials('application-id', 'access-key', 'secret-key');
+$credentials = new Credentials('application-id', 'key', 'secret');
 $client      = new PusherClient($credentials);
 $service     = new PusherService($client);
 ```
@@ -226,7 +226,7 @@ use Pusher\Client\Credentials;
 use Pusher\Client\PusherClient;
 use Pusher\Service\PusherService;
 
-$credentials = new Credentials('application-id', 'access-key', 'secret-key');
+$credentials = new Credentials('application-id', 'key', 'secret');
 $client      = new PusherClient($credentials);
 
 $client->addSubscriber(new PusherLogger());
@@ -245,7 +245,7 @@ better control of how requests are sent. You can do this:
 use Pusher\Client\Credentials;
 use Pusher\Client\PusherClient;
 
-$credentials = new Credentials('application-id', 'access-key', 'secret-key');
+$credentials = new Credentials('application-id', 'key', 'secret');
 $client      = new PusherClient($credentials);
 
 // Let's do a trigger

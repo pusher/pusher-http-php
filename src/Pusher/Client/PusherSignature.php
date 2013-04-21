@@ -42,7 +42,7 @@ class PusherSignature
     public function signRequest(RequestInterface $request, Credentials $credentials)
     {
         $queryParameters = array(
-            'auth_key'       => $credentials->getAccessKey(),
+            'auth_key'       => $credentials->getKey(),
             'auth_timestamp' => time(),
             'auth_version'   => self::AUTH_VERSION
         );
@@ -88,7 +88,7 @@ class PusherSignature
         $signature    = $this->signString($stringToSign, $credentials);
 
         return array(
-            'auth'         => $credentials->getAccessKey() . ':' . $signature,
+            'auth'         => $credentials->getKey() . ':' . $signature,
             'channel_data' => $data
         );
     }
@@ -110,7 +110,7 @@ class PusherSignature
         $signature    = $this->signString($stringToSign, $credentials);
 
         return array(
-            'auth' => $credentials->getAccessKey() . ':' . $signature
+            'auth' => $credentials->getKey() . ':' . $signature
         );
     }
 
@@ -123,6 +123,6 @@ class PusherSignature
      */
     public function signString($string, Credentials $credentials)
     {
-        return hash_hmac('sha256', $string, $credentials->getSecretKey());
+        return hash_hmac('sha256', $string, $credentials->getSecret());
     }
 }

@@ -34,24 +34,24 @@ class Credentials
     /**
      * @var string
      */
-    protected $accessKey;
+    protected $key;
 
     /**
      * @var string
      */
-    protected $secretKey;
+    protected $secret;
 
 
     /**
      * @param int    $appId
-     * @param string $accessKey
-     * @param string $secretKey
+     * @param string $key
+     * @param string $secret
      */
-    public function __construct($appId, $accessKey, $secretKey)
+    public function __construct($appId, $key, $secret)
     {
-        $this->appId     = (int) $appId;
-        $this->accessKey = (string) $accessKey;
-        $this->secretKey = (string) $secretKey;
+        $this->appId  = (int) $appId;
+        $this->key    = (string) $key;
+        $this->secret = (string) $secret;
     }
 
     /**
@@ -65,22 +65,22 @@ class Credentials
     }
 
     /**
-     * Get the access key
+     * Get the key part of the security token
      *
      * @return string
      */
-    public function getAccessKey()
+    public function getKey()
     {
-        return $this->accessKey;
+        return $this->key;
     }
 
     /**
-     * Get the secret key
+     * Get the secret part of the security token
      *
      * @return string
      */
-    public function getSecretKey()
+    public function getSecret()
     {
-        return $this->secretKey;
+        return $this->secret;
     }
 }

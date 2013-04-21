@@ -50,7 +50,7 @@ class PusherSignatureTest extends PHPUnit_Framework_TestCase
 
         // We set variables in query to have always the same result
         $request->getQuery()->replace(array(
-            'auth_key'       => $this->credentials->getAccessKey(),
+            'auth_key'       => $this->credentials->getKey(),
             'auth_timestamp' => '1353088179',
             'auth_version'   => '1.0',
             'body_md5'       => 'ec365a775a4cd0599faeb73354201b6f'
