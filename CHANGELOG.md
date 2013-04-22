@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.0.0 (2013-04-20)
+
+[NEW] Complete rewrite. Here what is new:
+
+* It now uses Guzzle internally as a HTTP/REST library.
+* Cleaner architecture for easier dependencies management
+* Automatically filter and validate data
+* Completely unit-tested
+
+[NEW] Allow asynchronous triggers
+
 ## 2.1.3 (2012-12-22)
 
 [NEW] `$pusher->trigger` can now take an `array` of channel names as a first parameter to allow the same event to be published on multiple channels.

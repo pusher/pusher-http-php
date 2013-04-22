@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<phpunit bootstrap="./tests/Bootstrap.php" colors="true">
+    <testsuite name="Pusher tests">
+        <directory>./tests</directory>
+    </testsuite>
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+</phpunit>

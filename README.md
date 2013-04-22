@@ -1,217 +1,274 @@
 # Pusher PHP Library
 
-This is a PHP library for interacting with the Pusher REST API.
+Version 3.0.0
 
-Registering at <http://pusher.com> and use the application credentails within your app as shown below.
+## Introduction
+
+This is the official Pusher PHP client for interacting with the REST Pusher API.
+
+## Dependencies
+
+* [Guzzle library](http://guzzlephp.org): >= 3.4
 
 ## Installation
 
-You can get the Pusher PHP library via a composer package called `pusher-php-server`. See <https://packagist.org/packages/pusher/pusher-php-server>
+We recommend you to use Composer to install PHP Pusher client. Just add the following line into your `composer.json` file:
 
-Or you can clone or download the library files.
-
-**We recommend you [use composer](http://getcomposer.org/).**
-
-
-## Pusher constructor
-
-Use the credentials from your Pusher application to create a new `Pusher` instance.
-
-    $app_id = 'YOUR_APP_ID';
-    $app_key = 'YOUR_APP_KEY';
-    $app_secret = 'YOUR_APP_SECRET';
-
-    $pusher = new Pusher( $app_key, $app_secret, $app_id );
-
-By default calls will be made over a non-encrypted connection. To change this to make calls over HTTPS:
-
-    $pusher = new Pusher( $app_key, $app_secret, $app_id, false, 'https://api.pusherapp.com', 443 );
-
-## Publishing/Triggering events
-
-To trigger an event on one or more channels use the `trigger` function.
-
-### A single channel
-    
-    $pusher->trigger( 'my-channel', 'my_event', 'hello world' );
-
-### Multiple channels
-
-    $pusher->trigger( [ 'channel-1', 'channel-2' ], 'my_event', 'hello world' );
-
-### Arrays
-
-Objects are automatically converted to JSON format:
-
-    $array['name'] = 'joe';
-    $array['message_count'] = 23;
-
-    $pusher->trigger('my_channel', 'my_event', $array);
-
-The output of this will be:
-
-    "{'name': 'joe', 'message_count': 23}"
-
-### Socket id
-
-In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event (http://pusherapp.com/docs/duplicates):
-
-    $pusher->trigger('my-channel','event','data','socket_id');
-
-### Debugging
-
-You can either turn on debugging by setting the fifth argument to true, like so:
-
-    $pusher->trigger('my-channel', 'event', 'data', null, true)
-
-or with all requests:
-
-    $pusher = new Pusher($key, $secret, $app_id, true);
-
-On failed requests, this will return the server's response, instead of false.
-
-### Logging
-
-You can pass an object with a `log` function to the `pusher->set_logger` function so that you can log information from the library.
-
-    class MyLogger {
-        public function log( $msg ) {
-            print_r( $msg . "\n" );
-        }
+```json
+{
+    require: {
+        "pusher/pusher-php-server": "3.*"
     }
-    
-    $pusher->set_logger( new MyLogger() );
+}
+```
 
-### JSON format
+Then, update your dependencies by typing: `php composer.phar update`.
 
-If your data is already encoded in JSON format, you can avoid a second encoding step by setting the sixth argument true, like so:
+## Tutorial
 
-	$pusher->trigger('my-channel', 'event', 'data', null, false, true)
+Pusher PHP client is separated into two ways: the client object (`Pusher\Client\PusherClient` class) which allows
+to execute Guzzle commands manually, and the service object (`Pusher\Service\PusherService` class) which is a thin
+layer around the client that aims to simplify usage and error handling.
 
-## Authenticating Private channels
+This is how you create a Pusher service:
 
-To authorise your users to access private channels on Pusher, you can use the socket_auth function:
+```php
+use Pusher\Client\Credentials;
+use Pusher\Client\PusherClient;
+use Pusher\Service\PusherService;
 
-    $pusher->socket_auth('my-channel','socket_id');
+$credentials = new Credentials('application-id', 'key', 'secret');
+$client      = new PusherClient($credentials);
+$service     = new PusherService($client);
+```
 
-## Authenticating Presence channels
+Once you have access to the service, you can perform any operations.
 
-Using presence channels is similar to private channels, but you can specify extra data to identify that particular user:
+### Triggering events
 
-    $pusher->presence_auth('my-channel','socket_id', 'user_id', 'user_info');
+To trigger an event to one or more channels, use the `trigger` method. First parameter can either be a single channel (string),
+or multiple channels (an array of strings):
 
-### Presence example
+```php
+// Single channel
+$service->trigger('my-channel-1', 'my-event', array('key' => 'value'));
 
-First set this variable in your JS app:
+// Multiplie channels
+$service->trigger(array('my-channel-1', 'my-channel-2'), 'my-event', array('key' => 'value'));
+```
 
-    Pusher.channel_auth_endpoint = '/presence_auth.php';
+`trigger` method also supports a fourth parameter, which is the socket id to exclude a specific socket from receiving
+the message ([more information here](http://pusher.com/docs/server_api_guide/server_excluding_recipients)):
 
-Next, create the following in presence_auth.php:
+```php
+// Exclude socket '1234.1234'
+$service->trigger('my-channel-1', 'my-event', array('key' => 'value'), '1234.1234');
+```
 
-    <?php
-    header('Content-Type: application/json');
-    if ($_SESSION['user_id']){
-      $sql = "SELECT * FROM `users` WHERE id='$_SESSION[user_id]'";
-      $result = mysql_query($sql,$mysql);
-      $user = mysql_fetch_assoc($result);
-    } else {
-      die('aaargh, no-one is logged in')
+Finally, `trigger` method also supports a fifth parameter which is used to make an asynchronous trigger. This means
+that it immediately returns to the client, without waiting for the response. By default, all trigger requests are
+done *synchronously*:
+
+```php
+// Force the trigger to be asynchronous
+$service->trigger('my-channel-1', 'my-event', array('key' => 'value'), '', true);
+```
+
+Pusher service also provides a shortcut for doing asynchronous requests with the `triggerAsync` method, as shown above:
+
+```php
+$service->triggerAsync('my-channel-1', 'my-event', array('key' => 'value'));
+```
+
+### Channel(s) information
+
+You can fetch information about a single channel using the `getChannelInfo` method, with an optional array of information
+you want to retrieve (currently, Pusher API only supports *user_count* and *subscription_count* values:
+
+```php
+$result = $service->getChannelInfo('my-channel', array('user_count'));
+```
+
+You can use the method `getChannelsInfo` to get information about multiple channels, optionally filtered by name. Like
+`getChannelInfo`, this method accepts an optional second parameter which is an array of information to retrieve.
+
+```php
+// Get information about all channels whose name begins by 'presence-'
+$result = $service->getChannelsInfo('presence-');
+```
+
+### Presence channel users
+
+You can retrieve all the users in a presence channel user using the `getPresenceUsers` method:
+
+```php
+$result = $service->getPresenceUsers('presence-foobar');
+```
+
+### Authenticate private channels
+
+To authenticate a user against a private channel, call the `authenticatePrivate` method, with channel name and socket id.
+This method returns an array whose key is 'auth' and whose value is the signed authentication string. It's up to you
+to encode this as a JSON string (typically done in a controller in a MVC architecture) to return it to the client:
+
+```php
+$result = $service->authenticatePrivate('private-channel', '1234.1234');
+
+var_dump($result); // prints array('auth' => 'authentication-string')
+```
+
+### Authenticate presence channels
+
+To authenticate a user against a presence channel, call the `authenticatePresence` method, with channel name, socket id
+and user data. This method returns an array that contains values for `auth` and `channel_data` keys. It's up to you to
+encode this as a JSON string (typically done in a controller in a MVC architecture) to return it to the client:
+
+```php
+$result = $service->authenticatePresence('presence-channel', '1234.1234', array('firstName' => 'Michael'));
+
+var_dump($result); // prints array('auth' => 'authentication-string', 'channel_data' => '{"firstName":"Michael"}')
+```
+
+### General authentication
+
+For ease of use, service also has a generic `authenticate` method that choose the right method according to channel name:
+
+```php
+$result = $service->authenticate('private-channel', '1234.1234');
+$result = $service->authenticate('presence-channel', '1234.1234', array('firstName' => 'Michael'));
+```
+
+## Advanced use
+
+### Error handling
+
+When using the Pusher service, all exceptions that may occurred are handled, so that you can easily filter Pusher
+errors. All Pusher exceptions implement the `Pusher\Exception\ExceptionInterface`:
+
+```php
+use Pusher\Exception\ExceptionInterface as PusherExceptionInterface;
+
+try {
+    $result = $service->getPresenceUsers('presence-foobar');
+} catch (PusherExceptionInterface $e) {
+    // Handle exception
+}
+```
+
+Service instantiate concrete exceptions based on the error status code:
+
+* `Pusher\Service\Exception\UnauthorizedException`: thrown when Pusher REST API returns a 401 error (not authorized).
+* `Pusher\Service\Exception\ForbiddenException`: thrown when Pusher REST API returns a 403 error (when the application may be disabled, or when you have reached your messages quota).
+* `Pusher\Service\UnknownResourceException`: thrown when Pusher REST API returns a 404 error (may occur when you ask information about an unknown channel, for instance)
+* `Pusher\Service\RuntimeException`: thrown for any other errors.
+
+In all cases, you can find more information about the error by calling ```php $exception->getMessage();```.
+
+Usage example:
+
+```php
+use Pusher\Exception\ExceptionInterface as PusherExceptionInterface;
+use Pusher\Service\Exception\ForbiddenException;
+
+try {
+    $result = $service->getPresenceUsers('presence-foobar');
+} catch(ForbiddenException $e) {
+    // Oops, we may have reached our messages quota... Let's do something!
+} catch (PusherExceptionInterface $e) {
+    // Any other Pusher exception...
+} catch (\Exception $e) {
+    // Any other non-Pusher exception...
+}
+```
+
+### Debug applications
+
+In previous Pusher PHP client, you could attach a logger directly to the client through a `set_logger` method. While
+simple, this was a bad way of doing it as it was hard-coded into the client (and your logger had to have a `log` method,
+so your own logger may not have it). Furthermore, the places where logging occurred were hardcoded also.
+
+Instead, new Pusher PHP client takes advantage of an event manager to do this. For instance, let's say we want to log
+every URL BEFORE the request is sent. Let's first create a subscriber. A subscriber implements the interface
+`Symfony\Component\EventDispatcher\EventSubscriberInterface`. In the `getSubscribedEvents` method, we attach a listener
+for the event `request.before_send` (you can find a complete list of available hooks [here](http://guzzlephp.org/guide/http/creating_plugins.html#event-hooks)):
+
+```php
+<?php
+
+namespace Application\Logger;
+
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class PusherLogger implements EventSubscriberInterface
+{
+    /**
+     * {@inheritDoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            'request.before_send' => array('log', -255)
+        );
     }
-    
-    $pusher = new Pusher($key, $secret, $app_id);
-    $presence_data = array('name' => $user['name']);
-    echo $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
-    ?>
 
-Note: this assumes that you store your users in a table called `users` and that those users have a `name` column. It also assumes that you have a login mechanism that stores the `user_id` of the logged in user in the session.
+    /**
+     * Log something
+     *
+     * @param  Event $event
+     * @return void
+     */
+    public function log(Event $event)
+    {
+        $request = $event['request'];
+        $url     = $request->getUrl();
 
-## Application State Queries
-
-## Generic get function
-
-    pusher->get( $path, $params ) 
-
-Used to make `GET` queries against the Pusher REST API. Handles authentication.
-
-Response is an associative array with a `result` index. The contents of this index is dependent on the REST method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
-
-    $response = $pusher->get( '/channels' );
-    $http_status_code = $response[ 'status' ];
-    $result = $response[ 'result' ];
-
-### Get information about a channel
-
-    get_channel_info( $name )
-
-It's also possible to get information about a channel from the Pusher REST API.
-
-    $info = $pusher->get_channel_info('channel-name');
-    $channel_occupied = $info->occupied;
-
-This can also be achieved using the generic `pusher->get` function:
-
-    pusher->get( '/channels/channel-name' );    
-    
-### Get a list of application channels
-
-    get_channels()
-
-It's also possible to get a list of channels for an application from the Pusher REST API.
-
-    $result = $pusher->get_channels();
-    $channel_count = count($result->channels); // $channels is an Array
-
-This can also be achieved using the generic `pusher->get` function:
-
-    pusher->get( '/channels' );
-  
-### Get a filtered list of application channels
-
-    get_channels( array( 'filter_by_prefix' => 'some_filter' ) )
-
-It's also possible to get a list of channels based on their name prefix. To do this you need to supply an $options parameter to the call. In the following example the call will return a list of all channels with a 'presence-' prefix. This is idea for fetching a list of all presence channels.
-
-    $results = $pusher->get_channels( array( 'filter_by_prefix' => 'presence-') );
-    $channel_count = count($result->channels); // $channels is an Array
-
-This can also be achieved using the generic `pusher->get` function:
-
-    $pusher->get( '/channels', array( 'filter_by_prefix' => 'presence-' ) );
-
-### Get user information from a presence channel
-
-    $response = $pusher->get( '/channels/presence-channel-name/users' )
-
-The `$response` is in the format:
-
+        // Log the URL...
+    }
+}
 ```
-Array
-(
-    [body] => {"users":[{"id":"a_user_id"}]}
-    [status] => 200
-    [result] => Array
-        (
-            [users] => Array
-                (
-                    [0] => Array
-                        (
-                            [id] => a_user_id
-                        )
-                    /* Additional users */    
-                )
-        )
-)
+
+Next, we need to attach the subscriber to the client:
+
+```php
+use Pusher\Client\Credentials;
+use Pusher\Client\PusherClient;
+use Pusher\Service\PusherService;
+
+$credentials = new Credentials('application-id', 'key', 'secret');
+$client      = new PusherClient($credentials);
+
+$client->addSubscriber(new PusherLogger());
+
+$service = new PusherService($client);
 ```
-    
-## Running the tests
 
-Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
+And voilà, now all the URL will be logged.
 
-* Got to the `tests` directory
-* Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
-* Execute `phpunit .` to run all the tests.
-    
-## License
+### Directly use the client
 
-Copyright 2010, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php 
+While the Pusher service is convenient, you may want to directly use the Pusher client instead, so that you can have
+better control of how requests are sent. You can do this:
 
+```php
+use Pusher\Client\Credentials;
+use Pusher\Client\PusherClient;
+
+$credentials = new Credentials('application-id', 'key', 'secret');
+$client      = new PusherClient($credentials);
+
+// Let's do a trigger
+$parameters = array(
+    'event'     => 'my-event',
+    'channel'   => 'my-channel',
+    'data'      => array('key' => 'value'),
+    'socket_id' => '1234.1234'
+);
+
+$command = $client->getCommand('Trigger', $parameters)
+                  ->execute();
+```
+
+> When using the client directly, the exceptions thrown when errors occurred are Guzzle exceptions, not Pusher exceptions.
+Therefore it is harder to filter Pusher only exceptions. If you want this feature, please use the service instead, or
+write your own wrapper around the Pusher client.
