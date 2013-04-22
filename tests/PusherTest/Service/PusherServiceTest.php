@@ -66,7 +66,7 @@ class PusherServiceTest extends PHPUnit_Framework_TestCase
                      ->method('addSubscriber')
                      ->with($property->getValue($this->service));
 
-        $this->service->trigger('my-event', 'my-channel', array(), '', true);
+        $this->service->trigger('my-channel', 'my-event', array(), '', true);
     }
 
     /**
@@ -77,7 +77,7 @@ class PusherServiceTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->never())
                      ->method('addSubscriber');
 
-        $this->service->trigger('my-event', 'my-channel', array(), '');
+        $this->service->trigger('my-channel', 'my-event', array(), '');
     }
 
     /**
@@ -92,7 +92,7 @@ class PusherServiceTest extends PHPUnit_Framework_TestCase
                      ->method('addSubscriber')
                      ->with($property->getValue($this->service));
 
-        $this->service->triggerAsync('my-event', 'my-channel', array(), '');
+        $this->service->triggerAsync('my-channel', 'my-event', array(), '');
     }
 
     /**
@@ -111,7 +111,7 @@ class PusherServiceTest extends PHPUnit_Framework_TestCase
                      ->method('trigger')
                      ->with($expectedParameters);
 
-        $this->service->trigger('my-event', 'my-channel', array());
+        $this->service->trigger('my-channel', 'my-event', array());
     }
 
     /**
@@ -130,7 +130,7 @@ class PusherServiceTest extends PHPUnit_Framework_TestCase
                      ->method('trigger')
                      ->with($expectedParameters);
 
-        $this->service->trigger('my-event', array('my-channel-1', 'my-channel-2'), array());
+        $this->service->trigger(array('my-channel-1', 'my-channel-2'), 'my-event', array());
     }
 
     /**
