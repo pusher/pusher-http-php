@@ -76,14 +76,14 @@ class PusherService
      * Trigger a new event
      *
      * @link http://pusher.com/docs/rest_api#method-post-event
-     * @param  string        $event    Event name
      * @param  array|string  $channels Single or list of channels
+     * @param  string        $event    Event name
      * @param  array         $data     Event data (limited to 10 Kb)
      * @param  string        $socketId Exclude a specific socket id from the event
      * @param  bool          $async    If true, the request is performed asynchronously
      * @return void
      */
-    public function trigger($event, $channels, array $data = array(), $socketId = '', $async = false)
+    public function trigger($channels, $event, array $data = array(), $socketId = '', $async = false)
     {
         $parameters = array(
             'event'     => $event,
@@ -118,13 +118,13 @@ class PusherService
      * Trigger a new event asynchronously (it just aliases to trigger with last parameter set to true)
      *
      * @link http://pusher.com/docs/rest_api#method-post-event
-     * @param  string        $event    Event name
      * @param  array|string  $channels Single or list of channels
+     * @param  string        $event    Event name
      * @param  array         $data     Event data (limited to 10 Kb)
      * @param  string        $socketId Exclude a specific socket id from the event
      * @return void
      */
-    public function triggerAsync($event, $channels, array $data = array(), $socketId = '')
+    public function triggerAsync($channels, $event, array $data = array(), $socketId = '')
     {
         $this->trigger($event, $channels, $data, $socketId, true);
     }
@@ -233,6 +233,26 @@ class PusherService
         $signature   = $this->client->getSignature();
 
         return $signature->signPrivateChannel($channel, $socketId, $credentials);
+    }
+
+    /**
+     * Authenticate a user to either a presence or private channel based on channel name
+     *
+     * @link http://pusher.com/docs/auth_signatures#presence
+     * @link http://pusher.com/docs/auth_signatures#worked-example
+     * @param  string $channel
+     * @param  string $socketId
+     * @param  array  $data
+     * @throws Exception\RuntimeException
+     * @return array
+     */
+    public function authenticate($channel, $socketId, array $data = array())
+    {
+        if (substr($channel, 0, 8) === 'private-') {
+            return $this->authenticatePrivate($channel, $socketId);
+        } elseif (substr($channel, 0, 9) === 'presence-') {
+            return $this->authenticatePresence($channel, $socketId, $data);
+        }
     }
 
     /**

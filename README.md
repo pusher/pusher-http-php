@@ -46,15 +46,15 @@ Once you have access to the service, you can perform any operations.
 
 ### Triggering events
 
-To trigger an event to one or more channels, use the `trigger` method. Second parameter can either be a single channel (string),
+To trigger an event to one or more channels, use the `trigger` method. First parameter can either be a single channel (string),
 or multiple channels (an array of strings):
 
 ```php
 // Single channel
-$service->trigger('my-event', 'my-channel-1', array('key' => 'value'));
+$service->trigger('my-channel-1', 'my-event', array('key' => 'value'));
 
 // Multiplie channels
-$service->trigger('my-event', array('my-channel-1', 'my-channel-2'), array('key' => 'value'));
+$service->trigger(array('my-channel-1', 'my-channel-2'), 'my-event', array('key' => 'value'));
 ```
 
 `trigger` method also supports a fourth parameter, which is the socket id to exclude a specific socket from receiving
@@ -62,7 +62,7 @@ the message ([more information here](http://pusher.com/docs/server_api_guide/ser
 
 ```php
 // Exclude socket '1234.1234'
-$service->trigger('my-event', 'my-channel-1', array('key' => 'value'), '1234.1234');
+$service->trigger('my-channel-1', 'my-event', array('key' => 'value'), '1234.1234');
 ```
 
 Finally, `trigger` method also supports a fifth parameter which is used to make an asynchronous trigger. This means
@@ -71,13 +71,13 @@ done *synchronously*:
 
 ```php
 // Force the trigger to be asynchronous
-$service->trigger('my-event', 'my-channel-1', array('key' => 'value'), '', true);
+$service->trigger('my-channel-1', 'my-event', array('key' => 'value'), '', true);
 ```
 
 Pusher service also provides a shortcut for doing asynchronous requests with the `triggerAsync` method, as shown above:
 
 ```php
-$service->triggerAsync('my-event', 'my-channel-1', array('key' => 'value'));
+$service->triggerAsync('my-channel-1', 'my-event', array('key' => 'value'));
 ```
 
 ### Channel(s) information
@@ -127,6 +127,15 @@ encode this as a JSON string (typically done in a controller in a MVC architectu
 $result = $service->authenticatePresence('presence-channel', '1234.1234', array('firstName' => 'Michael'));
 
 var_dump($result); // prints array('auth' => 'authentication-string', 'channel_data' => '{"firstName":"Michael"}')
+```
+
+### General authentication
+
+For ease of use, service also has a generic `authenticate` method that choose the right method according to channel name:
+
+```php
+$result = $service->authenticate('private-channel', '1234.1234');
+$result = $service->authenticate('presence-channel', '1234.1234', array('firstName' => 'Michael'));
 ```
 
 ## Advanced use
