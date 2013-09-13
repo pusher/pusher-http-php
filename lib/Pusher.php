@@ -18,6 +18,8 @@
 		+ Zack Kitzmiller (delicious@zackisamazing.com)
 		+ Andrew Bender (igothelp@gmail.com)
 		+ Phil Leggetter (phil@leggetter.co.uk)
+		+ Loris Guignard (loris.guignard@gmail.com)
+		+ Adam Yeats (ay@adam.yt)
 */
 
 class PusherException extends Exception
