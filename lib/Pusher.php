@@ -108,6 +108,10 @@ class Pusher
 	*/
 	private function check_compatibility()
 	{
+		if (!extension_loaded('json')){
+       		throw new PusherException('This library depends on the JSON extension being installed.');
+ 		}
+		
 		if (!ini_get('allow_url_fopen')) {
 			throw new PusherException('This library depends on allow_url_fopen to be set to true.');
 		}
