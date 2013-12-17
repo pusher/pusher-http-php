@@ -18,6 +18,7 @@
 		+ Zack Kitzmiller (delicious@zackisamazing.com)
 		+ Andrew Bender (igothelp@gmail.com)
 		+ Phil Leggetter (phil@leggetter.co.uk)
+ 		+ Paul Rieger (http://github.com/PaulRieger)
 */
 
 class PusherException extends Exception
@@ -107,9 +108,8 @@ class Pusher
 	*/
 	private function check_compatibility()
 	{
-		if ( ! extension_loaded( 'curl' ) || ! extension_loaded( 'json' ) )
-		{
-			throw new PusherException('There is missing dependant extensions - please ensure both cURL and JSON modules are installed');
+		if (!ini_get('allow_url_fopen')) {
+			throw new PusherException('This library depends on allow_url_fopen to be set to true.');
 		}
 
 		if ( ! in_array( 'sha256', hash_algos() ) )
@@ -120,49 +120,44 @@ class Pusher
 	}
 	
 	/**
-	 * Utility function used to create the curl object with common settings
+	 * Utility function to call the REST API
+	 * @param string $s_url
+	 * @param string $request_method
+	 * @param string $query_params [optional]
+	 * @param string $post_value [optional]
+	 * @return array
 	 */
-	private function create_curl($s_url, $request_method = 'GET', $query_params = array() )
-	{
-		# Create the signed signature...
-		$signed_query = Pusher::build_auth_query_string(
-			$this->settings['auth_key'],
-			$this->settings['secret'],
-			$request_method,
-			$s_url,
-			$query_params);
+	private function makeCall($s_url, $request_method, $query_params = array(), $post_values = array()) {
+		$this -> log('request method: ' . $request_method);
+		$signed_query = Pusher::build_auth_query_string($this -> settings['auth_key'], $this -> settings['secret'], $request_method, $s_url, $query_params);
+		$full_url = $this -> settings['server'] . ':' . $this -> settings['port'] . $s_url . '?' . $signed_query;
+		$this -> log('full url: ' . $full_url);
+		if ($request_method == 'POST') {
+			$this -> log('post values: ' . print_r($post_values, true));
+			$context = array('http' => array(
+					'header' => 'Content-Type: application/json',
+					'method' => 'POST',
+					'content' => $post_values,
+				));
+		} else {
+			$context = array('http' => array(
+					'header' => 'Content-Type: application/json',
+					'method' => 'GET'
+				));
 
-		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
-
-		$this->log( 'curl_init( ' . $full_url . ' )' );
-		
-		# Set cURL opts and execute request
-		$ch = curl_init();
-		if ( $ch === false )
-		{
-			throw new PusherException('Could not initialise cURL!');
 		}
-		
-		curl_setopt( $ch, CURLOPT_URL, $full_url );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json" ) );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
-		
-		return $ch;
-	}
-
-	/**
-	 * Utility function to execute curl and create capture response information.
-	 */
-	private function exec_curl( $ch ) {
+		$context = stream_context_create($context);
 		$response = array();
+		try {
+			$response['body'] = file_get_contents($full_url, false, $context);
+			$responseHeader = explode(' ', $http_response_header[0]);
+			$response['status'] = $responseHeader[1];
+		} catch(Exception $e) {
+			$this -> log($e);
+			$response['status'] = '500';
+		}
 
-		$response[ 'body' ] = curl_exec( $ch );
-		$response[ 'status' ] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-		$this->log( 'exec_curl response: ' . print_r( $response, true ) );
-
-		curl_close( $ch );
+		$this -> log('file_get_contents response: ' . print_r($response, true));
 
 		return $response;
 	}
@@ -264,14 +259,9 @@ class Pusher
 
 		$query_params['body_md5'] = md5( $post_value );
 
-		$ch = $this->create_curl( $s_url, 'POST', $query_params );
-
 		$this->log( 'trigger POST: ' . $post_value );
 
-		curl_setopt( $ch, CURLOPT_POST, 1 );
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_value );
-
-		$response = $this->exec_curl( $ch );
+		$response = $this -> makeCall($s_url, 'POST', $query_params, $post_value);
 
 		if ( $response[ 'status' ] == 200 && $debug == false )
 		{
@@ -347,9 +337,7 @@ class Pusher
 	public function get( $path, $params = array() ) {
 		$s_url = $this->settings['url'] . $path;	
 
-		$ch = $this->create_curl( $s_url, 'GET', $params );
-
-		$response = $this->exec_curl( $ch );
+		$response = $this -> makeCall($s_url, 'GET', $params);
 		
 		if( $response[ 'status' ] == 200)
 		{
