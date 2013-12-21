@@ -10,7 +10,7 @@ You can get the Pusher PHP library via a composer package called `pusher-php-ser
 
 Or you can clone or download the library files.
 
-**We recommend you [use composer](http://getcomposer.org/).**
+**We recommend you to [use composer](http://getcomposer.org/).**
 
 
 ## Pusher constructor
@@ -54,7 +54,7 @@ The output of this will be:
 
 ### Socket id
 
-In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event (http://pusherapp.com/docs/duplicates):
+In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event ([http://pusherapp.com/docs/duplicates](http://pusherapp.com/docs/duplicates)):
 
     $pusher->trigger('my-channel','event','data','socket_id');
 
