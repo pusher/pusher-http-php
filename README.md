@@ -2,7 +2,7 @@
 
 This is a PHP library for interacting with the Pusher REST API.
 
-Registering at <http://pusher.com> and use the application credentails within your app as shown below.
+Registering at <http://pusher.com> and use the application credentials within your app as shown below.
 
 ## Installation
 
@@ -54,7 +54,7 @@ The output of this will be:
 
 ### Socket id
 
-In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event (http://pusherapp.com/docs/duplicates):
+In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event ([http://pusherapp.com/docs/duplicates](http://pusherapp.com/docs/duplicates)):
 
     $pusher->trigger('my-channel','event','data','socket_id');
 
