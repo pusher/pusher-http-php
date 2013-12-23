@@ -2,7 +2,7 @@
 
 This is a PHP library for interacting with the Pusher REST API.
 
-Registering at <http://pusher.com> and use the application credentials within your app as shown below.
+Register at <http://pusher.com> and use the application credentials within your app as shown below.
 
 ## Installation
 
