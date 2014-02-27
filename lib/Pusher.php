@@ -18,6 +18,7 @@
 		+ Zack Kitzmiller (delicious@zackisamazing.com)
 		+ Andrew Bender (igothelp@gmail.com)
 		+ Phil Leggetter (phil@leggetter.co.uk)
+		+ Mike Hayes (http://twitter.com/BlueHayes)
 */
 
 class PusherException extends Exception
@@ -64,12 +65,13 @@ class Pusher
 	* @param string $auth_key
 	* @param string $secret
 	* @param int $app_id
+	* @param string|null $channel_namespace [optional]
 	* @param bool $debug [optional]
 	* @param string $host [optional]
 	* @param int $port [optional]
 	* @param int $timeout [optional]
 	*/
-	public function __construct( $auth_key, $secret, $app_id, $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
+	public function __construct( $auth_key, $secret, $app_id, $channel_namespace = NULL, $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
 	{
 		// Check compatibility, disable for speed improvement
 		$this->check_compatibility();
@@ -81,6 +83,7 @@ class Pusher
 		$this->settings['secret'] = $secret;
 		$this->settings['app_id'] = $app_id;
 		$this->settings['url']		= '/apps/' . $this->settings['app_id'];
+		$this->settings['channel_namespace'] = $channel_namespace;
 		$this->settings['debug']	= $debug;
 		$this->settings['timeout']	= $timeout;
 
@@ -221,6 +224,31 @@ class Pusher
 			}		 
 			return implode( $separator, $string );
 	}
+	
+	/**
+	 * Apply the channel namespace/prefix to a channel name or an
+	 * array of channel names.
+	 * $param string|array $channels The channel or channels to have namespace applied.
+	 * @return string|array The channel or channels with namespace applied.
+	 */
+	 private function apply_channel_ns($channels)
+	 {
+	 	// If there is no channel namespace, return $channels unchanged.
+	 	if(empty($this->settings['channel_namespace'])) {
+	 		return $channels;
+	 	}
+	 	
+	 	// For an array of channels, the array with namespace applied.
+	 	if(is_array($channels)) {
+	 		return array_map(function($channel) {
+	 			return $this->settings['channel_namespace'] . '.' . $channel;
+	 		}, $channels);
+	 		
+	 	}
+	 	
+	 	// Return single channel namespaced
+	 	return $this->settings['channel_namespace'] . '.' . $channels;
+	 }
 
 	/**
 	* Trigger an event by providing event name and payload. 
@@ -243,6 +271,9 @@ class Pusher
 		if( count( $channels ) > 100 ) {
 			throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
 		}
+		
+		// Apply the channel namespace to all channels.
+		$channels = $this->apply_channel_ns($channels);
 
 		$query_params = array();
 		
@@ -297,6 +328,9 @@ class Pusher
 	  */
 	public function get_channel_info($channel, $params = array() )
 	{
+		// Apply the channel namespace.
+		$channel = $this->apply_channel_ns($channel);
+		
 		$response = $this->get( '/channels/' . $channel, $params );
 		
 		if( $response[ 'status' ] == 200)
@@ -372,6 +406,9 @@ class Pusher
 	*/
 	public function socket_auth( $channel, $socket_id, $custom_data = false )
 	{
+		// Apply the channel namespace.
+		$channel = $this->apply_channel_ns($channel);
+		
 		if($custom_data == true)
 		{
 			$signature = hash_hmac( 'sha256', $socket_id . ':' . $channel . ':' . $custom_data, $this->settings['secret'], false );
@@ -400,7 +437,7 @@ class Pusher
 	*/
 	public function presence_auth( $channel, $socket_id, $user_id, $user_info = false )
 	{
-
+		
 		$user_data = array( 'user_id' => $user_id );
 		if($user_info == true)
 		{
