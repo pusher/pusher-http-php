@@ -11,16 +11,26 @@ class ConfigurationError extends \Exception { }
 
 class Config
 {
+    /** @var string **/
     public $api_url;
+    /** @var int in seconds **/
     public $api_timeout = 60;
+    /** @var HTTPAdapterInterface **/
     public $api_adapter;
 
+    /** @var string **/
     public $socket_url;
+    /** @var array of kind array(string => KeyPair) **/
     public $keys = array();
 
-
     /**
-     * Example:
+     * Heroku example:
+     *   new Config();
+     *
+     * Simple example:
+     *   new Config('http://75e854969fc5d1eef71b:ea1fbae4b428e56e87b8@api.pusherapp.com/apps/78225');
+     *
+     * Full example:
      *   new Config(array(
      *     'api_url' => 'http://api.pusherapp.com/apps/78225',
      *     'api_timeout' => 60,
@@ -30,9 +40,14 @@ class Config
      *       '75e854969fc5d1eef71b' => 'ea1fbae4b428e56e87b8',
      *     ),
      *   ))
+     *
+     * @param $config array|string
      **/
-    public function __construct($opts = array())
+    public function __construct($config = array())
     {
+        if (is_string($config)) {
+            $config = array('api_url' => $config);
+        }
         $api_url = $config['api_url'] || getenv('PUSHER_URL');
         if (!empty($api_url)) {
             $this->set_api_url($api_url);
@@ -51,7 +66,7 @@ class Config
 
         $adapter = $config['api_adapter'];
         if (empty($adapter)) {
-            $adapter = detectAdapter();
+            $adapter = detect_adapter();
         }
         $this->api_adapter = $adapter;
 
@@ -59,6 +74,13 @@ class Config
 
     }
 
+    /**
+     * Fetches either the first key-pair or the given key-pair names by it's
+     * key.
+     *
+     * @param $api_key string|null
+     * @return KeyPair|null
+     **/
     function key($api_key = null) {
         if (!is_null($api_key)) {
             return $this->keys[$api_key];
@@ -67,16 +89,31 @@ class Config
         }
     }
 
+    /**
+     * Returns the first key-pair in the list of keys.
+     *
+     * @return KeyPair|null
+     **/
     function key_pair() {
         return $this->keys[0];
     }
 
+    /**
+     * Changes the api_url to the given value. If the URL contains userinfo
+     * then it's removed from the URL and stored in the keys data-structure
+     * as a new key-pair.
+     *
+     * @param string
+     * @throws Exception if the url is invalid <-- TODO: choose good exception type
+     * @return void
+     **/
     function set_api_url($api_url) {
         $parts = parse_url($api_url_);
         if (is_false($parts)) {
             throw Exception("The API URL is seriously broken mate");
         }
-        $user, $pass = $parts['user'], $parts['pass'];
+        $user = $parts['user'];
+        $pass = $parts['pass'];
         if (!empty($user) && !empty($pass)) {
             $keys[$user] = new KeyPair($user, $pass);
         }
@@ -86,20 +123,42 @@ class Config
         $this->api_url = unparse_url($parts);
     }
 
+    /**
+     * Setter for the socket_url
+     * @param socket_url string
+     * @return void
+     **/
     function set_socket_url($socket_url) {
         $this->socket_url = $socket_url;
     }
 
-    function set_timeout($timeout) {
-        $this->timeout = $timeout;
+    /**
+     * Setter for the api timeout
+     * @param timeout int in seconds
+     * @return void
+     **/
+    function set_api_timeout($timeout) {
+        $this->api_timeout = $timeout;
     }
 
+    /**
+     * Setter for the api adapter
+     * @param adapter HTTPAdapterInterface
+     * @return void
+     **/
     function set_adapter($adapter) {
         $this->adapter = $adapter;
     }
 
-    function set_key_pair($api_key, $api_secret) {
-        $this->keys[$api_key] = new PusherREST\KeyPair($api_key, $api_secret);
+    /**
+     * Adds a key-pair to the list of keys.
+     *
+     * @param key string
+     * @param secret string
+     * @return void
+     **/
+    function set_key_pair($key, $secret) {
+        $this->keys[$key] = new PusherREST\KeyPair($key, $secret);
     }
 
     /**
@@ -110,7 +169,7 @@ class Config
     public function validate()
     {
         if (empty($this->api_url)) {
-            throw ConfigurationError("api_url missing");
+            throw new ConfigurationError("api_url is missing");
         }
 
         // if (empty($this->socket_url)) {
@@ -118,15 +177,15 @@ class Config
         // }
 
         if (empty($this->keys)) {
-            throw ConfigurationError("keys missing");
+            throw new ConfigurationError("keys are missing");
         }
 
         if (empty($this->adapter)) {
-            throw ConfigurationError("adapter missing");
+            throw new ConfigurationError("adapter is missing");
         }
 
         if (empty($this->timeout)) {
-            throw ConfigurationError("timeout not set");
+            throw new ConfigurationError("timeout is not set");
         }
     }
 }

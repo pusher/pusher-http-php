@@ -59,9 +59,12 @@ class CurlAdapter implements HTTPAdapterInterface
                 'status' => curl_getinfo( $ch, CURLINFO_HTTP_CODE ),
                 'body' => curl_exec( $ch ),
             );
-        } finally {
+        } catch(Exception $e) {
             curl_close( $ch );
+            throw $e;
         }
+
+        curl_close( $ch );
 
         return $response;
     }

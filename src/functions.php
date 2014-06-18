@@ -4,20 +4,31 @@ use PusherREST\Config;
 use PusherREST\Client;
 
 /**
- * A global config
+ * Replaces the global config with a new set of parameters.
  *
- * @var PusherREST\Config
- **/
-static $config;
-
-/**
- * @param $config array
+ * @param $config array see PusherREST\Config's __constructor
+ * @throws ConfigurationError
+ * @return PusherREST\Config
  **/
 function configure($config = array())
 {
-    PusherREST::$config = new Config($config);
-    PusherREST::$config->validate();
+    $config = new Config($config);
+    $config->validate();
+    config($config);
+    return $config;
 }
+
+function config($new_config = null)
+{
+    static $config;
+    if (!is_null($new_config)) {
+        $config = $new_config;
+    }
+    return $config;
+}
+
+// Fetch the config from the env vars.
+config(new Config());
 
 /**
  * Validates and decodes an incoming HTTP webhook request from Pusher and

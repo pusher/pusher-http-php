@@ -10,27 +10,23 @@ Installation
 Use the [composer](http://getcomposer.org) to install this bundle.
 
 ```
-$ composer require pusher/pusher-rest-php
+$ composer require pusher/PusherREST
 ```
 
 Installation
 ------------
 
 This library is part of the composer.org
-`composer get pusher-rest-php`
+`composer get PusherREST
 
 Usage
 -----
 
 ```php
-$client = new pusher\RESTClient([
-  'api_key' => 'key',
-  'api_secret' => 'secret'
-  'host' => 'api.pusher.com',
-  'use_ssl' => false,
-  'timeout' => 10,
-  'proxy' => '10.13.37.4:80'
-]);
+$config = new PusherREST\Config(array(
+    'api_url' => 'http://key:secret@api.pusher.com/apps/3455'
+));
+$client = new PusherREST\Client($config);
 $client->trigger('channel_name', 'event_name', 'data');
 ```
 
@@ -46,8 +42,6 @@ TODO
 ====
 
 secure the auth end-point
-
-use guzzle ? https://github.com/guzzle/guzzle/tree/master/src
 
 Framework integration
 ---------------------

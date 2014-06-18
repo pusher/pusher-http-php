@@ -26,7 +26,7 @@ class Client
     /**
      * @param $config PusherREST\Config
      **/
-    public function __construct($config = PusherREST::config)
+    public function __construct($config = \PusherREST\config())
     {
         $this->base_url = $config->api_url;
         $this->adapter = $config->api_adapter;
