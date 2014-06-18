@@ -7,7 +7,6 @@ if (!in_array('sha256', hash_algos()))
 
 class KeyPair
 {
-
     /** @var string **/
     public $key;
 
@@ -38,14 +37,48 @@ class KeyPair
      **/
     public function channelSignature($socket_id, $channel, $user_data = null)
     {
-        $string_to_sign = $socket_id . ':' . $channel, $this->secret;
+        $string_to_sign = $socket_id . ':' . $channel;
 
         if(is_string($user_data))
         {
-            return $string_to_sign .= ':' . $user_data
+            $string_to_sign .= ':' . $user_data;
         }
 
         return $this->sign($string_to_sign);
+    }
+
+    /**
+     * Generates the signed parameters used in HTTP requests.
+     *
+     * @param $method string HTTP method
+     * @param $path string path to the resource
+     * @param $params array URL query params
+     * @param $body string|null HTTP body
+     * @return array a new set of params.
+     **/
+    public function signedParams($method, $path, $params, $body)
+    {
+        $method = strtoupper($method);
+
+        $params = array_merge($params, array(
+            'auth_key' => $this->key,
+            'auth_version' => '1.0',
+        ));
+
+        if (is_null($params['auth_timestamp'])) {
+            $params['auth_timestamp'] = time();
+        }
+
+        if (!is_null($body)) {
+            $params['body_md5'] = md5($body);
+        }
+
+        ksort($params);
+
+        $string_to_sign = $method . "\n" . $path . "\n" . http_build_query($params);
+
+        $params['auth_signature'] = $this->sign($string_to_sign);
+        return $params;
     }
 
     /**
@@ -77,10 +110,11 @@ class KeyPair
  * Compares string a and b in constant time. Used to avoid side-channel
  * timing attacks.
  *
- * TODO: make sure the compare is constant-time.
+ * TODO: make sure the compare is actually constant-time.
+ *
  * @param a string
  * @param b string
- * @return bool
+ * @return boolean true if the two strings are equal
  **/
 function constant_compare($a, $b)
 {

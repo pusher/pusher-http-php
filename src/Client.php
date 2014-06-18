@@ -46,7 +46,8 @@ class Client
         if (!is_null($body)) {
             $body = json_encode($body);
         }
-        $params = $this->signedParams($method, $path, $params, $body);
+        $base_path = parse_url($this->base_url, PHP_URL_PATH)['path'];
+        $params = $this->signedParams($method, $base_path . $path, $params, $body);
         $response = $this->adapter->request(
             $method,
             $this->base_url . $path . '?' . http_build_query($params),
@@ -86,38 +87,6 @@ class Client
         }
 
         return $this->post('events', array(), $body);
-    }
-
-    /**
-     * Generates the signed parameters used in HTTP requests.
-     *
-     * @param $method string HTTP method
-     * @param $path string path to the resource
-     * @param $params array URL query params
-     * @param $body string|null HTTP body
-     * @return array a new set of params.
-     **/
-    private function signedParams($method, $path, $params, $body)
-    {
-        $params = array_merge($params, array(
-            'auth_key' => $this->key_pair->key,
-            'auth_version' => '1.0'
-        );
-
-        if (is_null($params['auth_timestamp'])) {
-            $params['auth_timestamp'] = time();
-        }
-
-        if (!is_null($body)) {
-            $params['body_md5'] = md5($body);
-        }
-
-        ksort($params);
-
-        $string_to_sign = $method . "\n" . $path . "\n" . http_build_query($params);
-
-        $params['auth_signature'] = $this->key_pair->sign($string_to_sign)
-        return $params;
     }
 
     /**
