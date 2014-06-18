@@ -1,0 +1,9 @@
+phpunit.xml
+composer.phar
+composer.lock
+composer-test.lock
+vendor/
+build/
+artifacts/
+.idea
+.DS_STORE
