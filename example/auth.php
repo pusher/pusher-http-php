@@ -9,13 +9,9 @@ require "_config.php";
 
 // TODO: Add XSS check here
 
-// TODO: Check auth here
+// TODO: Check user auth here
 
-$socket_id = PusherREST::socket_id($_POST['socket_id']);
-$channel = PusherREST::channel($_POST['channel']);
-$user_data = PusherREST::user_data($_POST['user_data']);
-
-$auth = PusherREST::auth($socket_id, $channel, $user_data);
+$data = PusherREST::delegated_auth($_POST);
 
 header('Content-Type: application/json');
-print($auth);
+print($data);

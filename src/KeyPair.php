@@ -110,21 +110,20 @@ class KeyPair
  * Compares string a and b in constant time. Used to avoid side-channel
  * timing attacks.
  *
- * TODO: make sure the compare is actually constant-time.
- *
  * @param a string
  * @param b string
  * @return boolean true if the two strings are equal
  **/
 function constant_compare($a, $b)
 {
-    $len = max(array(strlen($a), strlen($b)));
-    $equal = true;
-    for ($i = 1; $i <= $len; $i++) {
-        if ($a[$i] != $b[$i]) {
-            $equal = false;
-        }
+    if (strlen($a) != strlen($b)) {
+        return false;
     }
-    return $equal;
+    $result = 0;
+    $len = strlen($a)
+    for ($i = 0; $i < $len; $i++) {
+        $result |= ord($a[$i]) ^ ord($b[$i]);
+    }
+    return $result == 0;
 }
 

@@ -57,6 +57,22 @@ function webhook_events()
 }
 
 /**
+ * Setup client
+ **/
+function print_client_setup($config, $auth_endpoint)
+{
+    ?>
+<script src="//js.pusher.com/2.0/pusher.min.js"></script>
+<script>
+Pusher.config = {
+    'socket_url': "<?= $config->socket_url ?>",
+    'auth_endpoint': "<?= $auth_endpoint ?>"
+}
+</script>
+    <?php
+}
+
+/**
  * Validates that the signature is correct.
  * Used by webhook_events() or to build your own webhook_events that
  * integrates with various PHP frameworks.
@@ -100,4 +116,14 @@ function not_authorized()
 {
     header("Status: 401 Unauthorized");
     exit;
+}
+
+
+function delegated_auth($post)
+{
+    $socket_id = PusherREST::socket_id($_POST['socket_id']);
+    $channel = PusherREST::channel($_POST['channel']);
+    $user_data = PusherREST::user_data($_POST['user_data']);
+
+    $auth = PusherREST::auth($socket_id, $channel, $user_data);
 }

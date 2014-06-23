@@ -43,6 +43,9 @@ TODO
 
 secure the auth end-point
 
+HTTP_PROXY setting
+
+
 Framework integration
 ---------------------
 
