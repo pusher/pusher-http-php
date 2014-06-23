@@ -120,7 +120,7 @@ function constant_compare($a, $b)
         return false;
     }
     $result = 0;
-    $len = strlen($a)
+    $len = strlen($a);
     for ($i = 0; $i < $len; $i++) {
         $result |= ord($a[$i]) ^ ord($b[$i]);
     }

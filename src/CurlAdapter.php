@@ -12,6 +12,7 @@ class CurlAdapter implements HTTPAdapterInterface
      **/
     public static function isSupported()
     {
+        return false;
         return extension_loaded('curl');
     }
 
@@ -51,14 +52,21 @@ class CurlAdapter implements HTTPAdapterInterface
                 $opts[CURLOPT_POSTFIELDS] = $body;
             }
 
-            foreach ( $opts as $key => $val ) {
-                curl_setopt($ch, $key, $val);
+            curl_setopt_array($ch, $opts);
+
+            $body = curl_exec( $ch );
+
+            if ($body === false) {
+                // fail
             }
+
+            var_dump(curl_getinfo($ch));
 
             $response = array(
                 'status' => curl_getinfo( $ch, CURLINFO_HTTP_CODE ),
-                'body' => curl_exec( $ch ),
+                'body' => $body,
             );
+            var_dump($response);
         } catch(Exception $e) {
             curl_close( $ch );
             throw $e;

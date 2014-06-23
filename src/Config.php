@@ -1,27 +1,40 @@
 <?php namespace PusherREST;
 
-use PusherREST\KeyPair;
-use PusherREST\CurlAdapter;
-use PusherREST\FileAdapter;
-
-class ConfigurationError extends \Exception { }
-
-#PUSHER_SOCKET_URL: ws://ws.pusherapp.com/app/75e854969fc5d1eef71b
-#PUSHER_URL:        http://75e854969fc5d1eef71b:ea1fbae4b428e56e87b8@api.pusherapp.com/apps/78225
-
+/**
+ * export PUSHER_URL=http://75e854969fc5d1eef71b:ea1fbae4b428e56e87b8@api.pusherapp.com/apps/78225
+ * export PUSHER_SOCKET_URL=ws://ws.pusherapp.com/app/75e854969fc5d1eef71b
+ **/
 class Config
 {
     /** @var string **/
-    public $api_url;
+    public $apiUrl;
     /** @var int in seconds **/
-    public $api_timeout = 60;
+    public $apiTimeout = 60;
     /** @var HTTPAdapterInterface **/
-    public $api_adapter;
+    public $apiAdapter;
 
     /** @var string **/
-    public $socket_url;
+    public $socketUrl;
     /** @var array of kind array(string => KeyPair) **/
-    public $keys = array();
+    private $keys = array();
+
+    /**
+     * Returns an instance of the first adapter that is supported in the current
+     * PHP runtime.
+     *
+     * @todo Make the resolution extensible
+     * @return CurlAdapter|FileAdapter|null
+     **/
+    public static function detectAdapter() {
+        if (CurlAdapter::isSupported()) {
+            return new CurlAdapter();
+        }
+        if (FileAdapter::isSupported()) {
+            return new FileAdapter();
+        }
+        return null;
+    }
+
 
     /**
      * Heroku example:
@@ -48,54 +61,32 @@ class Config
         if (is_string($config)) {
             $config = array('api_url' => $config);
         }
-        $api_url = $config['api_url'] || getenv('PUSHER_URL');
-        if (!empty($api_url)) {
-            $this->set_api_url($api_url);
+
+        $api_url = $config['api_url'];
+        if (empty($api_url)) {
+            $api_url = getenv('PUSHER_URL');
         }
 
-        $socket_url = $config['socket_url'] || getenv('PUSHER_SOCKET_URL');
-        if (!empty($socket_url)) {
-            $this->set_socket_url($socket_url);
+        $this->setApiUrl($api_url);
+
+        $this->socketUrl = $config['socket_url'];
+        if (empty($this->socketUrl)) {
+            $this->socketUrl = getenv('PUSHER_SOCKET_URL');
         }
 
         if (is_array($config['keys'])) {
             foreach ($config['keys'] as $key => $secret) {
-                $this->set_key_pair($key, $secret);
+                $this->setKeyPair($key, $secret);
             }
         }
 
         $adapter = $config['api_adapter'];
         if (empty($adapter)) {
-            $adapter = detect_adapter();
+            $adapter = Config::detectAdapter();
         }
-        $this->api_adapter = $adapter;
+        $this->apiAdapter = $adapter;
 
-        $this->api_timeout = $config['api_timeout'] || 60;
-
-    }
-
-    /**
-     * Fetches either the first key-pair or the given key-pair names by it's
-     * key.
-     *
-     * @param $api_key string|null
-     * @return KeyPair|null
-     **/
-    function key($api_key = null) {
-        if (!is_null($api_key)) {
-            return $this->keys[$api_key];
-        } else {
-            return $this->keys[0];
-        }
-    }
-
-    /**
-     * Returns the first key-pair in the list of keys.
-     *
-     * @return KeyPair|null
-     **/
-    function key_pair() {
-        return $this->keys[0];
+        $this->apiTimeout = $config['api_timeout'] || 60;
     }
 
     /**
@@ -103,51 +94,47 @@ class Config
      * then it's removed from the URL and stored in the keys data-structure
      * as a new key-pair.
      *
+     * If PHP's parse_url is not able to parse the URL the function doesn't
+     * change the value of $this->apiUrl and returns false.
+     *
      * @param string
-     * @throws Exception if the url is invalid <-- TODO: choose good exception type
-     * @return void
+     * @return boolean
      **/
-    function set_api_url($api_url) {
-        $parts = parse_url($api_url_);
-        if (is_false($parts)) {
-            throw Exception("The API URL is seriously broken mate");
+    function setApiUrl($api_url) {
+        $parts = parse_url($api_url);
+        if ($parts === false) {
+            return false;
         }
         $user = $parts['user'];
         $pass = $parts['pass'];
         if (!empty($user) && !empty($pass)) {
-            $keys[$user] = new KeyPair($user, $pass);
+            $this->setKeyPair($user, $pass);
         }
-        $parts['user'] = null;
-        $parts['pass'] = null;
+        unset($parts['user']);
+        unset($parts['pass']);
 
-        $this->api_url = unparse_url($parts);
+        $this->apiUrl = unparse_url($parts);
+        return true;
     }
 
     /**
-     * Setter for the socket_url
-     * @param socket_url string
-     * @return void
+     * Fetches either the first key-pair or the given key-pair names by it's
+     * key.
+     *
+     * @param $api_key string
+     * @return KeyPair|null
      **/
-    function set_socket_url($socket_url) {
-        $this->socket_url = $socket_url;
+    function getKeyPair($api_key) {
+        return $this->keys[$api_key];
     }
 
     /**
-     * Setter for the api timeout
-     * @param timeout int in seconds
-     * @return void
+     * Returns the first key-pair in the list of keys.
+     *
+     * @return KeyPair|null
      **/
-    function set_api_timeout($timeout) {
-        $this->api_timeout = $timeout;
-    }
-
-    /**
-     * Setter for the api adapter
-     * @param adapter HTTPAdapterInterface
-     * @return void
-     **/
-    function set_adapter($adapter) {
-        $this->adapter = $adapter;
+    function firstKeyPair() {
+        return reset($this->keys);
     }
 
     /**
@@ -157,8 +144,8 @@ class Config
      * @param secret string
      * @return void
      **/
-    function set_key_pair($key, $secret) {
-        $this->keys[$key] = new PusherREST\KeyPair($key, $secret);
+    function setKeyPair($key, $secret) {
+        $this->keys[$key] = new KeyPair($key, $secret);
     }
 
     /**
@@ -168,7 +155,7 @@ class Config
      */
     public function validate()
     {
-        if (empty($this->api_url)) {
+        if (empty($this->apiUrl)) {
             throw new ConfigurationError("api_url is missing");
         }
 
@@ -180,27 +167,32 @@ class Config
             throw new ConfigurationError("keys are missing");
         }
 
-        if (empty($this->adapter)) {
+        if (empty($this->apiAdapter)) {
             throw new ConfigurationError("adapter is missing");
         }
 
-        if (empty($this->timeout)) {
+        if (empty($this->apiTimeout)) {
             throw new ConfigurationError("timeout is not set");
         }
     }
 }
 
 /**
- * Detects what HTTP adapter is available.
+ * Utility function to recompose an array returns from parse_url into an URL.
  *
- * @return HTTPAdapterInterface|null
+ * @see http://uk3.php.net/manual/en/function.parse-url.php#106731
+ * @param $parsed_url array
+ * @return string
  **/
-function detect_adapter() {
-    if (CurlAdapter::isSupported()) {
-        return new CurlAdapter();
-    }
-    if (FileAdapter::isSupported()) {
-        return new FileAdapter();
-    }
-    return null;
+function unparse_url($parsed_url) {
+  $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+  $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+  $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+  $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+  $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+  $pass     = ($user || $pass) ? "$pass@" : '';
+  $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+  $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+  $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+  return "$scheme$user$pass$host$port$path$query$fragment";
 }

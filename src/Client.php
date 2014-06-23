@@ -1,17 +1,11 @@
 <?php namespace PusherREST;
 
 use PusherREST\VERSION;
-use PusherREST\CurlAdapter;
-use PusherREST\FileAdapter;
-
-if (!extension_loaded('json')) {
-    throw new Exception('There is missing dependant extensions - please ensure that the JSON module is installed');
-}
 
 class Client
 {
     /** @var string **/
-    public $base_url;
+    public $baseUrl;
 
     /** @var HTTPAdapterInterface **/
     public $adapter;
@@ -20,51 +14,53 @@ class Client
     public $timeout;
 
     /** @var PusherREST\KeyPair **/
-    public $key_pair;
+    public $keyPair;
 
 
     /**
      * @param $config PusherREST\Config
      **/
-    public function __construct($config = \PusherREST\config())
+    public function __construct($config)
     {
-        $this->base_url = $config->api_url;
-        $this->adapter = $config->api_adapter;
-        $this->timeout = $config->api_timeout;
-        $this->key_pair = $config->key_pair;
+        $this->baseUrl = $config->apiUrl;
+        $this->adapter = $config->apiAdapter;
+        $this->timeout = $config->apiTimeout;
+        $this->keyPair = $config->firstKeyPair();
     }
 
     /**
      * @param $method string
-     * @param $path string
+     * @param $rel_path string
      * @param $params array
      * @param $body array|null
      **/
-    public function request($method, $path, $params = array(), $body = null)
+    public function request($method, $rel_path, $params = array(), $body = null)
     {
         $method = strtoupper($method);
         if (!is_null($body)) {
             $body = json_encode($body);
         }
-        $base_path = parse_url($this->base_url, PHP_URL_PATH)['path'];
-        $params = $this->signedParams($method, $base_path . $path, $params, $body);
+        $base_path = parse_url($this->baseUrl, PHP_URL_PATH);
+        $path = path_join($base_path, $rel_path);
+        $params = $this->keyPair->signedParams($method, $path, $params, $body);
         $response = $this->adapter->request(
             $method,
-            $this->base_url . $path . '?' . http_build_query($params),
+            path_join($this->baseUrl, $rel_path) . '?' . http_build_query($params),
             $this->requestHeaders(),
-            $body);
+            $body,
+            $this->timeout);
         // TODO: handle bad requests
         return json_decode($response['body']);
     }
 
-    public function get($path, $params)
+    public function get($rel_path, $params)
     {
-        return $this->request('GET', $path, $params);
+        return $this->request('GET', $rel_path, $params);
     }
 
-    public function post($path, $body)
+    public function post($rel_path, $body)
     {
-        return $this->request('POST', $path, array(), $body);
+        return $this->request('POST', $rel_path, array(), $body);
     }
 
     public function trigger($channels, $event, $data, $socket_id = null, $already_encoded = false)
@@ -86,19 +82,21 @@ class Client
             $body[ 'socket_id' ] = $socket_id;
         }
 
-        return $this->post('events', array(), $body);
+        return $this->post('events', $body);
     }
 
     /**
      * Returns the User-Agent identifier of this client library. Used in
      * requestHeaders()
      *
+     * FIXME: VERSION constant is not replaced by it's value
+     *
      * @return string
      **/
     private function userAgent()
     {
-        return 'PusherREST-PHP/' . pusher\VERSION .
-            ' ' . $adapter->adapterName() .
+        return 'PusherREST-PHP/' . VERSION .
+            ' ' . $this->adapter->adapterName() .
             ' PHP/' . PHP_VERSION;
     }
 
@@ -114,3 +112,10 @@ class Client
     }
 }
 
+function path_join($a, $b)
+{
+    if ($a[-1] != "/") {
+        $a .= "/";
+    }
+    return $a . $b;
+}

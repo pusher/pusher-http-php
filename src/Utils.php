@@ -27,11 +27,6 @@ public function privateChannel($socket_id, $channel)
     return delegate($socket_id, $channel);
 }
 
-public function checkCompatiblity()
-{
-
-}
-
 public function delegate($socket_id, $channel, $channel_data = null)
     {
         if (!is_null($channel_data)) {

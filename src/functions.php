@@ -1,8 +1,5 @@
 <?php namespace PusherREST;
 
-use PusherREST\Config;
-use PusherREST\Client;
-
 /**
  * Replaces the global config with a new set of parameters.
  *
@@ -26,9 +23,6 @@ function config($new_config = null)
     }
     return $config;
 }
-
-// Fetch the config from the env vars.
-config(new Config());
 
 /**
  * Validates and decodes an incoming HTTP webhook request from Pusher and
@@ -59,15 +53,17 @@ function webhook_events()
 /**
  * Setup client
  **/
-function print_client_setup($config, $auth_endpoint)
+function print_client_setup($auth_endpoint)
 {
+    $config = config();
     ?>
 <script src="//js.pusher.com/2.0/pusher.min.js"></script>
 <script>
 Pusher.config = {
-    'socket_url': "<?= $config->socket_url ?>",
+    'socket_url': "<?= $config->socketUrl ?>",
     'auth_endpoint': "<?= $auth_endpoint ?>"
 }
+var pusher = new Pusher("<?= $config->firstKeyPair()->key ?>");
 </script>
     <?php
 }
@@ -102,7 +98,7 @@ function validate_request($api_key, $signature, $body)
  **/
 function trigger($channel_name, $event_name, $data)
 {
-    $client = new Client(PusherREST::config);
+    $client = new Client(config());
     return $client->trigger($channel_name, $event_name, $data);
 }
 

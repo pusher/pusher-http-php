@@ -1,10 +1,9 @@
-<?php namespace pusher;
-
-use PusherREST\HTTPAdapterInterface;
+<?php namespace PusherREST;
 
 /**
  * A HTTP client that uses the file_get_contents method. This adapter is
- * useful on Google AppEngine where the cUrl extension is not available.
+ * useful on Google AppEngine or other environments where the cUrl extension
+ * is not available.
  **/
 class FileAdapter implements HTTPAdapterInterface
 {
@@ -16,39 +15,40 @@ class FileAdapter implements HTTPAdapterInterface
         return ini_get('allow_url_fopen');
     }
 
-    public $opts;
+    public $options;
 
     /**
-     * @param $opts array options to be merged in during request.
+     * @param $options array context options to be merged in during request.
      **/
-    public function __construct($opts = array())
+    public function __construct($options = array())
     {
-        $this->opts = opts;
+        $this->options = $options;
     }
 
     /**
+     * TODO: make sure of the $timeout var
      * @see HTTPAdapterInterface
      **/
     public function request($method, $url, $headers, $body, $timeout)
     {
-        $context = [
+        $options = [
             'http' => [
                 'method' => $method,
-                'header' => join("\r\n", $headers) . "\r\n",
-                'content' => $data
+                'header' => join("\r\n", $headers) . "\r\n"
             ]
         ];
-        $context = array_merge_recursive($this->opts, $context);
+        $options = array_merge_recursive($this->options, $options);
         if (!is_null($body)) {
-            $context['http']['content'] = $body;
+            $options['http']['content'] = $body;
         }
-        $context = stream_context_create($context);
+        var_dump($options);
+        $context = stream_context_create($options);
         $result = file_get_contents($url, false, $context);
         return $result;
     }
 
     public function adapterName()
     {
-        return 'file/xxx';
+        return 'file/0.0.0';
     }
 }
