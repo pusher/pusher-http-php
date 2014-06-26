@@ -46,11 +46,12 @@ class Client
         $response = $this->adapter->request(
             $method,
             path_join($this->baseUrl, $rel_path) . '?' . http_build_query($params),
-            $this->requestHeaders(),
+            $this->requestHeaders(!is_null($body)),
             $body,
             $this->timeout);
+        var_dump($response);
         // TODO: handle bad requests
-        return json_decode($response['body']);
+        return json_decode($response);
     }
 
     public function get($rel_path, $params)
@@ -103,12 +104,16 @@ class Client
     /**
      * @return string[]
      **/
-    private function requestHeaders()
+    private function requestHeaders($has_body)
     {
-        return array(
+        $headers = array(
             'User-Agent: ' . $this->userAgent(),
             'Accept: application/json',
         );
+        if ($has_body) {
+            $headers[] = 'Content-Type: application/json';
+        }
+        return $headers;
     }
 }
 
