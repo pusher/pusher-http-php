@@ -3,7 +3,7 @@
 /**
  * Adapter interface used to abstract the HTTP client.
  */
-interface HTTPAdapterInterface {
+interface HTTPAdapter {
     /**
      * Used to determine if this adapter is available. Depending on the PHP
      * installation some extensions might now be enabled.

@@ -52,7 +52,7 @@ class KeyPair
      *
      * @param $method string HTTP method
      * @param $path string path to the resource
-     * @param $params array URL query params
+     * @param $params array array(string => string) URL query params
      * @param $body string|null HTTP body
      * @return array a new set of params.
      **/
@@ -73,9 +73,14 @@ class KeyPair
             $params['body_md5'] = md5($body);
         }
 
-        ksort($params);
+        // All params need to be lowercase
+        $params = array_change_key_case($params);
+        $params = array_filter($params);
 
-        $string_to_sign = $method . "\n" . $path . "\n" . http_build_query($params);
+        ksort($params);
+        $query = urldecode(http_build_query($params));
+
+        $string_to_sign = implode("\n", array($method, $path, $query));
 
         $params['auth_signature'] = $this->sign($string_to_sign);
         return $params;

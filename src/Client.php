@@ -1,13 +1,13 @@
 <?php namespace PusherREST;
 
-use PusherREST\VERSION;
+use PusherREST\Version;
 
 class Client
 {
     /** @var string **/
     public $baseUrl;
 
-    /** @var HTTPAdapterInterface **/
+    /** @var HTTPAdapter **/
     public $adapter;
 
     /** @var int in seconds **/
@@ -49,9 +49,10 @@ class Client
             $this->requestHeaders(!is_null($body)),
             $body,
             $this->timeout);
+
         var_dump($response);
         // TODO: handle bad requests
-        return json_decode($response);
+        return json_decode($response['body']);
     }
 
     public function get($rel_path, $params)
@@ -90,13 +91,11 @@ class Client
      * Returns the User-Agent identifier of this client library. Used in
      * requestHeaders()
      *
-     * FIXME: VERSION constant is not replaced by it's value
-     *
      * @return string
      **/
     private function userAgent()
     {
-        return 'PusherREST-PHP/' . VERSION .
+        return 'PusherREST-PHP/' . Version::VERSION .
             ' ' . $this->adapter->adapterName() .
             ' PHP/' . PHP_VERSION;
     }
@@ -119,8 +118,11 @@ class Client
 
 function path_join($a, $b)
 {
-    if ($a[-1] != "/") {
-        $a .= "/";
+    if ($a[-1] == "/" ^ $b[0] == "/") {
+        return $a . $b;
     }
-    return $a . $b;
+    if ($b[0] == "/") {
+        return $a . substr($b, 1);
+    }
+    return $a . "/" . $b;
 }

@@ -1,18 +1,17 @@
 <?php namespace PusherREST;
 
-use PusherREST\HTTPAdapterInterface;
+use PusherREST\HTTPAdapter;
 
 /**
  * A HTTP client that uses the venerable cURL library
  **/
-class CurlAdapter implements HTTPAdapterInterface
+class CurlAdapter implements HTTPAdapter
 {
     /**
-     * @see HTTPAdapterInterface
+     * @see HTTPAdapter
      **/
     public static function isSupported()
     {
-        //return false;
         return extension_loaded('curl');
     }
 
@@ -27,18 +26,17 @@ class CurlAdapter implements HTTPAdapterInterface
     }
 
     /**
-     * @see HTTPAdapterInterface
+     * @see HTTPAdapter
      **/
     public function request($method, $url, $headers, $body, $timeout)
     {
         # Set cURL opts and execute request
-        $ch = curl_init();
+        $ch = curl_init($url);
         if (!$ch) {
             throw new AdapterError('curl_init: Could not initialise cURL');
         }
 
-        $opts = array_merge($this->opts, array(
-            CURLOPT_URL => $url,
+        $opts = array_replace($this->opts, array(
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => $timeout,
@@ -51,27 +49,25 @@ class CurlAdapter implements HTTPAdapterInterface
             $opts[CURLOPT_POSTFIELDS] = $body;
         }
 
-        if (!curl_setopt_array($ch, $opts)) {
-            throw new AdapterError("curl_setopt_array: Invalid cURL option");
+        foreach ($opts as $key => $value) {
+            if (!curl_setopt($ch, $key, $value)) {
+                throw new AdapterError("curl_setopt_array: Invalid cURL option $key => $value");
+            }
         }
 
         $body = curl_exec( $ch );
-        //curl_exec($ch);
+
+        if (curl_errno($ch) > 0) {
+            throw new AdapterError("curl: " . curl_error($ch));
+        }
+
         $info = curl_getinfo($ch);
-        $info['curl_result'] = curl_errno($ch);
-        if ($info['curl_result']) {
-            $info['curl_error'] = curl_error($ch);
-        }
 
-        if ($body === false) {
-            // fail
-        }
-
+        // TODO: Headers
         $response = array(
-            'status' => $info,
+            'status' => $info['http_code'],
             'body' => $body,
         );
-        var_dump($response);
 
         curl_close( $ch );
 

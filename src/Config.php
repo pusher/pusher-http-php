@@ -10,7 +10,7 @@ class Config
     public $apiUrl;
     /** @var int in seconds **/
     public $apiTimeout = 60;
-    /** @var HTTPAdapterInterface **/
+    /** @var HTTPAdapter **/
     public $apiAdapter;
 
     /** @var string **/
@@ -107,6 +107,7 @@ class Config
         }
         // $parts['host'] = 'localhost';
         // $parts['port'] = '1234';
+        // $parts['path'] = '/foo';
 
         $user = $parts['user'];
         $pass = $parts['pass'];
