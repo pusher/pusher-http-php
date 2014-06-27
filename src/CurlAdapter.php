@@ -6,12 +6,12 @@ use PusherREST\HTTPAdapter;
 
 /**
  * A HTTP client that uses the venerable cURL library
- * */
+ */
 class CurlAdapter implements HTTPAdapter {
 
     /**
      * @see HTTPAdapter
-     * */
+     */
     public static function isSupported() {
         return extension_loaded('curl');
     }
@@ -20,14 +20,14 @@ class CurlAdapter implements HTTPAdapter {
 
     /**
      * @param $opts array options to be merged in during request.
-     * */
+     */
     public function __construct($opts = array()) {
         $this->opts = $opts;
     }
 
     /**
      * @see HTTPAdapter
-     * */
+     */
     public function request($method, $url, $headers, $body, $timeout) {
         # Set cURL opts and execute request
         $ch = curl_init($url);

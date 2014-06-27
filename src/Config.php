@@ -5,22 +5,22 @@ namespace PusherREST;
 /**
  * export PUSHER_URL=http://75e854969fc5d1eef71b:ea1fbae4b428e56e87b8@api.pusherapp.com/apps/78225
  * export PUSHER_SOCKET_URL=ws://ws.pusherapp.com/app/75e854969fc5d1eef71b
- * */
+ */
 class Config {
 
-    /** @var string * */
+    /** @var string */
     public $apiUrl;
 
-    /** @var int in seconds * */
+    /** @var int in seconds */
     public $apiTimeout = 60;
 
-    /** @var HTTPAdapter * */
+    /** @var HTTPAdapter */
     public $apiAdapter;
 
-    /** @var string * */
+    /** @var string */
     public $socketUrl;
 
-    /** @var array of kind array(string => KeyPair) * */
+    /** @var array of kind array(string => KeyPair) */
     private $keys = array();
 
     /**
@@ -29,7 +29,7 @@ class Config {
      *
      * @todo Make the resolution extensible
      * @return CurlAdapter|FileAdapter|null
-     * */
+     */
     public static function detectAdapter() {
         if (CurlAdapter::isSupported()) {
             return new CurlAdapter();
@@ -59,7 +59,7 @@ class Config {
      *   ))
      *
      * @param $config array|string
-     * */
+     */
     public function __construct($config = array()) {
         if (is_string($config)) {
             $config = array('api_url' => $config);
@@ -102,7 +102,7 @@ class Config {
      *
      * @param string
      * @return boolean
-     * */
+     */
     function setApiUrl($api_url) {
         $parts = parse_url($api_url);
         if ($parts === false) {
@@ -130,7 +130,7 @@ class Config {
      *
      * @param $api_key string
      * @return KeyPair|null
-     * */
+     */
     function getKeyPair($api_key) {
         return $this->keys[$api_key];
     }
@@ -139,7 +139,7 @@ class Config {
      * Returns the first key-pair in the list of keys.
      *
      * @return KeyPair|null
-     * */
+     */
     function firstKeyPair() {
         return reset($this->keys);
     }
@@ -150,7 +150,7 @@ class Config {
      * @param key string
      * @param secret string
      * @return void
-     * */
+     */
     function setKeyPair($key, $secret) {
         $this->keys[$key] = new KeyPair($key, $secret);
     }
@@ -190,7 +190,7 @@ class Config {
  * @see http://uk3.php.net/manual/en/function.parse-url.php#106731
  * @param $parsed_url array
  * @return string
- * */
+ */
 function unparse_url($parsed_url) {
     $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
     $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';

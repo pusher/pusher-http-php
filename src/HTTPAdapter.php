@@ -12,7 +12,7 @@ interface HTTPAdapter {
      * installation some extensions might now be enabled.
      *
      * @return boolean true if supported
-     * */
+     */
     public static function isSupported();
 
     /**
@@ -24,7 +24,7 @@ interface HTTPAdapter {
      * @param $body string|null
      * @param $timeout int in seconds
      * @return array with array('status' => int, 'body' => string)
-     * */
+     */
     public function request($method, $url, $headers, $body, $timeout);
 
     /**
@@ -32,6 +32,6 @@ interface HTTPAdapter {
      * The format should be name/version. Eg: "curl/1.3.0"
      *
      * @return string
-     * */
+     */
     public function adapterName();
 }

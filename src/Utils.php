@@ -9,7 +9,7 @@ namespace PusherREST;
  * @param $channl string Name of the channel to authorize
  * @param $custom_data null|string Additional data to authorize
  * @return string json data
- * */
+ */
 function presenceChannel($socket_id, $channel, $user_id, $user_info = null) {
     $channel_data = array('user_id' => $user_id);
     if (!is_null($user_info)) {

@@ -6,21 +6,21 @@ use PusherREST\Version;
 
 class Client {
 
-    /** @var string * */
+    /** @var string */
     public $baseUrl;
 
-    /** @var HTTPAdapter * */
+    /** @var HTTPAdapter */
     public $adapter;
 
-    /** @var int in seconds * */
+    /** @var int in seconds */
     public $timeout;
 
-    /** @var PusherREST\KeyPair * */
+    /** @var PusherREST\KeyPair */
     public $keyPair;
 
     /**
      * @param $config PusherREST\Config
-     * */
+     */
     public function __construct($config) {
         if (is_array($config)) {
             $config = new Config($config);
@@ -36,7 +36,7 @@ class Client {
      * @param $rel_path string
      * @param $params array
      * @param $body array|null
-     * */
+     */
     public function request($method, $rel_path, $params = array(), $body = null) {
         $method = strtoupper($method);
         if (!is_null($body)) {
@@ -87,7 +87,7 @@ class Client {
      * requestHeaders()
      *
      * @return string
-     * */
+     */
     private function userAgent() {
         return 'PusherREST-PHP/' . Version::VERSION .
                 ' ' . $this->adapter->adapterName() .
@@ -96,7 +96,7 @@ class Client {
 
     /**
      * @return string[]
-     * */
+     */
     private function requestHeaders($has_body) {
         $headers = array(
             'User-Agent: ' . $this->userAgent(),

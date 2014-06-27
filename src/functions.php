@@ -8,7 +8,7 @@ namespace PusherREST;
  * @param $config array see PusherREST\Config's __constructor
  * @throws ConfigurationError
  * @return PusherREST\Config
- * */
+ */
 function configure($config = array()) {
     $config = new Config($config);
     $config->validate();
@@ -32,7 +32,7 @@ function config($new_config = null) {
  * a 401 Unauthorized response.
  *
  * @return mixed
- * */
+ */
 function webhook_events() {
     $api_key = $_REQUEST['HTTP_X_PUSHER_KEY'];
     $signature = $_REQUEST['HTTP_X_PUSHER_SIGNATURE'];
@@ -51,7 +51,7 @@ function webhook_events() {
 
 /**
  * Setup client
- * */
+ */
 function print_client_setup($auth_endpoint) {
     $config = config();
     ?>
@@ -75,7 +75,7 @@ function print_client_setup($auth_endpoint) {
  * @param $signature string
  * @param $body string
  * @return boolean
- * */
+ */
 function validate_request($api_key, $signature, $body) {
     $key_pair = $config->key($api_key);
     if (is_null($key_pair)) {
@@ -92,7 +92,7 @@ function validate_request($api_key, $signature, $body) {
  * @param $event_name string
  * @param $body string
  * @return ???
- * */
+ */
 function trigger($channel_name, $event_name, $data) {
     $client = new Client(config());
     return $client->trigger($channel_name, $event_name, $data);
@@ -103,7 +103,7 @@ function trigger($channel_name, $event_name, $data) {
  * Unauthorized.
  *
  * @return void
- * */
+ */
 function not_authorized() {
     header("Status: 401 Unauthorized");
     exit;
