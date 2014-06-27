@@ -1,27 +1,27 @@
-<?php namespace PusherREST;
+<?php
 
-if (!in_array('sha256', hash_algos()))
-{
+namespace PusherREST;
+
+if (!in_array('sha256', hash_algos())) {
     throw new Exception('SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.');
 }
 
-class KeyPair
-{
-    /** @var string **/
+class KeyPair {
+
+    /** @var string * */
     public $key;
 
-    /** @var string **/
+    /** @var string * */
     public $secret;
 
     /**
-    * Used to delegate authorization. Generated signature can be transmitted
-    * to socket libraries to connect to private and presence channels.
-    *
-    * @param $key string Pusher API key
-    * @param $secret string Pusher API secret
-    **/
-    public function __construct($key, $secret)
-    {
+     * Used to delegate authorization. Generated signature can be transmitted
+     * to socket libraries to connect to private and presence channels.
+     *
+     * @param $key string Pusher API key
+     * @param $secret string Pusher API secret
+     * */
+    public function __construct($key, $secret) {
         $this->key = $key;
         $this->secret = $secret;
     }
@@ -34,13 +34,11 @@ class KeyPair
      * @param $channl string Name of the channel to authorize
      * @param $user_data null|string Additional data to authorize
      * @return string hmac sha256 signature
-     **/
-    public function channelSignature($socket_id, $channel, $user_data = null)
-    {
+     * */
+    public function channelSignature($socket_id, $channel, $user_data = null) {
         $string_to_sign = $socket_id . ':' . $channel;
 
-        if(is_string($user_data))
-        {
+        if (is_string($user_data)) {
             $string_to_sign .= ':' . $user_data;
         }
 
@@ -55,9 +53,8 @@ class KeyPair
      * @param $params array array(string => string) URL query params
      * @param $body string|null HTTP body
      * @return array a new set of params.
-     **/
-    public function signedParams($method, $path, $params, $body)
-    {
+     * */
+    public function signedParams($method, $path, $params, $body) {
         $method = strtoupper($method);
 
         $params = array_merge($params, array(
@@ -91,9 +88,8 @@ class KeyPair
      *
      * @param $string_to_sign string
      * @return string hmac signature
-     **/
-    public function sign($string_to_sign)
-    {
+     * */
+    public function sign($string_to_sign) {
         return hash_hmac('sha256', $string_to_sign, $this->secret, false);
     }
 
@@ -104,11 +100,11 @@ class KeyPair
      * @param $signature string signature to verify
      * @param $string_to_sign string content to verify
      * @return bool true if the signature matches
-     **/
-    public function verify($signature, $string_to_sign)
-    {
+     * */
+    public function verify($signature, $string_to_sign) {
         return constant_compare($signature, $this->sign($string_to_sign));
     }
+
 }
 
 /**
@@ -118,9 +114,8 @@ class KeyPair
  * @param a string
  * @param b string
  * @return boolean true if the two strings are equal
- **/
-function constant_compare($a, $b)
-{
+ * */
+function constant_compare($a, $b) {
     if (strlen($a) != strlen($b)) {
         return false;
     }
@@ -131,4 +126,3 @@ function constant_compare($a, $b)
     }
     return $result == 0;
 }
-

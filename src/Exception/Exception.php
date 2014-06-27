@@ -1,3 +1,7 @@
-<?php namespace PusherREST\Exception;
+<?php
 
-class Exception extends \Exception {}
+namespace PusherREST\Exception;
+
+class Exception extends \Exception {
+    
+}

@@ -1,3 +1,7 @@
-<?php namespace PusherREST\Exception;
+<?php
 
-class ConfigurationError extends Exception {}
+namespace PusherREST\Exception;
+
+class ConfigurationError extends Exception {
+    
+}

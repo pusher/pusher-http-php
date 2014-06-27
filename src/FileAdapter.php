@@ -1,17 +1,18 @@
-<?php namespace PusherREST;
+<?php
+
+namespace PusherREST;
 
 /**
  * A HTTP client that uses the file_get_contents method. This adapter is
  * useful on Google AppEngine or other environments where the cUrl extension
  * is not available.
- **/
-class FileAdapter implements HTTPAdapter
-{
+ * */
+class FileAdapter implements HTTPAdapter {
+
     /**
      * @see HTTPAdapter
-     **/
-    public static function isSupported()
-    {
+     * */
+    public static function isSupported() {
         return ini_get('allow_url_fopen');
     }
 
@@ -19,17 +20,15 @@ class FileAdapter implements HTTPAdapter
 
     /**
      * @param $options array context options to be merged in during request.
-     **/
-    public function __construct($options = array())
-    {
+     * */
+    public function __construct($options = array()) {
         $this->options = $options;
     }
 
     /**
      * @see HTTPAdapter
-     **/
-    public function request($method, $url, $headers, $body, $timeout)
-    {
+     * */
+    public function request($method, $url, $headers, $body, $timeout) {
         var_dump($url);
         $options = [
             'http' => [
@@ -61,8 +60,8 @@ class FileAdapter implements HTTPAdapter
         return array('status' => $status, 'body' => $body, 'headers' => $headers);
     }
 
-    public function adapterName()
-    {
+    public function adapterName() {
         return 'file/0.0.0';
     }
+
 }

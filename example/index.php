@@ -29,8 +29,8 @@ require "_config.php";
 //     ev.preventDefault();
 //     $.post('/trigger.php', {message: $('#hello input[name=message]').value()});
 // });
-pusher.subscribe('messages', function(event) {
-    $('#history').append(event);
-});
+    pusher.subscribe('messages', function(event) {
+        $('#history').append(event);
+    });
 </script>
 </html>

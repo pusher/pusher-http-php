@@ -1,27 +1,27 @@
-<?php namespace PusherREST;
+<?php
+
+namespace PusherREST;
 
 use PusherREST\Version;
 
-class Client
-{
-    /** @var string **/
+class Client {
+
+    /** @var string * */
     public $baseUrl;
 
-    /** @var HTTPAdapter **/
+    /** @var HTTPAdapter * */
     public $adapter;
 
-    /** @var int in seconds **/
+    /** @var int in seconds * */
     public $timeout;
 
-    /** @var PusherREST\KeyPair **/
+    /** @var PusherREST\KeyPair * */
     public $keyPair;
-
 
     /**
      * @param $config PusherREST\Config
-     **/
-    public function __construct($config)
-    {
+     * */
+    public function __construct($config) {
         if (is_array($config)) {
             $config = new Config($config);
         }
@@ -36,9 +36,8 @@ class Client
      * @param $rel_path string
      * @param $params array
      * @param $body array|null
-     **/
-    public function request($method, $rel_path, $params = array(), $body = null)
-    {
+     * */
+    public function request($method, $rel_path, $params = array(), $body = null) {
         $method = strtoupper($method);
         if (!is_null($body)) {
             $body = json_encode($body);
@@ -47,44 +46,37 @@ class Client
         $path = path_join($base_path, $rel_path);
         $params = $this->keyPair->signedParams($method, $path, $params, $body);
         $response = $this->adapter->request(
-            $method,
-            path_join($this->baseUrl, $rel_path) . '?' . http_build_query($params),
-            $this->requestHeaders(!is_null($body)),
-            $body,
-            $this->timeout);
+                $method, path_join($this->baseUrl, $rel_path) . '?' . http_build_query($params), $this->requestHeaders(!is_null($body)), $body, $this->timeout);
 
         var_dump($response);
         // TODO: handle bad requests
         return json_decode($response['body']);
     }
 
-    public function get($rel_path, $params)
-    {
+    public function get($rel_path, $params) {
         return $this->request('GET', $rel_path, $params);
     }
 
-    public function post($rel_path, $body)
-    {
+    public function post($rel_path, $body) {
         return $this->request('POST', $rel_path, array(), $body);
     }
 
-    public function trigger($channels, $event, $data, $socket_id = null)
-    {
-        if (is_string( $channels )) {
-            $channels = array( $channels );
-        } else if ( count( $channels ) > 100 ) {
+    public function trigger($channels, $event, $data, $socket_id = null) {
+        if (is_string($channels)) {
+            $channels = array($channels);
+        } else if (count($channels) > 100) {
             throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
         }
 
-        $data = json_encode( $data );
+        $data = json_encode($data);
 
         $body = array();
-        $body[ 'name' ] = $event;
-        $body[ 'data' ] = $data;
-        $body[ 'channels' ] = $channels;
+        $body['name'] = $event;
+        $body['data'] = $data;
+        $body['channels'] = $channels;
 
         if ($socket_id) {
-            $body[ 'socket_id' ] = $socket_id;
+            $body['socket_id'] = $socket_id;
         }
 
         return $this->post('events', $body);
@@ -95,19 +87,17 @@ class Client
      * requestHeaders()
      *
      * @return string
-     **/
-    private function userAgent()
-    {
+     * */
+    private function userAgent() {
         return 'PusherREST-PHP/' . Version::VERSION .
-            ' ' . $this->adapter->adapterName() .
-            ' PHP/' . PHP_VERSION;
+                ' ' . $this->adapter->adapterName() .
+                ' PHP/' . PHP_VERSION;
     }
 
     /**
      * @return string[]
-     **/
-    private function requestHeaders($has_body)
-    {
+     * */
+    private function requestHeaders($has_body) {
         $headers = array(
             'User-Agent: ' . $this->userAgent(),
             'Accept: application/json',
@@ -117,10 +107,10 @@ class Client
         }
         return $headers;
     }
+
 }
 
-function path_join($a, $b)
-{
+function path_join($a, $b) {
     if ($a[-1] == "/" ^ $b[0] == "/") {
         return $a . $b;
     }

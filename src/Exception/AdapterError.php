@@ -1,3 +1,7 @@
-<?php namespace PusherREST\Exception;
+<?php
 
-class AdapterError extends Exception {}
+namespace PusherREST\Exception;
+
+class AdapterError extends Exception {
+    
+}

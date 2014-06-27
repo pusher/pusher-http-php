@@ -7,3 +7,4 @@ build/
 artifacts/
 .idea
 .DS_STORE
+/nbproject/private/

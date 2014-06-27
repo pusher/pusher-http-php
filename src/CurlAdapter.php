@@ -1,17 +1,18 @@
-<?php namespace PusherREST;
+<?php
+
+namespace PusherREST;
 
 use PusherREST\HTTPAdapter;
 
 /**
  * A HTTP client that uses the venerable cURL library
- **/
-class CurlAdapter implements HTTPAdapter
-{
+ * */
+class CurlAdapter implements HTTPAdapter {
+
     /**
      * @see HTTPAdapter
-     **/
-    public static function isSupported()
-    {
+     * */
+    public static function isSupported() {
         return extension_loaded('curl');
     }
 
@@ -19,17 +20,15 @@ class CurlAdapter implements HTTPAdapter
 
     /**
      * @param $opts array options to be merged in during request.
-     **/
-    public function __construct($opts = array())
-    {
+     * */
+    public function __construct($opts = array()) {
         $this->opts = $opts;
     }
 
     /**
      * @see HTTPAdapter
-     **/
-    public function request($method, $url, $headers, $body, $timeout)
-    {
+     * */
+    public function request($method, $url, $headers, $body, $timeout) {
         # Set cURL opts and execute request
         $ch = curl_init($url);
         if (!$ch) {
@@ -55,7 +54,7 @@ class CurlAdapter implements HTTPAdapter
             }
         }
 
-        $body = curl_exec( $ch );
+        $body = curl_exec($ch);
 
         if (curl_errno($ch) > 0) {
             throw new AdapterError("curl: " . curl_error($ch));
@@ -69,13 +68,13 @@ class CurlAdapter implements HTTPAdapter
             'body' => $body,
         );
 
-        curl_close( $ch );
+        curl_close($ch);
 
         return $response;
     }
 
-    public function adapterName()
-    {
+    public function adapterName() {
         return 'curl/' . curl_version()['version'];
     }
+
 }
