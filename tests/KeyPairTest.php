@@ -5,8 +5,8 @@ namespace PusherREST\Tests;
 use PusherREST\KeyPair;
 
 /**
-* @covers PusherREST\KeyPair
-*/
+ * @covers PusherREST\KeyPair
+ **/
 class KeyPairTest extends \PHPUnit_Framework_TestCase
 {
     public function testSign()

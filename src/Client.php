@@ -22,6 +22,9 @@ class Client
      **/
     public function __construct($config)
     {
+        if (is_array($config)) {
+            $config = new Config($config);
+        }
         $this->baseUrl = $config->apiUrl;
         $this->adapter = $config->apiAdapter;
         $this->timeout = $config->apiTimeout;
@@ -65,7 +68,7 @@ class Client
         return $this->request('POST', $rel_path, array(), $body);
     }
 
-    public function trigger($channels, $event, $data, $socket_id = null, $already_encoded = false)
+    public function trigger($channels, $event, $data, $socket_id = null)
     {
         if (is_string( $channels )) {
             $channels = array( $channels );
@@ -73,7 +76,7 @@ class Client
             throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
         }
 
-        $data = $already_encoded ? $data : json_encode( $data );
+        $data = json_encode( $data );
 
         $body = array();
         $body[ 'name' ] = $event;
