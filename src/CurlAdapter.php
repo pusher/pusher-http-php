@@ -1,8 +1,9 @@
 <?php
 
-namespace PusherREST;
+namespace pusher;
 
-use PusherREST\HTTPAdapter;
+use pusher\HTTPAdapter;
+use pusher\Exception\AdapterError;
 
 /**
  * A HTTP client that uses the venerable cURL library
@@ -16,26 +17,29 @@ class CurlAdapter implements HTTPAdapter {
         return extension_loaded('curl');
     }
 
-    public $opts;
+    public $options = array();
 
     /**
-     * @param $opts array options to be merged in during request.
+     * @param $options array options to be merged in during request.
      */
-    public function __construct($opts = array()) {
-        $this->opts = $opts;
+    public function __construct($options = array()) {
+        if (is_array($options)) {
+            $this->options = $options;
+        }
     }
 
     /**
      * @see HTTPAdapter
+     * @throws pusher\Exception\AdapterError
      */
-    public function request($method, $url, $headers, $body, $timeout) {
+    public function request($method, $url, $headers, $body, $timeout, $proxy_url) {
         # Set cURL opts and execute request
         $ch = curl_init($url);
         if (!$ch) {
             throw new AdapterError('curl_init: Could not initialise cURL');
         }
 
-        $opts = array_replace($this->opts, array(
+        $options = array_replace($this->options, array(
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => $timeout,
@@ -44,11 +48,15 @@ class CurlAdapter implements HTTPAdapter {
 
         if (!is_null($body)) {
             // FIXME: Only POST, how to set the method ?
-            $opts[CURLOPT_POST] = 1;
-            $opts[CURLOPT_POSTFIELDS] = $body;
+            $options[CURLOPT_POST] = 1;
+            $options[CURLOPT_POSTFIELDS] = $body;
         }
 
-        foreach ($opts as $key => $value) {
+        if (!empty($proxy_url)) {
+            $options[CURLOPT_PROXY] = $proxy_url;
+        }
+
+        foreach ($options as $key => $value) {
             if (!curl_setopt($ch, $key, $value)) {
                 throw new AdapterError("curl_setopt_array: Invalid cURL option $key => $value");
             }
@@ -62,7 +70,7 @@ class CurlAdapter implements HTTPAdapter {
 
         $info = curl_getinfo($ch);
 
-        // TODO: Headers
+        // TODO: Headers ?
         $response = array(
             'status' => $info['http_code'],
             'body' => $body,
@@ -73,8 +81,9 @@ class CurlAdapter implements HTTPAdapter {
         return $response;
     }
 
-    public function adapterName() {
-        return 'curl/' . curl_version()['version'];
+    public function adapterId() {
+        $curl_version = curl_version();
+        return 'curl/' . $curl_version['version'];
     }
 
 }

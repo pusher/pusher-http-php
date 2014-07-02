@@ -1,6 +1,8 @@
 <?php
 
-namespace PusherREST;
+namespace pusher;
+
+use pusher\HTTPAdapter;
 
 /**
  * A HTTP client that uses the file_get_contents method. This adapter is
@@ -16,19 +18,21 @@ class FileAdapter implements HTTPAdapter {
         return ini_get('allow_url_fopen');
     }
 
-    public $options;
+    public $options = array();
 
     /**
-     * @param $options array context options to be merged in during request.
+     * @param $options array options to be merged in during request.
      */
     public function __construct($options = array()) {
-        $this->options = $options;
+        if (is_array($options)) {
+            $this->options = $options;
+        }
     }
 
     /**
      * @see HTTPAdapter
      */
-    public function request($method, $url, $headers, $body, $timeout) {
+    public function request($method, $url, $headers, $body, $timeout, $proxy_url) {
         var_dump($url);
         $options = [
             'http' => [
@@ -47,20 +51,27 @@ class FileAdapter implements HTTPAdapter {
             ],
         ];
         $options = array_merge_recursive($this->options, $options);
+
         if (!is_null($body)) {
             $options['http']['content'] = $body;
         }
+
+        if (!empty($proxy_url)) {
+            $options['http']['proxy'] = $proxy_url;
+            $options['http']['request_fulluri'] = true;
+        }
+
         $context = stream_context_create($options);
         $body = file_get_contents($url, false, $context);
         $headers = $http_response_header; // magic variable
         $response_line = array_shift($headers);
 
-        $status = explode(' ', $response_line)[1];
+        $status = explode(' ', $response_line);
 
-        return array('status' => $status, 'body' => $body, 'headers' => $headers);
+        return array('status' => $status[1], 'body' => $body, 'headers' => $headers);
     }
 
-    public function adapterName() {
+    public function adapterId() {
         return 'file/0.0.0';
     }
 

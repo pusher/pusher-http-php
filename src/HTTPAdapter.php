@@ -1,6 +1,6 @@
 <?php
 
-namespace PusherREST;
+namespace pusher;
 
 /**
  * Adapter interface used to abstract the HTTP client.
@@ -16,16 +16,22 @@ interface HTTPAdapter {
     public static function isSupported();
 
     /**
+     * @param $adapter_options array options specific for the adapter
+     */
+    public function __construct($adapter_options);
+
+    /**
      * Performs a single HTTP request from the given arguments.
      *
      * @param $method string
-     * @param $uri string
+     * @param $url string
      * @param $headers string[]
      * @param $body string|null
-     * @param $timeout int in seconds
+     * @param $timeout int
+     * @param $proxy_url string|null
      * @return array with array('status' => int, 'body' => string)
      */
-    public function request($method, $url, $headers, $body, $timeout);
+    public function request($method, $url, $headers, $body, $timeout, $proxy_url);
 
     /**
      * Returns the name of the adapter which is added in the User-Agent header
@@ -33,5 +39,5 @@ interface HTTPAdapter {
      *
      * @return string
      */
-    public function adapterName();
+    public function adapterId();
 }

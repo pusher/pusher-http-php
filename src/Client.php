@@ -1,34 +1,65 @@
 <?php
 
-namespace PusherREST;
+namespace pusher;
 
-use PusherREST\Version;
+use pusher\Version;
 
+/**
+ * Simple HTTP client that encode and decodes request/responses using the
+ * pusher conventions.
+ */
 class Client {
 
-    /** @var string */
+    /**
+     * @var string
+     */
     public $baseUrl;
 
-    /** @var HTTPAdapter */
+    /**
+     * @var HTTPAdapter
+     */
     public $adapter;
 
-    /** @var int in seconds */
+    /**
+     * @var int in seconds
+     */
     public $timeout;
 
-    /** @var PusherREST\KeyPair */
+    /**
+     * @var string|null
+     */
+    public $proxyUrl;
+
+    /**
+     * @var pusher\KeyPair
+     */
     public $keyPair;
 
     /**
-     * @param $config PusherREST\Config
+     * @param $config pusher\Config
      */
     public function __construct($config) {
-        if (is_array($config)) {
-            $config = new Config($config);
-        }
-        $this->baseUrl = $config->apiUrl;
-        $this->adapter = $config->apiAdapter;
-        $this->timeout = $config->apiTimeout;
+        $this->baseUrl = $config->baseUrl;
+        $this->adapter = $config->adapter;
+        $this->timeout = $config->timeout;
+        $this->proxyUrl = $config->proxyUrl;
         $this->keyPair = $config->firstKeyPair();
+    }
+
+    /**
+     * @param $rel_path string
+     * @param $params array
+     */
+    public function get($rel_path, $params) {
+        return $this->request('GET', $rel_path, $params);
+    }
+
+    /**
+     * @param $rel_path string
+     * @param $body string
+     */
+    public function post($rel_path, $body) {
+        return $this->request('POST', $rel_path, array(), $body);
     }
 
     /**
@@ -36,6 +67,8 @@ class Client {
      * @param $rel_path string
      * @param $params array
      * @param $body array|null
+     * @throws Exception\HTTPError
+     * @return mixed
      */
     public function request($method, $rel_path, $params = array(), $body = null) {
         $method = strtoupper($method);
@@ -43,43 +76,30 @@ class Client {
             $body = json_encode($body);
         }
         $base_path = parse_url($this->baseUrl, PHP_URL_PATH);
-        $path = path_join($base_path, $rel_path);
-        $params = $this->keyPair->signedParams($method, $path, $params, $body);
+        $full_path = $this->path_join($base_path, $rel_path);
+        $params = $this->signedParams($method, $full_path, $params, $body);
+        $full_url = $this->path_join($this->baseUrl, $rel_path) . '?' . http_build_query($params);
+
+        var_dump('full_url', $full_url);
         $response = $this->adapter->request(
-                $method, path_join($this->baseUrl, $rel_path) . '?' . http_build_query($params), $this->requestHeaders(!is_null($body)), $body, $this->timeout);
+                $method, $full_url, $this->requestHeaders(!is_null($body)), $body, $this->timeout, $this->proxyUrl);
 
-        var_dump($response);
-        // TODO: handle bad requests
-        return json_decode($response['body']);
-    }
-
-    public function get($rel_path, $params) {
-        return $this->request('GET', $rel_path, $params);
-    }
-
-    public function post($rel_path, $body) {
-        return $this->request('POST', $rel_path, array(), $body);
-    }
-
-    public function trigger($channels, $event, $data, $socket_id = null) {
-        if (is_string($channels)) {
-            $channels = array($channels);
-        } else if (count($channels) > 100) {
-            throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
+        switch ($response['status']) {
+            case 200:
+                return json_decode($response['body']);
+            case 202:
+                return true;
+            case 400:
+                throw new Exception\HTTPError("Bad request", $response);
+            case 401:
+                throw new Exception\HTTPError("Autentication error", $response);
+            case 404:
+                throw new Exception\HTTPError("Not Found", $response);
+            case 407:
+                throw new Exception\HTTPError("Proxy Authentication Required", $response);
+            default:
+                throw new Exception\HTTPError("Unknown error", $response);
         }
-
-        $data = json_encode($data);
-
-        $body = array();
-        $body['name'] = $event;
-        $body['data'] = $data;
-        $body['channels'] = $channels;
-
-        if ($socket_id) {
-            $body['socket_id'] = $socket_id;
-        }
-
-        return $this->post('events', $body);
     }
 
     /**
@@ -89,12 +109,14 @@ class Client {
      * @return string
      */
     private function userAgent() {
-        return 'PusherREST-PHP/' . Version::VERSION .
-                ' ' . $this->adapter->adapterName() .
+        return 'pusher-rest-php/' . Version::VERSION .
+                ' ' . $this->adapter->adapterId() .
                 ' PHP/' . PHP_VERSION;
     }
 
     /**
+     * Returns HTTP headers used in all the requests.
+     *
      * @return string[]
      */
     private function requestHeaders($has_body) {
@@ -108,14 +130,59 @@ class Client {
         return $headers;
     }
 
-}
+    /**
+     * Generates the signed parameters used in HTTP requests.
+     *
+     * @param $method string HTTP method
+     * @param $path string path to the resource
+     * @param $params array array(string => string) URL query params
+     * @param $body string|null HTTP body
+     * @return array a new set of params.
+     */
+    private function signedParams($method, $path, $params, $body) {
+        $method = strtoupper($method);
 
-function path_join($a, $b) {
-    if ($a[-1] == "/" ^ $b[0] == "/") {
-        return $a . $b;
+        $params = array_merge($params, array(
+            'auth_key' => $this->key,
+            'auth_version' => '1.0',
+        ));
+
+        if (is_null($params['auth_timestamp'])) {
+            $params['auth_timestamp'] = time();
+        }
+
+        if (!is_null($body)) {
+            $params['body_md5'] = md5($body);
+        }
+
+        // All params need to be lowercase
+        $params = array_change_key_case($params);
+        $params = array_filter($params);
+
+        ksort($params);
+        $query = urldecode(http_build_query($params));
+
+        $string_to_sign = implode("\n", array($method, $path, $query));
+
+        $params['auth_signature'] = $this->keyPair->sign($string_to_sign);
+        return $params;
     }
-    if ($b[0] == "/") {
-        return $a . substr($b, 1);
+
+    /**
+     * Util to join two strings a/b
+     *
+     * @param $a string
+     * @param $b string
+     * @return string
+     */
+    private function path_join($a, $b) {
+        if ($a[-1] == "/" ^ $b[0] == "/") {
+            return $a . $b;
+        }
+        if ($b[0] == "/") {
+            return $a . substr($b, 1);
+        }
+        return $a . "/" . $b;
     }
-    return $a . "/" . $b;
+
 }

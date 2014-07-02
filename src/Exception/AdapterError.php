@@ -1,6 +1,6 @@
 <?php
 
-namespace PusherREST\Exception;
+namespace pusher\Exception;
 
 class AdapterError extends Exception {
     

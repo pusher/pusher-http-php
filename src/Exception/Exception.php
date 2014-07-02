@@ -1,7 +1,7 @@
 <?php
 
-namespace PusherREST\Exception;
+namespace pusher\Exception;
 
 class Exception extends \Exception {
-    
+
 }

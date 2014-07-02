@@ -22,7 +22,14 @@ require "_config.php";
         </div>
     </div>
 </body>
-<?php PusherREST\print_client_setup('/auth.php'); ?>
+
+<script src="//js.pusher.com/2.2/pusher.min.js"></script>
+<script>
+Pusher.config = {
+    'auth_endpoint': "/auth.php"
+}
+var pusher = new Pusher("<?= $pusher->keyPair()->key ?>");
+</script>
 <script src="//code.jquery.com/jquery.js"></script>
 <script>
 // $("#hello").submit(function(ev) {
@@ -30,6 +37,7 @@ require "_config.php";
 //     $.post('/trigger.php', {message: $('#hello input[name=message]').value()});
 // });
     pusher.subscribe('messages', function(event) {
+        console.log('event', event);
         $('#history').append(event);
     });
 </script>

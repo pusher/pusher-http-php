@@ -5,16 +5,19 @@
 
   http://pusher.com/docs/webhooks
 
-  TODO: how do you select which key is used ?
-
  */
 
 require "_config.php";
 
-$events = PusherREST\webhook_events();
+$wh = $pusher->webhook();
 
-// Here, handle the events, like store in the DB.
-foreach ($events as &$event) {
+if (!$wh->valid()) {
+  header('Status: 401 Unauthorized');
+  exit;
+}
+
+// Here, handle the events store in the DB.
+foreach ($wh->events() as &$event) {
     // do something with the event
     switch ($event['name']) {
         case "channel_occupied":
@@ -22,6 +25,10 @@ foreach ($events as &$event) {
         case "member_added":
         case "member_removed":
         case "client_event":
+          var_dump($event);
+          break;
+        default:
+          print("Unknown event type" . $event["name"]);
     }
 }
 

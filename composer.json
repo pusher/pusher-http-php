@@ -22,14 +22,13 @@
 
     "autoload": {
         "psr-4": {
-            "PusherREST\\": "src/"
-        },
-        "files": ["src/functions.php"]
+            "pusher\\": "src/"
+        }
     },
 
     "autoload-dev": {
         "psr-4": {
-            "PusherREST\\Tests\\": "tests/"
+            "pusher\\Tests\\": "tests/"
         }
     }
 }

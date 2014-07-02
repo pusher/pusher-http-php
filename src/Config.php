@@ -1,24 +1,40 @@
 <?php
 
-namespace PusherREST;
+namespace pusher;
+
+use pusher\KeyPair;
+use pusher\Exception\ConfigurationError;
 
 /**
- * export PUSHER_URL=http://75e854969fc5d1eef71b:ea1fbae4b428e56e87b8@api.pusherapp.com/apps/78225
- * export PUSHER_SOCKET_URL=ws://ws.pusherapp.com/app/75e854969fc5d1eef71b
+ *
+ * Heroku example:
+ *   new Config(getenv('PUSHER_URL'));
+ *
+ * Simple example:
+ *   new Config('http://75e854969fc5d1eef71b:ea1fbae4b428e56e87b8@api.pusherapp.com/apps/78225');
+ *
+ * Full example:
+ *   new Config(array(
+ *     'base_url' => 'http://api.pusherapp.com/apps/78225',
+ *     'timeout' => 5,
+ *     'proxy_url' => 'http://localhost:8080',
+ *     'adapter' => new CurlAdapter(array(CURLOPT_SSL_VERIFYPEER => 0)),
+ *     'keys' => array(
+ *       '75e854969fc5d1eef71b' => 'ea1fbae4b428e56e87b8',
+ *     ),
+ *   ))
+ *
  */
 class Config {
 
     /** @var string */
-    public $apiUrl;
+    public $baseUrl;
 
     /** @var int in seconds */
-    public $apiTimeout = 60;
+    public $timeout = 5;
 
     /** @var HTTPAdapter */
-    public $apiAdapter;
-
-    /** @var string */
-    public $socketUrl;
+    public $adapter;
 
     /** @var array of kind array(string => KeyPair) */
     private $keys = array();
@@ -28,53 +44,30 @@ class Config {
      * PHP runtime.
      *
      * @todo Make the resolution extensible
+     * @param $adapter_options array array('curl_adapter' => array(), 'file_adapter' => array())
      * @return CurlAdapter|FileAdapter|null
      */
-    public static function detectAdapter() {
+    public static function detectAdapter($adapter_options) {
         if (CurlAdapter::isSupported()) {
-            return new CurlAdapter();
+            return new CurlAdapter($adapter_options['curl_adapter']);
         }
         if (FileAdapter::isSupported()) {
-            return new FileAdapter();
+            return new FileAdapter($adapter_options['file_adapter']);
         }
         return null;
     }
 
     /**
-     * Heroku example:
-     *   new Config();
-     *
-     * Simple example:
-     *   new Config('http://75e854969fc5d1eef71b:ea1fbae4b428e56e87b8@api.pusherapp.com/apps/78225');
-     *
-     * Full example:
-     *   new Config(array(
-     *     'api_url' => 'http://api.pusherapp.com/apps/78225',
-     *     'api_timeout' => 60,
-     *     'api_adapter' => new CurlAdapter(array(CURLOPT_SSL_VERIFYPEER => 0)),
-     *     'socket_url' => 'ws://ws.pusherapp.com/app/75e854969fc5d1eef71b',
-     *     'keys' => array(
-     *       '75e854969fc5d1eef71b' => 'ea1fbae4b428e56e87b8',
-     *     ),
-     *   ))
-     *
      * @param $config array|string
      */
     public function __construct($config = array()) {
         if (is_string($config)) {
-            $config = array('api_url' => $config);
+            $config = array('base_url' => $config);
         }
 
-        $api_url = $config['api_url'];
-        if (empty($api_url)) {
-            $api_url = getenv('PUSHER_URL');
-        }
-
-        $this->setApiUrl($api_url);
-
-        $this->socketUrl = $config['socket_url'];
-        if (empty($this->socketUrl)) {
-            $this->socketUrl = getenv('PUSHER_SOCKET_URL');
+        $url = $config['base_url'];
+        if (!empty($url)) {
+            $this->setBaseUrl($url);
         }
 
         if (is_array($config['keys'])) {
@@ -83,34 +76,39 @@ class Config {
             }
         }
 
-        $adapter = $config['api_adapter'];
-        if (empty($adapter)) {
-            $adapter = Config::detectAdapter();
-        }
-        $this->apiAdapter = $adapter;
+        $this->proxy_url = $config['proxy_url'];
 
-        $this->apiTimeout = $config['api_timeout'] || 60;
+        $adapter = $config['adapter'];
+        if (empty($adapter)) {
+            $adapter = Config::detectAdapter($config);
+        }
+        $this->adapter = $adapter;
+
+        $timeout = $config['timeout'];
+        if (is_int($timeout)) {
+            $this->timeout = $timeout;
+        }
     }
 
     /**
-     * Changes the api_url to the given value. If the URL contains userinfo
+     * Changes the base_url to the given value. If the URL contains userinfo
      * then it's removed from the URL and stored in the keys data-structure
      * as a new key-pair.
      *
      * If PHP's parse_url is not able to parse the URL the function doesn't
-     * change the value of $this->apiUrl and returns false.
+     * change the value of $this->baseUrl and returns false.
      *
      * @param string
      * @return boolean
      */
-    function setApiUrl($api_url) {
-        $parts = parse_url($api_url);
+    function setBaseUrl($base_url) {
+        $parts = parse_url($base_url);
         if ($parts === false) {
             return false;
         }
+
         // $parts['host'] = 'localhost';
         // $parts['port'] = '1234';
-        // $parts['path'] = '/foo';
 
         $user = $parts['user'];
         $pass = $parts['pass'];
@@ -120,7 +118,7 @@ class Config {
         unset($parts['user']);
         unset($parts['pass']);
 
-        $this->apiUrl = unparse_url($parts);
+        $this->baseUrl = unparse_url($parts);
         return true;
     }
 
@@ -131,7 +129,7 @@ class Config {
      * @param $api_key string
      * @return KeyPair|null
      */
-    function getKeyPair($api_key) {
+    function keyPair($api_key) {
         return $this->keys[$api_key];
     }
 
@@ -158,26 +156,22 @@ class Config {
     /**
      * Checks that no config variable is missing.
      *
-     * @throws PusherREST\ConfigurationError
+     * @throws pusher\ConfigurationError
      */
     public function validate() {
-        if (empty($this->apiUrl)) {
-            throw new ConfigurationError("api_url is missing");
+        if (empty($this->baseUrl)) {
+            throw new ConfigurationError("baseUrl is missing");
         }
-
-        // if (empty($this->socket_url)) {
-        //     throw ConfigurationError("socket_url missing");
-        // }
 
         if (empty($this->keys)) {
             throw new ConfigurationError("keys are missing");
         }
 
-        if (empty($this->apiAdapter)) {
+        if (empty($this->adapter)) {
             throw new ConfigurationError("adapter is missing");
         }
 
-        if (empty($this->apiTimeout)) {
+        if (empty($this->timeout)) {
             throw new ConfigurationError("timeout is not set");
         }
     }
