@@ -13,13 +13,13 @@ class WebHook {
     public $data = array();
 
     /**
-     * @param $request array
-     * @param $body_file string
      * @param $config pusher\Config
+     * @param $api_key string extracted from the X-Pusher-Key header
+     * @param $signature string extracted from the X-Pusher-Signature header
+     * @param $body_file string file to read the body from
      */
-    public function __construct($request, $body_file, $config) {
-        $api_key = $request['HTTP_X_PUSHER_KEY'];
-        $this->signature = $request['HTTP_X_PUSHER_SIGNATURE'];
+    public function __construct($config, $api_key, $signature, $body_file = 'php://input') {
+        $this->signature = $signature;
         $this->keyPair = $config->keyPair($api_key);
         $this->bodyFile = $body_file;
     }
@@ -33,7 +33,7 @@ class WebHook {
             return false;
         }
         $this->readBody();
-        return $this->key_pair->verify($this->body);
+        return $this->keyPair->verify($this->signature, $this->body);
     }
 
     /**
@@ -56,7 +56,7 @@ class WebHook {
     private function readBody() {
         if (!isset($this->body)) {
             $this->body = file_get_contents($this->bodyFile);
-            $this->data = json_decode($this->body);
+            $this->data = json_decode($this->body, true);
         }
     }
 

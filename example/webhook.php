@@ -12,8 +12,8 @@ require "_config.php";
 $wh = $pusher->webhook();
 
 if (!$wh->valid()) {
-  header('Status: 401 Unauthorized');
-  exit;
+    header('Unauthorized', true, 401);
+    exit;
 }
 
 $events = $wh->events();
@@ -27,10 +27,11 @@ foreach ($events as &$event) {
         case "member_added":
         case "member_removed":
         case "client_event":
-          error_log(var_export($event));
-          break;
+            // Do something with the event (eg: update the DB)
+            var_dump($event);
+            break;
         default:
-          print("Unknown event type" . $event["name"]);
+            var_dump("Fail");
     }
 }
 

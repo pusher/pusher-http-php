@@ -13,7 +13,7 @@ $message = $_POST['message'];
 
 $ret = $pusher->trigger($channel_name, 'some_event', array('message' => $message));
 
-header("Status: 201 Created");
+header("Created", true, 201);
 
 ?>
 OK

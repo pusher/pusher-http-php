@@ -11,6 +11,9 @@ use pusher\Client;
  */
 class Pusher {
 
+    /**
+     * @var pusher\Config
+     */
     public $config;
 
     /**
@@ -62,15 +65,17 @@ class Pusher {
      * If the request is invalid the request is short-circuited and returns
      * a 401 Unauthorized response.
      *
-     * @param $request array|null defaults to $_REQUEST if null
+     * @param $server array|null defaults to $_SERVER if null
      * @param $body_file string where to read the body from
      * @return pusher\WebHook
      */
-    public function webhook($request = null, $body_file = 'php://input') {
-        if (is_null($request)) {
-            $request = $_REQUEST;
+    public function webhook($server = null, $body_file = 'php://input') {
+        if (is_null($server)) {
+            $server = $_SERVER;
         }
-        return new WebHook($request, $body_file, $this->config);
+        $api_key = $server['HTTP_X_PUSHER_KEY'];
+        $signature = $server['HTTP_X_PUSHER_SIGNATURE'];
+        return new WebHook($this->config, $api_key, $signature, $body_file);
     }
 
     /**
