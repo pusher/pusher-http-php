@@ -18,6 +18,9 @@ if (!$wh->valid()) {
 
 $events = $wh->events();
 
+header('OK', true, 200);
+header('Content-Type: text/plain');
+
 // Here, handle the events store in the DB.
 foreach ($events as &$event) {
     // do something with the event
@@ -35,7 +38,5 @@ foreach ($events as &$event) {
     }
 }
 
-header('OK', true, 200);
-header('Content-Type: text/plain');
 ?>
 OK

@@ -27,18 +27,38 @@ use pusher\Exception\ConfigurationError;
  */
 class Config {
 
-    /** @var string */
+    /**
+     * @var string
+     */
     public $baseUrl;
 
-    /** @var int in seconds */
+    /**
+     * @var int in seconds
+     */
     public $timeout = 5;
 
-    /** @var HTTPAdapter */
+    /**
+     * @var string|null
+     */
+    public $proxyUrl;
+
+    /**
+     * @var HTTPAdapter
+     */
     public $adapter;
 
-    /** @var array of kind array(string => KeyPair) */
+    /**
+     * @var array of kind array(string => KeyPair)
+     */
     private $keys = array();
 
+    /**
+     * Makes sure to return a Config object. If $config is already a Config
+     * instance it just returns it, otherwise a new one is created.
+     *
+     * @param $config string|array|Config
+     * @return Config
+     */
     public static function ensure($config) {
         if (!$config instanceof Config) {
             $config = new Config($config);
@@ -57,10 +77,12 @@ class Config {
      */
     public static function detectAdapter($adapter_options) {
         if (CurlAdapter::isSupported()) {
-            return new CurlAdapter($adapter_options['curl_adapter']);
+            $opts = isset($adapter_options['curl_adapter']) ? $adapter_options['curl_adapter'] : array();
+            return new CurlAdapter($opts);
         }
         if (FileAdapter::isSupported()) {
-            return new FileAdapter($adapter_options['file_adapter']);
+            $opts = isset($adapter_options['file_adapter']) ? $adapter_options['file_adapter'] : array();
+            return new FileAdapter($opts);
         }
         return null;
     }
@@ -73,28 +95,37 @@ class Config {
             $config = array('base_url' => $config);
         }
 
-        $url = $config['base_url'];
-        if (!empty($url)) {
-            $this->setBaseUrl($url);
+        if (isset($config['base_url'])) {
+            $url = $config['base_url'];
+            if (!empty($url)) {
+                $this->setBaseUrl($url);
+            }
         }
 
-        if (is_array($config['keys'])) {
+        if (isset($config['keys']) && is_array($config['keys'])) {
             foreach ($config['keys'] as $key => $secret) {
                 $this->setKeyPair($key, $secret);
             }
         }
 
-        $this->proxy_url = $config['proxy_url'];
+        if (isset($config['proxy_url'])) {
+            $this->proxyUrl = $config['proxy_url'];
+        }
 
-        $adapter = $config['adapter'];
+        $adapter = null;
+        if (isset($config['adapter'])) {
+            $adapter = $config['adapter'];
+        }
         if (empty($adapter)) {
             $adapter = Config::detectAdapter($config);
         }
         $this->adapter = $adapter;
 
-        $timeout = $config['timeout'];
-        if (is_int($timeout)) {
-            $this->timeout = $timeout;
+        if (isset($config['timeout'])) {
+            $timeout = $config['timeout'];
+            if (is_int($timeout)) {
+                $this->timeout = $timeout;
+            }
         }
     }
 
