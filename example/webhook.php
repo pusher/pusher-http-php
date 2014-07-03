@@ -16,8 +16,10 @@ if (!$wh->valid()) {
   exit;
 }
 
+$events = $wh->events();
+
 // Here, handle the events store in the DB.
-foreach ($wh->events() as &$event) {
+foreach ($events as &$event) {
     // do something with the event
     switch ($event['name']) {
         case "channel_occupied":
@@ -25,7 +27,7 @@ foreach ($wh->events() as &$event) {
         case "member_added":
         case "member_removed":
         case "client_event":
-          var_dump($event);
+          error_log(var_export($event));
           break;
         default:
           print("Unknown event type" . $event["name"]);

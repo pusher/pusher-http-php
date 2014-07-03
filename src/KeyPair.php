@@ -53,12 +53,12 @@ class KeyPair {
      * channels might also have custom data attached to them.
      *
      * @param $socket_id string Id of the socket to authorize
-     * @param $channel string Name of the channel to authorize
+     * @param $channel_name string Name of the channel to authorize
      * @param $channel_data null|string Additional data to authorize
      * @return string hmac sha256 signature
      */
-    public function authenticate($socket_id, $channel, $channel_data = null) {
-        $string_to_sign = $socket_id . ':' . $channel;
+    public function authenticate($socket_id, $channel_name, $channel_data = null) {
+        $string_to_sign = $socket_id . ':' . $channel_name;
 
         if (is_string($channel_data)) {
             $string_to_sign .= ':' . $channel_data;

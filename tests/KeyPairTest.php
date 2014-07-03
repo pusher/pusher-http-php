@@ -27,8 +27,8 @@ class KeyPairTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testAuthenticate() {
-        $signature = $this->kp->authenticate('a', 'b');
-        $this->assertEquals('5f1fd0c2612847d85b717d6cd9fca80d04ddd77b8bace2e5863998aac14b1eeb', $signature);
+        $signature = $this->kp->authenticate('38087.11062758', 'private-messages');
+        $this->assertEquals('413ad362eff8e6d4688b64f91ed99b31faa442ff54ba0048755da649219540a1', $signature);
     }
 
 }

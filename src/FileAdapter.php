@@ -33,7 +33,6 @@ class FileAdapter implements HTTPAdapter {
      * @see HTTPAdapter
      */
     public function request($method, $url, $headers, $body, $timeout, $proxy_url) {
-        var_dump($url);
         $options = [
             'http' => [
                 'method' => $method,

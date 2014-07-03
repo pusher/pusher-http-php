@@ -39,6 +39,14 @@ class Config {
     /** @var array of kind array(string => KeyPair) */
     private $keys = array();
 
+    public static function ensure($config) {
+        if (!$config instanceof Config) {
+            $config = new Config($config);
+            $config->validate();
+        }
+        return $config;
+    }
+
     /**
      * Returns an instance of the first adapter that is supported in the current
      * PHP runtime.

@@ -17,20 +17,20 @@ class Pusher {
      * @throws pusher\ConfigurationError
      */
     public function __construct($config) {
-        if (is_array($config) || is_string($config)) {
-            $config = new Config($config);
-            $config->validate();
-        }
+        $config = Config::ensure($config);
         $this->config = $config;
         $this->client = new Client($config);
     }
 
+    /**
+     * @return KeyPair
+     */
     public function keyPair() {
         return $this->config->firstKeyPair();
     }
 
     /**
-     * Returns a JSON-encoded string that's valid for Pusher-js client
+     * Returns a JSON-encoded string that is valid for Pusher-js client
      * authentication.
      *
      * @param $socket_id string
@@ -45,7 +45,7 @@ class Pusher {
             $channel_data = json_encode($channel_data);
         }
 
-        $signature = $kp->authenticate($socket_id, $channel, $channel_data);
+        $signature = $kp->authenticate($socket_id, $channel_name, $channel_data);
 
         $json = array('auth' => $kp->key . ':' . $signature);
 
@@ -62,14 +62,15 @@ class Pusher {
      * If the request is invalid the request is short-circuited and returns
      * a 401 Unauthorized response.
      *
-     * @param $request array|null A $_REQUEST object or similar
-     * @return mixed
+     * @param $request array|null defaults to $_REQUEST if null
+     * @param $body_file string where to read the body from
+     * @return pusher\WebHook
      */
-    public function webhook($request = null) {
+    public function webhook($request = null, $body_file = 'php://input') {
         if (is_null($request)) {
             $request = $_REQUEST;
         }
-        return new WebHook($request, $this);
+        return new WebHook($request, $body_file, $this->config);
     }
 
     /**
@@ -79,6 +80,7 @@ class Pusher {
      * @param $event string name of the event
      * @param $data array data associated to the event
      * @param $socket_id string|null
+     * @throws Exception\HTTPError on invalid responses
      * @return array
      */
     public function trigger($channels, $event, $data, $socket_id = null) {
@@ -108,6 +110,7 @@ class Pusher {
      * GET /apps/[id]/channels
      *
      * @param $params array Hash of parameters for the API - see REST API docs
+     * @throws Exception\HTTPError on invalid responses
      * @return array See Pusher API docs
      */
     public function channels($params = array()) {
@@ -119,6 +122,7 @@ class Pusher {
      *
      * @param $channel_name string
      * @param $params array
+     * @throws Exception\HTTPError on invalid responses
      * @return array
      */
     public function channelInfo($channel_name, $params = array()) {
@@ -132,6 +136,7 @@ class Pusher {
      *
      * @param $channel_name string
      * @param $params array
+     * @throws Exception\HTTPError on invalid responses
      * @return array
      */
     public function presenceUsers($channel_name, $params = array()) {

@@ -6,7 +6,8 @@ use pusher\HTTPAdapter;
 use pusher\Exception\AdapterError;
 
 /**
- * A HTTP client that uses the venerable cURL library
+ * A HTTP client that uses the venerable cURL library. This adapter supports
+ * Keep-Alive.
  */
 class CurlAdapter implements HTTPAdapter {
 
@@ -18,28 +19,34 @@ class CurlAdapter implements HTTPAdapter {
     }
 
     public $options = array();
+    private $ch;
 
     /**
      * @param $options array options to be merged in during request.
+     * @throws pusher\Exception\AdapterError if curl_init() didn't work
      */
     public function __construct($options = array()) {
         if (is_array($options)) {
             $this->options = $options;
         }
+        $this->ch = curl_init();
+        if (!$this->ch) {
+            throw new AdapterError('curl_init: Could not initialise cURL');
+        }
+    }
+
+    public function __destruct() {
+        curl_close($this->ch);
     }
 
     /**
      * @see HTTPAdapter
-     * @throws pusher\Exception\AdapterError
+     * @throws pusher\Exception\AdapterError on invalid curl_setopt options
      */
     public function request($method, $url, $headers, $body, $timeout, $proxy_url) {
-        # Set cURL opts and execute request
-        $ch = curl_init($url);
-        if (!$ch) {
-            throw new AdapterError('curl_init: Could not initialise cURL');
-        }
 
         $options = array_replace($this->options, array(
+            CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => $timeout,
@@ -57,26 +64,24 @@ class CurlAdapter implements HTTPAdapter {
         }
 
         foreach ($options as $key => $value) {
-            if (!curl_setopt($ch, $key, $value)) {
+            if (!curl_setopt($this->ch, $key, $value)) {
                 throw new AdapterError("curl_setopt_array: Invalid cURL option $key => $value");
             }
         }
 
-        $body = curl_exec($ch);
+        $body = curl_exec($this->ch);
 
-        if (curl_errno($ch) > 0) {
-            throw new AdapterError("curl: " . curl_error($ch));
+        if (curl_errno($this->ch) > 0) {
+            throw new AdapterError("curl: " . curl_error($this->ch));
         }
 
-        $info = curl_getinfo($ch);
+        $info = curl_getinfo($this->ch);
 
         // TODO: Headers ?
         $response = array(
             'status' => $info['http_code'],
             'body' => $body,
         );
-
-        curl_close($ch);
 
         return $response;
     }

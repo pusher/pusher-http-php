@@ -39,6 +39,7 @@ class Client {
      * @param $config pusher\Config
      */
     public function __construct($config) {
+        $config = Config::ensure($config);
         $this->baseUrl = $config->baseUrl;
         $this->adapter = $config->adapter;
         $this->timeout = $config->timeout;
@@ -67,7 +68,7 @@ class Client {
      * @param $rel_path string
      * @param $params array
      * @param $body array|null
-     * @throws Exception\HTTPError
+     * @throws Exception\HTTPError on invalid responses
      * @return mixed
      */
     public function request($method, $rel_path, $params = array(), $body = null) {
@@ -80,7 +81,6 @@ class Client {
         $params = $this->signedParams($method, $full_path, $params, $body);
         $full_url = $this->path_join($this->baseUrl, $rel_path) . '?' . http_build_query($params);
 
-        var_dump('full_url', $full_url);
         $response = $this->adapter->request(
                 $method, $full_url, $this->requestHeaders(!is_null($body)), $body, $this->timeout, $this->proxyUrl);
 
@@ -92,7 +92,7 @@ class Client {
             case 400:
                 throw new Exception\HTTPError("Bad request", $response);
             case 401:
-                throw new Exception\HTTPError("Autentication error", $response);
+                throw new Exception\HTTPError("Authentication error", $response);
             case 404:
                 throw new Exception\HTTPError("Not Found", $response);
             case 407:
@@ -123,6 +123,7 @@ class Client {
         $headers = array(
             'User-Agent: ' . $this->userAgent(),
             'Accept: application/json',
+            'Connection: keep-alive',
         );
         if ($has_body) {
             $headers[] = 'Content-Type: application/json';
@@ -142,8 +143,8 @@ class Client {
     private function signedParams($method, $path, $params, $body) {
         $method = strtoupper($method);
 
-        $params = array_merge($params, array(
-            'auth_key' => $this->key,
+        $params = array_replace($params, array(
+            'auth_key' => $this->keyPair->key,
             'auth_version' => '1.0',
         ));
 

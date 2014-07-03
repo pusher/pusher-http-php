@@ -11,10 +11,12 @@ require "_config.php";
 // TODO: Check user auth here
 
 $socket_id = $_POST['socket_id'];
-$channel = $_POST['channel'];
-$channel_data = $_POST['channel_data'];
+$channel_name = $_POST['channel_name'];
+$channel_data = array(
+    'user_id' => rand()
+);
 
-$data = $pusher->authenticate($socket_id, $channel, $channel_data);
+$data = $pusher->authenticate($socket_id, $channel_name, $channel_data);
 
 header('Content-Type: application/json');
 print($data);
