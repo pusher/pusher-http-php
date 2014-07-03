@@ -10,24 +10,21 @@ Installation
 Use the [composer](http://getcomposer.org) to install this bundle.
 
 ```
-$ composer require pusher/PusherREST
+$ composer require pusher/pusher-rest
 ```
 
 Installation
 ------------
 
 This library is part of the composer.org
-`composer get PusherREST
+`composer get pusher/pusher-rest`
 
 Usage
 -----
 
 ```php
-$config = new PusherREST\Config(array(
-    'api_url' => 'http://key:secret@api.pusher.com/apps/3455'
-));
-$client = new PusherREST\Client($config);
-$client->trigger('channel_name', 'event_name', 'data');
+$pusher = new pusher\Pusher(getenv('PUSHER_URL'));
+$pusher->trigger('channel_name', 'event_name', 'data');
 ```
 
 Configuration
@@ -37,13 +34,6 @@ Compatibility
 -------------
 
 This library follows [Semantic Versioning](http://semver.org).
-
-TODO
-====
-
-secure the auth end-point
-
-HTTP_PROXY setting
 
 
 Framework integration
