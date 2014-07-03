@@ -18,5 +18,6 @@ $channel_data = array(
 
 $data = $pusher->authenticate($socket_id, $channel_name, $channel_data);
 
+header('OK', true, 200);
 header('Content-Type: application/json');
 print($data);

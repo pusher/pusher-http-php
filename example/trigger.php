@@ -14,6 +14,5 @@ $message = $_REQUEST['message'];
 $ret = $pusher->trigger($channel_name, 'some_event', array('message' => $message));
 
 header("Created", true, 201);
-
 ?>
 OK

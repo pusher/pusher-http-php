@@ -18,7 +18,14 @@ class CurlAdapter implements HTTPAdapter {
         return extension_loaded('curl');
     }
 
+    /**
+     * @var array
+     */
     public $options = array();
+
+    /**
+     * @var resource curl handle
+     */
     private $ch;
 
     /**

@@ -35,6 +35,7 @@ foreach ($events as &$event) {
     }
 }
 
+header('OK', true, 200);
 header('Content-Type: text/plain');
 ?>
 OK
