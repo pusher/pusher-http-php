@@ -51,6 +51,9 @@ class CurlAdapter implements HTTPAdapter {
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => $timeout,
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+            CURLOPT_SSL_VERIFYPEER => 1,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_CAINFO => __dir__ . DIRECTORY_SEPARATOR . "cacert.pem"
         ));
 
         if (!is_null($body)) {

@@ -8,8 +8,8 @@ sockets on the 'messages' channel.
 require "_config.php";
 
 // TODO: input sanitization
-$channel_name = $_POST['channel_name'];
-$message = $_POST['message'];
+$channel_name = $_REQUEST['channel_name'];
+$message = $_REQUEST['message'];
 
 $ret = $pusher->trigger($channel_name, 'some_event', array('message' => $message));
 

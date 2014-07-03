@@ -15,7 +15,10 @@ class FileAdapter implements HTTPAdapter {
      * @see HTTPAdapter
      */
     public static function isSupported() {
-        return ini_get('allow_url_fopen');
+        // for SSL support also check:
+        //   extension_loaded('openssl') and in_array('https', $w)
+        $w = stream_get_wrappers();
+        return in_array('http', $w) && ini_get('allow_url_fopen');
     }
 
     public $options = array();
@@ -43,8 +46,7 @@ class FileAdapter implements HTTPAdapter {
             ],
             'ssl' => [
                 'verify_peer' => true,
-                //'cafile' => '/path/to/cafile.pem',
-                //'CN_match' => 'example.com',
+                'cafile' => __dir__ . DIRECTORY_SEPARATOR . "cacert.pem",
                 'ciphers' => 'HIGH:!SSLv2:!SSLv3',
                 'disable_compression' => true,
             ],
