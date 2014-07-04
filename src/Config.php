@@ -6,6 +6,7 @@ use pusher\KeyPair;
 use pusher\Exception\ConfigurationError;
 
 /**
+ * A configuration store used by pusher\Client and pusher\Pusher
  *
  * Heroku example:
  *   new Config(getenv('PUSHER_URL'));
@@ -157,7 +158,7 @@ class Config {
         unset($parts['user']);
         unset($parts['pass']);
 
-        $this->baseUrl = unparse_url($parts);
+        $this->baseUrl = $this->unparse_url($parts);
         return true;
     }
 
@@ -215,24 +216,26 @@ class Config {
         }
     }
 
+    /**
+     * Utility function to recompose an array returns from parse_url into an URL.
+     *
+     * @see http://uk3.php.net/manual/en/function.parse-url.php#106731
+     * @param $parsed_url array
+     * @return string
+     */
+    private function unparse_url($parsed_url) {
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+        return "$scheme$user$pass$host$port$path$query$fragment";
+    }
+
 }
 
-/**
- * Utility function to recompose an array returns from parse_url into an URL.
- *
- * @see http://uk3.php.net/manual/en/function.parse-url.php#106731
- * @param $parsed_url array
- * @return string
- */
-function unparse_url($parsed_url) {
-    $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-    $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-    $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-    $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-    $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
-    $pass = ($user || $pass) ? "$pass@" : '';
-    $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-    $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-    $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
-    return "$scheme$user$pass$host$port$path$query$fragment";
-}
+

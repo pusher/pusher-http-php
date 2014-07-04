@@ -6,8 +6,7 @@ use pusher\Config;
 use pusher\Client;
 
 /**
- * This is the main class used to interact with the pusher API and related
- * constructs.
+ * Main class used to interact with the pusher API and related constructs.
  */
 class Pusher {
 

@@ -6,6 +6,9 @@ if (!in_array('sha256', hash_algos())) {
     throw new Exception('SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.');
 }
 
+/**
+ * Container for the Pusher key:secret token
+ */
 class KeyPair {
 
     /** @var string */

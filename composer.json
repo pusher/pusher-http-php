@@ -12,12 +12,13 @@
     },
 
     "suggest": {
-        "ext-curl": "Pusher will use specific adapters if cURL is present"
+        "ext-curl": "Pusher will use a different HTTP adapter if cURL is present"
     },
 
     "require-dev": {
         "ext-curl": "*",
-        "phpunit/phpunit": "~4.0"
+        "phpunit/phpunit": "~4.0",
+        "phpdocumentor/phpdocumentor": "2.*"
     },
 
     "autoload": {

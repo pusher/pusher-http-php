@@ -3,13 +3,30 @@
 namespace pusher;
 
 /**
+ * Webhook data validator and extractor.
  *
+ * On normal cases use $pusher->webhook($_SERVER); to instanciate this class.
  */
 class WebHook {
 
+    /**
+     * @var string
+     */
     public $signature;
+
+    /**
+     * @var pusher\KeyPair
+     */
     public $keyPair;
+
+    /**
+     * @var string
+     */
     public $bodyFile;
+
+    /**
+     * @var array
+     */
     public $data = array();
 
     /**
@@ -25,6 +42,7 @@ class WebHook {
     }
 
     /**
+     * Checks the validity and signature of the data passed in the constructor.
      *
      * @return boolean
      */
@@ -37,6 +55,7 @@ class WebHook {
     }
 
     /**
+     * Returns the events passed in the webhook body.
      *
      * @return array
      */
@@ -46,6 +65,8 @@ class WebHook {
     }
 
     /**
+     * Returns the unix timestamp at which the webhook request was sent.
+     *
      * @return int
      */
     public function timestamp() {
