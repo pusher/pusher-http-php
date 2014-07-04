@@ -30,7 +30,7 @@ class CurlAdapter implements HTTPAdapter {
 
     /**
      * @param $options array options to be merged in during request.
-     * @throws pusher\Exception\AdapterError if curl_init() didn't work
+     * @throws Exception\AdapterError if curl_init() didn't work
      */
     public function __construct($options = array()) {
         if (is_array($options)) {
@@ -48,7 +48,7 @@ class CurlAdapter implements HTTPAdapter {
 
     /**
      * @see HTTPAdapter
-     * @throws pusher\Exception\AdapterError on invalid curl_setopt options
+     * @throws Exception\AdapterError on invalid curl_setopt options
      */
     public function request($method, $url, $headers, $body, $timeout, $proxy_url) {
 

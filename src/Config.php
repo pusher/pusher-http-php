@@ -196,7 +196,7 @@ class Config {
     /**
      * Checks that no config variable is missing.
      *
-     * @throws pusher\ConfigurationError
+     * @throws Exception\ConfigurationError
      */
     public function validate() {
         if (empty($this->baseUrl)) {

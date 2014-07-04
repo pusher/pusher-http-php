@@ -9,7 +9,7 @@ interface HTTPAdapter {
 
     /**
      * Used to determine if this adapter is available. Depending on the PHP
-     * installation some extensions might now be enabled.
+     * installation some extensions might not be enabled.
      *
      * @return boolean true if supported
      */

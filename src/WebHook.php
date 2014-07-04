@@ -15,7 +15,7 @@ class WebHook {
     public $signature;
 
     /**
-     * @var pusher\KeyPair
+     * @var KeyPair
      */
     public $keyPair;
 
@@ -30,7 +30,7 @@ class WebHook {
     public $data = array();
 
     /**
-     * @param $config pusher\Config
+     * @param $config Config
      * @param $api_key string extracted from the X-Pusher-Key header
      * @param $signature string extracted from the X-Pusher-Signature header
      * @param $body_file string file to read the body from

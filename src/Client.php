@@ -31,12 +31,12 @@ class Client {
     public $proxyUrl;
 
     /**
-     * @var pusher\KeyPair
+     * @var KeyPair
      */
     public $keyPair;
 
     /**
-     * @param $config pusher\Config
+     * @param $config Config
      */
     public function __construct($config) {
         $config = Config::ensure($config);
@@ -117,6 +117,7 @@ class Client {
     /**
      * Returns HTTP headers used in all the requests.
      *
+     * @param $has_body boolean
      * @return string[]
      */
     private function requestHeaders($has_body) {

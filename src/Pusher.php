@@ -11,12 +11,12 @@ use pusher\Client;
 class Pusher {
 
     /**
-     * @var pusher\Config
+     * @var Config
      */
     public $config;
 
     /**
-     * @throws pusher\ConfigurationError
+     * @throws Exception\ConfigurationError
      */
     public function __construct($config) {
         $config = Config::ensure($config);
