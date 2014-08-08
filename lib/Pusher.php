@@ -69,7 +69,7 @@ class Pusher
 	* @param int $port [optional]
 	* @param int $timeout [optional]
 	*/
-	public function __construct( $auth_key, $secret, $app_id, $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
+	public function __construct( $auth_key, $secret, $app_id, $debug = false, $host = 'http://api.pusherapp.com', $port = 80, $timeout = 30 )
 	{
 		// Check compatibility, disable for speed improvement
 		$this->check_compatibility();
@@ -87,7 +87,7 @@ class Pusher
 	}
 
 	/**
-	 * Set a logger to be informed of interal log messages.
+	 * Set a logger to be informed of internal log messages.
 	 */
 	public function set_logger( $logger ) {
 		$this->logger = $logger;
@@ -172,6 +172,7 @@ class Pusher
 	 *
 	 *	@param string $auth_key
 	 *	@param string $auth_secret
+     *  @param string $request_method
 	 *	@param string $request_path
 	 *	@param array $query_params
 	 *	@param string $auth_version [optional]
@@ -226,12 +227,14 @@ class Pusher
 	* Trigger an event by providing event name and payload. 
 	* Optionally provide a socket ID to exclude a client (most likely the sender).
 	*
-	* @param array $channel An array of channel names to publish the event on.
+	* @param array $channels An array of channel names to publish the event on.
 	* @param string $event
 	* @param mixed $data Event data
 	* @param int $socket_id [optional]
 	* @param bool $debug [optional]
-	* @return bool|string
+    * @param bool $already_encoded [optional]
+	* @return bool|array
+    * @throws PusherException
 	*/
 	public function trigger( $channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false )
 	{
@@ -339,10 +342,10 @@ class Pusher
 	 * GET arbitrary REST API resource using a synchronous http client.
    * All request signing is handled automatically.
    *  
-   * @param string path Path excluding /apps/APP_ID
-   * @param params array API params (see http://pusher.com/docs/rest_api)
+   * @param string $path Path excluding /apps/APP_ID
+   * @param array $params [optional] array API params (see http://pusher.com/docs/rest_api)
    *
-   * @return See Pusher API docs
+   * @return bool|array See Pusher API docs
 	 */
 	public function get( $path, $params = array() ) {
 		$s_url = $this->settings['url'] . $path;	
@@ -365,9 +368,10 @@ class Pusher
 
 	/**
 	* Creates a socket signature
-	* 
+	*
+    * @param string $channel
 	* @param int $socket_id
-	* @param string $custom_data
+	* @param mixed $custom_data
 	* @return string
 	*/
 	public function socket_auth( $channel, $socket_id, $custom_data = false )
@@ -393,6 +397,7 @@ class Pusher
 	/**
 	* Creates a presence signature (an extension of socket signing)
 	*
+    * @param string $channel
 	* @param int $socket_id
 	* @param string $user_id
 	* @param mixed $user_info
