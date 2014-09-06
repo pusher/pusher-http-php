@@ -169,16 +169,16 @@ class Pusher
 	}
 	
 	/**
-	 *	Build the required HMAC'd auth string
+	 * Build the required HMAC'd auth string
 	 *
-	 *	@param string $auth_key
-	 *	@param string $auth_secret
-	 *  @param string $request_method
-	 *	@param string $request_path
-	 *	@param array $query_params
-	 *	@param string $auth_version [optional]
-	 *	@param string $auth_timestamp [optional]
-	 *	@return string
+	 * @param string $auth_key
+	 * @param string $auth_secret
+	 * @param string $request_method
+	 * @param string $request_path
+	 * @param array $query_params
+	 * @param string $auth_version [optional]
+	 * @param string $auth_timestamp [optional]
+	 * @return string
 	 */
 	public static function build_auth_query_string($auth_key, $auth_secret, $request_method, $request_path,
 		$query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
@@ -207,6 +207,7 @@ class Pusher
 	 * Implode an array with the key and value pair giving
 	 * a glue, a separator between pairs and the array
 	 * to implode.
+	 *
 	 * @param string $glue The glue between key and value
 	 * @param string $separator Separator between pairs
 	 * @param array $array The array to implode
@@ -293,11 +294,11 @@ class Pusher
 	}
 	
 	/**
-	 *	Fetch channel information for a specific channel.
+	 * Fetch channel information for a specific channel.
 	 *
 	 * @param string $channel The name of the channel
 	 * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
-	 *	@return object
+	 * @return object
 	 */
 	public function get_channel_info($channel, $params = array() )
 	{
@@ -319,7 +320,6 @@ class Pusher
 	 * Fetch a list containing all channels
 	 * 
 	 * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
-	 *
 	 * @return array
 	 */
 	public function get_channels($params = array())
@@ -345,7 +345,6 @@ class Pusher
 	 *  
 	 * @param string $path Path excluding /apps/APP_ID
 	 * @param array $params [optional] array API params (see http://pusher.com/docs/rest_api)
-	 *
 	 * @return bool|array See Pusher API docs
 	 */
 	public function get( $path, $params = array() ) {
