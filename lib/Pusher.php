@@ -91,54 +91,6 @@ class Pusher
 		}
 
 	}
-	
-	/**
-	  *	Fetch channel information for a specific channel.
-	  *
-	  * @param string $channel The name of the channel
-	  * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
-	  *	@return object
-	  */
-	public function get_channel_info($channel, $params = array() )
-	{
-		$response = $this->get( '/channels/' . $channel, $params );
-		
-		if( $response[ 'status' ] == 200)
-		{
-			$response = json_decode( $response[ 'body' ] );
-		}
-		else
-		{
-			$response = false;
-		}
-		
-		return $response;
-	}
-	
-	/**
-	 * Fetch a list containing all channels
-	 * 
-	 * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
-	 *
-	 * @return array
-	 */
-	public function get_channels($params = array())
-	{
-		$response = $this->get( '/channels', $params );
-		
-		if( $response[ 'status' ] == 200)
-		{
-			$response = json_decode( $response[ 'body' ] );
-			$response->channels = get_object_vars( $response->channels );
-		}
-		else
-		{
-			$response = false;
-		}
-		
-		return $response;
-	}
-
 
 
 	/**

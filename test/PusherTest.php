@@ -30,6 +30,28 @@ class PusherTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedResult, $this->pusher->get('/some-path', $payload));
     }
+
+    public function testGetChannels()
+    {
+        $response = array('status' => 200, 'body' => json_encode(array('channels' => array('one' => 'name_one'))));
+        $expectedResult = new \stdClass();
+        $expectedResult->channels = array('one' => 'name_one');
+        $payload = array('some' => 'payload');
+        $this->client->shouldReceive('get')->once()->with('/apps/fake-id/channels', $payload)->andReturn($response);
+
+        $this->assertEquals($expectedResult, $this->pusher->getChannels($payload));
+    }
+
+    public function testGetChannelInfo()
+    {
+        $response = array('status' => 200, 'body' => json_encode(array('channels' => array('one' => 'name_one'))));
+        $expectedResult = json_decode($response['body']);
+        $payload = array('some' => 'payload');
+        $this->client->shouldReceive('get')->once()->with('/apps/fake-id/channels/fake-channel', $payload)->andReturn($response);
+
+        $this->assertEquals($expectedResult, $this->pusher->getChannelInfo('fake-channel', $payload));
+    }
+
     public function testSocketAuthWithCustomData()
     {
         $expectedWithData = array(
