@@ -183,32 +183,6 @@ class Pusher
 		return $response;
 	}
 
-	/**
-	* Creates a socket signature
-	* 
-	* @param int $socket_id
-	* @param string $custom_data
-	* @return string
-	*/
-	public function socket_auth( $channel, $socket_id, $custom_data = false )
-	{
-		if($custom_data == true)
-		{
-			$signature = hash_hmac( 'sha256', $socket_id . ':' . $channel . ':' . $custom_data, $this->settings['secret'], false );
-		}
-		else
-		{
-			$signature = hash_hmac( 'sha256', $socket_id . ':' . $channel, $this->settings['secret'], false );
-		}
-
-		$signature = array ( 'auth' => $this->settings['auth_key'] . ':' . $signature );
-		// add the custom data if it has been supplied
-		if($custom_data){
-			$signature['channel_data'] = $custom_data;
-		}
-		return json_encode( $signature );
-
-	}
 
 	/**
 	* Creates a presence signature (an extension of socket signing)
@@ -312,6 +286,36 @@ class Pusher
         {
             $this->client = $client;
         }
+    }
+    /**
+     * create a socket signature
+     *
+     * @param      $channel
+     * @param      $socketId
+     * @param string $customData
+     * @return string
+     */
+    public function socketAuth($channel, $socketId, $customData = null)
+    {
+        $this->log('Pusher::socketAuth() creating socket authorization hash for channel [' . $channel . ']');
+
+        if ($customData)
+        {
+            $signature = hash_hmac('sha256', $socketId . ':' . $channel . ':' . $customData, $this->secret, false);
+        }
+        else
+        {
+            $signature = hash_hmac('sha256', $socketId . ':' . $channel, $this->secret, false);
+        }
+
+        $signature = array('auth' => $this->authKey . ':' . $signature);
+
+        if ($customData)
+        {
+            $signature['channel_data'] = $customData;
+        }
+
+        return json_encode($signature);
     }
     /**
      * @param $config
