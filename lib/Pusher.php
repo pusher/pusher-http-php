@@ -1,24 +1,3 @@
-<?php
-
-/* 
-		Pusher PHP Library
-	/////////////////////////////////
-	PHP library for the Pusher API.
-
-	See the README for usage information: https://github.com/pusher/pusher-php-server
-
-	Copyright 2011, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
-
-	Contributors:
-		+ Paul44 (http://github.com/Paul44)
-		+ Ben Pickles (http://github.com/benpickles)
-		+ Mastercoding (http://www.mastercoding.nl)
-		+ Alias14 (mali0037@gmail.com)
-		+ Max Williams (max@pusher.com)
-		+ Zack Kitzmiller (delicious@zackisamazing.com)
-		+ Andrew Bender (igothelp@gmail.com)
-		+ Phil Leggetter (phil@leggetter.co.uk)
-*/
 
 class PusherException extends Exception
 {
@@ -47,6 +26,27 @@ class PusherInstance {
 		return self::$instance;
 	}
 }
+<?php namespace Pusher;
+
+/**
+ * Pusher PHP Library
+ * PHP library for the Pusher API.
+ * See the README for usage information: https://github.com/pusher/pusher-php-server
+ *
+ * @package     Pusher
+ * @copyright   2011,   Squeeks
+ * @licence     http://www.opensource.org/licenses/mit-license.php  MIT
+ * @author      Paul44          <http://github.com/Paul44>
+ * @author      Ben Pickles     <http://github.com/benpickles>
+ * @author      MasterCoding    <http://www.mastercoding.nl>
+ * @author      Alias14         <mali0037@gmail.com>
+ * @author      Max Williams    <max@pusher.com>
+ * @author      Zack Kitzmiller <delicious@zackisamazing.com>
+ * @author      Andrew Bender   <igothelp@gmail.com>
+ * @author      Phil Leggetter  <phil@leggetter.co.uk>
+ * @author      Mohammad Gufran <me@gufran.me>
+ */
+
 
 class Pusher
 {
