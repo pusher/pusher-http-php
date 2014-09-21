@@ -21,6 +21,39 @@ class PusherTest extends \PHPUnit_Framework_TestCase
     {
         m::close();
     }
+
+    /**
+     * @expectedException \Pusher\Exceptions\PusherException
+     */
+    public function testThrowsExceptionIfChannelsCountIsMoreThanHundred()
+    {
+        $channels = array();
+        foreach(range(0, 100) as $channel)
+        {
+            $channels[] = $channel;
+        }
+
+        $this->pusher->trigger($channels, 'event', 'data');
+    }
+
+    public function testCanTriggerEvent()
+    {
+        $expectedResponse = array('status' => 200);
+        $payload = json_encode(array('name' => 'event', 'data' => json_encode('some_data'), 'channels' => array('channel')));
+
+        $this->client->shouldReceive('post')->once()->with("/apps/fake-id/events", array('body_md5' => md5($payload)), $payload)->andReturn($expectedResponse);
+        $this->assertTrue($this->pusher->trigger('channel', 'event', 'some_data'));
+    }
+
+    public function testCanTriggerEventAndReturnFalseOnFailure()
+    {
+        $expectedResponse = array('status' => 500);
+        $payload = json_encode(array('name' => 'event', 'data' => json_encode('some_data'), 'channels' => array('channel')));
+
+        $this->client->shouldReceive('post')->once()->with("/apps/fake-id/events", array('body_md5' => md5($payload)), $payload)->andReturn($expectedResponse);
+        $this->assertFalse($this->pusher->trigger('channel', 'event', 'some_data'));
+    }
+
     public function testCanGetArbitraryResource()
     {
         $response = array('status' => 200, 'body' => json_encode(array('hello' => 'world')));

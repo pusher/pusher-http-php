@@ -24,74 +24,6 @@ use Pusher\Exceptions\PusherException;
 
 class Pusher
 {
-
-
-	/**
-	* Trigger an event by providing event name and payload. 
-	* Optionally provide a socket ID to exclude a client (most likely the sender).
-	*
-	* @param array $channel An array of channel names to publish the event on.
-	* @param string $event
-	* @param mixed $data Event data
-	* @param int $socket_id [optional]
-	* @param bool $debug [optional]
-	* @return bool|string
-	*/
-	public function trigger( $channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false )
-	{
-		if( is_string( $channels ) === true ) {
-			$this->log( '->trigger received string channel "' . $channels . '". Converting to array.' );
-			$channels = array( $channels );
-		}
-
-		if( count( $channels ) > 100 ) {
-			throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
-		}
-
-		$query_params = array();
-		
-		$s_url = $this->settings['url'] . '/events';		
-		
-		$data_encoded = $already_encoded ? $data : json_encode( $data );
-
-		$post_params = array();
-		$post_params[ 'name' ] = $event;
-		$post_params[ 'data' ] = $data_encoded;
-		$post_params[ 'channels' ] = $channels;
-
-		if ( $socket_id !== null )
-		{
-			$post_params[ 'socket_id' ] = $socket_id;
-		}
-
-		$post_value = json_encode( $post_params );
-
-		$query_params['body_md5'] = md5( $post_value );
-
-		$ch = $this->create_curl( $s_url, 'POST', $query_params );
-
-		$this->log( 'trigger POST: ' . $post_value );
-
-		curl_setopt( $ch, CURLOPT_POST, 1 );
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_value );
-
-		$response = $this->exec_curl( $ch );
-
-		if ( $response[ 'status' ] == 200 && $debug == false )
-		{
-			return true;
-		}
-		elseif ( $debug == true || $this->settings['debug'] == true )
-		{
-			return $response;
-		}
-		else
-		{
-			return false;
-		}
-
-	}
-
     /**
      * Current version of Pusher library
      */
@@ -185,6 +117,48 @@ class Pusher
     {
         $this->logger = $logger;
     }
+
+    /**
+     * Trigger an event by providing event name and payload.
+     * Optionally provide a socket ID to exclude a client (most likely the sender).
+     *
+     * @param string|array $channels
+     * @param string       $event
+     * @param string|array $data
+     * @param string $socketId
+     * @param bool         $alreadyEncoded
+     * @return bool
+     * @throws Exceptions\PusherException
+     */
+    public function trigger($channels, $event, $data, $socketId = null, $alreadyEncoded = false)
+    {
+        if (is_string($channels))
+        {
+            $this->log('Pusher::trigger() received string channel [' . $channels . ']. Converting to array.');
+            $channels = [$channels];
+        }
+
+        if (count($channels) > 100)
+        {
+            throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
+        }
+
+        $url = $this->url . '/events';
+        $data = $alreadyEncoded ? $data : json_encode($data);
+
+        $postParams = $this->getPostParams($channels, $event, $data, $socketId);
+
+        $queryParams = $this->getQueryParams($postParams);
+
+        $this->log('Pusher::trigger() making POST request with [Post Parameters: ' . $postParams . '] and [Query Params: (array)' . json_encode($queryParams) . ']');
+
+        $response = $this->client->post($url, $queryParams, $postParams);
+
+        $this->log('Pusher::trigger() received response code [' . $response['status'] . '].');
+
+        return ($response['status'] == 200);
+    }
+
     /**
      * Fetch channel information for a specific channel.
      *
@@ -314,6 +288,37 @@ class Pusher
 
         return $this->socketAuth($channel, $socketId, json_encode($userData));
     }
+
+    /**
+     * @param $channels
+     * @param $event
+     * @param $data
+     * @param $socket_id
+     * @return string
+     */
+    private function getPostParams($channels, $event, $data, $socket_id)
+    {
+        $postParams['name'] = $event;
+        $postParams['data'] = $data;
+        $postParams['channels'] = $channels;
+
+        if ($socket_id !== null)
+        {
+            $postParams['socket_id'] = $socket_id;
+        }
+
+        return json_encode($postParams);
+    }
+
+    /**
+     * @param $data
+     * @return array
+     */
+    private function getQueryParams($data)
+    {
+        return array('body_md5' =>  md5($data));
+    }
+
     /**
      * Log a message to registered logger
      *
