@@ -24,7 +24,6 @@ use Pusher\Exceptions\PusherException;
 
 class Pusher
 {
-	public static $VERSION = '2.0.0';
 
 	private $settings = array ();
 	private $logger = null;
@@ -366,4 +365,8 @@ class Pusher
 		return $this->socket_auth($channel, $socket_id, json_encode($user_data) );
 	}
 
+    /**
+     * Current version of Pusher library
+     */
+    const VERSION = '3.0.0';
 }
