@@ -37,4 +37,27 @@ class PusherTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(json_encode($expectedWithData), $this->pusher->socketAuth('channel', 'socket-1'));
     }
+
+    public function testPresenceAuthWithUserInfo()
+    {
+        $expectedWithData = array(
+            'auth' => 'fake-auth-key:hmac_hash',
+            'channel_data' => json_encode(array(
+                'user_id' => 'user-id',
+                'user_info' => 'user-info'
+            ))
+        );
+        $this->assertEquals(json_encode($expectedWithData), $this->pusher->presenceAuth('channel', 'socket-1', 'user-id', 'user-info'));
+    }
+
+    public function testPresenceAuthWithoutUserInfo()
+    {
+        $expectedWithData = array(
+            'auth' => 'fake-auth-key:hmac_hash',
+            'channel_data' => json_encode(array(
+                'user_id' => 'user-id'
+            ))
+        );
+        $this->assertEquals(json_encode($expectedWithData), $this->pusher->presenceAuth('channel', 'socket-1', 'user-id'));
+    }
 }

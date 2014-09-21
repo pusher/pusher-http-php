@@ -311,6 +311,27 @@ class Pusher
 
         return json_encode($signature);
     }
+
+    /**
+     * Creates a presence signature (an extension of socket signing)
+     *
+     * @param string   $channel
+     * @param int $socketId
+     * @param string $userId
+     * @param mixed $userInfo
+     * @return string
+     */
+    public function presenceAuth($channel, $socketId, $userId, $userInfo = null)
+    {
+        $userData = array('user_id' => $userId);
+
+        if($userInfo)
+        {
+            $userData['user_info'] = $userInfo;
+        }
+
+        return $this->socketAuth($channel, $socketId, json_encode($userData));
+    }
     /**
      * Log a message to registered logger
      *
