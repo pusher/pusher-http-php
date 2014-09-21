@@ -21,6 +21,15 @@ class PusherTest extends \PHPUnit_Framework_TestCase
     {
         m::close();
     }
+    public function testCanGetArbitraryResource()
+    {
+        $response = array('status' => 200, 'body' => json_encode(array('hello' => 'world')));
+        $expectedResult = array('status' => 200, 'body' => json_encode(array('hello' => 'world')), 'result' => array('hello' => 'world'));
+        $payload = array('some' => 'payload');
+        $this->client->shouldReceive('get')->once()->with('/apps/fake-id/some-path', $payload)->andReturn($response);
+
+        $this->assertEquals($expectedResult, $this->pusher->get('/some-path', $payload));
+    }
     public function testSocketAuthWithCustomData()
     {
         $expectedWithData = array(

@@ -139,33 +139,6 @@ class Pusher
 		return $response;
 	}
 
-	/**
-	 * GET arbitrary REST API resource using a synchronous http client.
-   * All request signing is handled automatically.
-   *  
-   * @param string path Path excluding /apps/APP_ID
-   * @param params array API params (see http://pusher.com/docs/rest_api)
-   *
-   * @return See Pusher API docs
-	 */
-	public function get( $path, $params = array() ) {
-		$s_url = $this->settings['url'] . $path;	
-
-		$ch = $this->create_curl( $s_url, 'GET', $params );
-
-		$response = $this->exec_curl( $ch );
-		
-		if( $response[ 'status' ] == 200)
-		{
-			$response[ 'result' ] = json_decode( $response[ 'body' ], true );
-		}
-		else
-		{
-			$response = false;
-		}
-		
-		return $response;
-	}
 
 
 	/**
@@ -281,6 +254,34 @@ class Pusher
     {
         $this->logger = $logger;
     }
+    /**
+     * GET arbitrary REST API resource using a synchronous http client.
+     * All request signing is handled automatically.
+     *
+     * @param string $path
+     * @param array $params
+     * @return array | false
+     */
+    public function get($path, array $params = array())
+    {
+        $this->log('Pusher::get() Fetching resource [' . $path . '] with parameters [' . json_encode($params) . ']');
+
+        $url = $this->url . $path;
+        $response = $this->client->get($url, $params);
+
+        if ($response['status'] == 200)
+        {
+            $response['result'] = json_decode($response['body'], true);
+        }
+        else
+        {
+            $this->log('Pusher::get() Error occurred [Response: ' . $response['body'] . ']');
+            $response = false;
+        }
+
+        return $response;
+    }
+
     /**
      * create a socket signature
      *
