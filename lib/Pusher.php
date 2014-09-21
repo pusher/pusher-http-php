@@ -1,8 +1,4 @@
 
-class PusherException extends Exception
-{
-}
-
 class PusherInstance {
 	
 	private static $instance = null;
