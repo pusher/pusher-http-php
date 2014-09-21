@@ -92,27 +92,6 @@ class Pusher
 
 	}
 
-
-	/**
-	* Creates a presence signature (an extension of socket signing)
-	*
-	* @param int $socket_id
-	* @param string $user_id
-	* @param mixed $user_info
-	* @return string
-	*/
-	public function presence_auth( $channel, $socket_id, $user_id, $user_info = false )
-	{
-
-		$user_data = array( 'user_id' => $user_id );
-		if($user_info == true)
-		{
-			$user_data['user_info'] = $user_info;
-		}
-
-		return $this->socket_auth($channel, $socket_id, json_encode($user_data) );
-	}
-
     /**
      * Current version of Pusher library
      */
