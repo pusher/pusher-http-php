@@ -1,4 +1,5 @@
 *.DS_Store
 test/config.php
 vendor
+.idea/
 composer.lock
