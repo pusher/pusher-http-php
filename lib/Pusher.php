@@ -71,8 +71,6 @@ class Pusher
 	*/
 	public function __construct( $auth_key, $secret, $app_id, $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
 	{
-		// Check compatibility, disable for speed improvement
-		$this->check_compatibility();
 
 		// Setup defaults
 		$this->settings['server'] = $host;
@@ -102,22 +100,6 @@ class Pusher
 		}
 	}
 
-	/**
-	* Check if the current PHP setup is sufficient to run this class
-	*/
-	private function check_compatibility()
-	{
-		if ( ! extension_loaded( 'curl' ) || ! extension_loaded( 'json' ) )
-		{
-			throw new PusherException('There is missing dependant extensions - please ensure both cURL and JSON modules are installed');
-		}
-
-		if ( ! in_array( 'sha256', hash_algos() ) )
-		{
-			throw new PusherException('SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.');
-		}
-
-	}
 	
 	/**
 	 * Utility function used to create the curl object with common settings
