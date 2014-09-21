@@ -75,54 +75,6 @@ class Pusher
 
 	
 	/**
-	 * Utility function used to create the curl object with common settings
-	 */
-	private function create_curl($s_url, $request_method = 'GET', $query_params = array() )
-	{
-		# Create the signed signature...
-		$signed_query = Pusher::build_auth_query_string(
-			$this->settings['auth_key'],
-			$this->settings['secret'],
-			$request_method,
-			$s_url,
-			$query_params);
-
-		$full_url = $this->settings['server'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
-
-		$this->log( 'curl_init( ' . $full_url . ' )' );
-		
-		# Set cURL opts and execute request
-		$ch = curl_init();
-		if ( $ch === false )
-		{
-			throw new PusherException('Could not initialise cURL!');
-		}
-		
-		curl_setopt( $ch, CURLOPT_URL, $full_url );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json" ) );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
-		
-		return $ch;
-	}
-
-	/**
-	 * Utility function to execute curl and create capture response information.
-	 */
-	private function exec_curl( $ch ) {
-		$response = array();
-
-		$response[ 'body' ] = curl_exec( $ch );
-		$response[ 'status' ] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-		$this->log( 'exec_curl response: ' . print_r( $response, true ) );
-
-		curl_close( $ch );
-
-		return $response;
-	}
-	
-	/**
 	 *	Build the required HMAC'd auth string
 	 *
 	 *	@param string $auth_key
