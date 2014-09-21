@@ -73,61 +73,6 @@ class Pusher
 		}
 	}
 
-	
-	/**
-	 *	Build the required HMAC'd auth string
-	 *
-	 *	@param string $auth_key
-	 *	@param string $auth_secret
-	 *	@param string $request_path
-	 *	@param array $query_params
-	 *	@param string $auth_version [optional]
-	 *	@param string $auth_timestamp [optional]
-	 *	@return string
-	 */
-	public static function build_auth_query_string($auth_key, $auth_secret, $request_method, $request_path,
-		$query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
-	{ 
-		$params = array();
-		$params['auth_key'] = $auth_key;
-		$params['auth_timestamp'] = (is_null($auth_timestamp)?time() : $auth_timestamp);
-		$params['auth_version'] = $auth_version;
-		
-		$params = array_merge($params, $query_params);
-		ksort($params);
-		
-		$string_to_sign = "$request_method\n" . $request_path . "\n" . Pusher::array_implode( '=', '&', $params );
-
-		$auth_signature = hash_hmac( 'sha256', $string_to_sign, $auth_secret, false );
-		
-		$params['auth_signature'] = $auth_signature;
-		ksort($params);
-		
-		$auth_query_string = Pusher::array_implode( '=', '&', $params );
-		
-		return $auth_query_string;
-	}
-	
-	/**
-	 * Implode an array with the key and value pair giving
-	 * a glue, a separator between pairs and the array
-	 * to implode.
-	 * @param string $glue The glue between key and value
-	 * @param string $separator Separator between pairs
-	 * @param array $array The array to implode
-	 * @return string The imploded array
-	 */
-	public static function array_implode( $glue, $separator, $array ) {
-			if ( ! is_array( $array ) ) return $array;
-			$string = array();
-			foreach ( $array as $key => $val ) {
-					if ( is_array( $val ) )
-							$val = implode( ',', $val );
-					$string[] = "{$key}{$glue}{$val}";
-
-			}		 
-			return implode( $separator, $string );
-	}
 
 	/**
 	* Trigger an event by providing event name and payload. 
