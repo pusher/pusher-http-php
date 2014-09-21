@@ -25,38 +25,6 @@ use Pusher\Exceptions\PusherException;
 class Pusher
 {
 
-	private $settings = array ();
-	private $logger = null;
-
-	/**
-	* PHP5 Constructor. 
-	* 
-	* Initializes a new Pusher instance with key, secret , app ID and channel. 
-	* You can optionally turn on debugging for all requests by setting debug to true.
-	* 
-	* @param string $auth_key
-	* @param string $secret
-	* @param int $app_id
-	* @param bool $debug [optional]
-	* @param string $host [optional]
-	* @param int $port [optional]
-	* @param int $timeout [optional]
-	*/
-	public function __construct( $auth_key, $secret, $app_id, $debug = false, $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
-	{
-
-		// Setup defaults
-		$this->settings['server'] = $host;
-		$this->settings['port']		= $port;
-		$this->settings['auth_key'] = $auth_key;
-		$this->settings['secret'] = $secret;
-		$this->settings['app_id'] = $app_id;
-		$this->settings['url']		= '/apps/' . $this->settings['app_id'];
-		$this->settings['debug']	= $debug;
-		$this->settings['timeout']	= $timeout;
-
-	}
-
 	/**
 	 * Set a logger to be informed of interal log messages.
 	 */
@@ -266,4 +234,83 @@ class Pusher
      * Current version of Pusher library
      */
     const VERSION = '3.0.0';
+
+    /**
+     * @var bool
+     */
+    protected $debug;
+
+    /**
+     * @var string
+     */
+    protected $secret;
+
+    /**
+     * @var string
+     */
+    protected $authKey;
+
+    /**
+     * @var string
+     */
+    protected $url;
+
+    /**
+     * @var int
+     */
+    protected $appId;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger = null;
+
+    /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * Initializes a new Pusher instance with key, secret, app ID and channel.
+     * You can optionally supply an array of configuration to alter functionality.
+     * Supported keys in array:
+     * <code>
+     *     array(
+     *       'debug'    => false,                   // Enable or disable debugging
+     *       'host'     => 'api.pusherapp.com',     // Change the host server URL
+     *       'secured'  => true,                    // Force https instead of http
+     *       'port'     => 80,                      // Port to connect
+     *       'timeout'  => 30                       // Timeout in seconds
+     *     )
+     * </code>
+     *
+     * @param string          $authKey
+     * @param string          $secret
+     * @param string          $appId
+     * @param array           $config
+     * @param LoggerInterface $logger [optional]
+     * @param Client          $client [Optional]
+     */
+    public function __construct($authKey, $secret, $appId, array $config = array(), LoggerInterface $logger = null, Client $client = null)
+    {
+        $config = $this->resolveConfig($config);
+
+        $this->authKey = $authKey;
+        $this->secret = $secret;
+        $this->appId = $appId;
+        $this->logger = $logger;
+        $this->debug = $config['debug'];
+        $this->url = '/apps/' . $appId;
+
+        $protocol = $config['secured'] ? 'https' : 'http';
+
+        if(is_null($client))
+        {
+            $this->client = new Client($protocol . '://' . $config['host'], $config['port'], $authKey, $secret, $config['timeout']);
+        }
+        else
+        {
+            $this->client = $client;
+        }
+    }
 }
