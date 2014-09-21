@@ -186,6 +186,56 @@ class Pusher
         $this->logger = $logger;
     }
     /**
+     * Fetch channel information for a specific channel.
+     *
+     * @param string $channel
+     * @param array  $params
+     * @return object
+     */
+    public function getChannelInfo($channel, array $params = array())
+    {
+        $response = $this->get('/channels/' . $channel, $params);
+        $this->log('Pusher::getChannelInfo() retrieving channel info for channel [' . $channel . ']');
+
+        if ($response['status'] == 200)
+        {
+            $response = json_decode($response['body']);
+        }
+        else
+        {
+            $this->log('Pusher::getChannelInfo() Error occurred [Response: ' . $response . ']');
+            $response = false;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Fetch a list containing all channels
+     *
+     * @param array $params
+     * @return array
+     */
+    public function getChannels(array $params = array())
+    {
+        $this->log('Pusher::getChannels() retrieving list of channels [Parameters: ' . json_encode($params). ']');
+        $response = $this->get('/channels', $params);
+
+        if ($response['status'] == 200)
+        {
+            $response = json_decode($response['body']);
+            $response->channels = get_object_vars($response->channels);
+        }
+        else
+        {
+            $this->log('Pusher::getChannels() Error occurred [Response: ' . json_encode($response['body']). ']');
+            $response = false;
+        }
+
+        return $response;
+    }
+
+    /**
      * GET arbitrary REST API resource using a synchronous http client.
      * All request signing is handled automatically.
      *
