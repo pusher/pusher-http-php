@@ -19,6 +19,7 @@
  * @author      Mohammad Gufran <me@gufran.me>
  */
 
+use Pusher\Interfaces\LoggerInterface;
 use Pusher\Exceptions\PusherException;
 
 class Pusher
