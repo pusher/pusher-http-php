@@ -25,15 +25,6 @@ use Pusher\Exceptions\PusherException;
 class Pusher
 {
 
-	/**
-	 *
-	 */
-	private function log( $msg ) {
-		if( is_null( $this->logger ) == false ) {
-			$this->logger->log( 'Pusher: ' . $msg );
-		}
-	}
-
 
 	/**
 	* Trigger an event by providing event name and payload. 
@@ -320,6 +311,19 @@ class Pusher
 
         return json_encode($signature);
     }
+    /**
+     * Log a message to registered logger
+     *
+     * @param string $msg
+     */
+    private function log($msg)
+    {
+        if ( ! is_null($this->logger))
+        {
+            $this->logger->log('Pusher: ' . $msg);
+        }
+    }
+
     /**
      * @param $config
      * @return array
