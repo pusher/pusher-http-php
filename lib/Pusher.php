@@ -26,13 +26,6 @@ class Pusher
 {
 
 	/**
-	 * Set a logger to be informed of interal log messages.
-	 */
-	public function set_logger( $logger ) {
-		$this->logger = $logger;
-	}
-
-	/**
 	 *
 	 */
 	private function log( $msg ) {
@@ -286,6 +279,16 @@ class Pusher
         {
             $this->client = $client;
         }
+    }
+
+    /**
+     * Set a logger to be informed of internal log messages.
+     *
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
     /**
      * create a socket signature
