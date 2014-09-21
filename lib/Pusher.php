@@ -313,4 +313,20 @@ class Pusher
             $this->client = $client;
         }
     }
+    /**
+     * @param $config
+     * @return array
+     */
+    private function resolveConfig($config)
+    {
+        $defaultConfig = array(
+            'debug'    => false,
+            'host'     => 'api.pusherapp.com',
+            'secured'  => true,
+            'port'     => 80,
+            'timeout'  => 30
+        );
+
+        return $defaultConfig + $config;
+    }
 }
