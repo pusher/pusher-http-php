@@ -66,3 +66,39 @@ class Client
         curl_setopt($this->curl, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($this->curl, CURLOPT_USERAGENT, self::USER_AGENT . ' - v' . Pusher::VERSION);
     }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @param string $params
+     * @param null $postFields
+     * @return array
+     */
+    public function execute($method, $url, $params, $postFields = null)
+    {
+        $signed_query = Helper::buildAuthQuery(
+            $this->authKey,
+            $this->secret,
+            $method,
+            $url,
+            $params
+        );
+
+        $fullUrl = $this->server . ':' . $this->port . $url . '?' . $signed_query;
+
+        curl_setopt($this->curl, CURLOPT_URL, $fullUrl);
+        $response = curl_exec($this->curl);
+        $status = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+
+        return array('body' => $response, 'status' => $status);
+    }
+
+    /**
+     * @param $url
+     * @param $params
+     * @return array
+     */
+    public function get($url, $params)
+    {
+        return $this->execute('GET', $url, $params);
+    }
