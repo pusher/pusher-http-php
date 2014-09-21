@@ -50,6 +50,27 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array('body' => 'executed', 'status' => 200), $this->client->execute('GET', $url, $params));
     }
+
+    public function testCanExecuteCurlPostMethodCall()
+    {
+        $this->instantiate();
+        $params = array('hello' => 'pusher');
+        $url = '/hello-world';
+        $postFields = json_encode(array('key' => 'value'));
+
+        // Mocking everything with re-defined functions
+        $signedQuery = 'auth_key=random-auth-key&auth_signature=hmac_hash&auth_timestamp=1000&auth_version=1.0&hello=pusher';
+
+        $fullUrl = self::SERVER . ':' . self::PORT . $url . '?' . $signedQuery;
+
+        self::$curl->shouldReceive('setOpt')->once()->with('curl_mock', CURLOPT_URL, $fullUrl);
+        self::$curl->shouldReceive('setOpt')->once()->with('curl_mock', CURLOPT_POST, 1);
+        self::$curl->shouldReceive('setOpt')->once()->with('curl_mock', CURLOPT_POSTFIELDS, $postFields);
+        self::$curl->shouldReceive('getInfo')->once()->with('curl_mock', CURLINFO_HTTP_CODE)->andReturn(200);
+
+        $this->assertEquals(array('body' => 'executed', 'status' => 200), $this->client->execute('POST', $url, $params, $postFields));
+    }
+
     public static function handleCurlSetOpt($curl, $opt, $value)
     {
         return self::$curl->setOpt($curl, $opt, $value);

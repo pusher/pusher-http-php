@@ -87,6 +87,21 @@ class Client
         $fullUrl = $this->server . ':' . $this->port . $url . '?' . $signed_query;
 
         curl_setopt($this->curl, CURLOPT_URL, $fullUrl);
+
+        if(strtoupper($method) === 'POST')
+        {
+            curl_setopt($this->curl, CURLOPT_POST, 1);
+
+            if( ! empty($postFields))
+            {
+                curl_setopt($this->curl, CURLOPT_POSTFIELDS, $postFields);
+            }
+        }
+        else
+        {
+            curl_setopt($this->curl, CURLOPT_POST, 0);
+        }
+
         $response = curl_exec($this->curl);
         $status = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
 
@@ -102,3 +117,15 @@ class Client
     {
         return $this->execute('GET', $url, $params);
     }
+
+    /**
+     * @param $url
+     * @param $params
+     * @param $payload
+     * @return array
+     */
+    public function post($url, $params, $payload)
+    {
+        return $this->execute('POST', $url, $params, $payload);
+    }
+}
