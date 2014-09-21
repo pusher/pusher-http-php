@@ -19,6 +19,7 @@
  * @author      Mohammad Gufran <me@gufran.me>
  */
 
+use Pusher\Exceptions\PusherException;
 
 class Pusher
 {
