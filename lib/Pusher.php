@@ -50,10 +50,11 @@ class PusherInstance {
 
 class Pusher
 {
-	public static $VERSION = '2.0.0';
+	public static $VERSION = '2.2.0';
 
 	private $settings = array(
-		'host' => 'http://api.pusherapp.com',
+		'scheme' => 'http',
+		'host' => 'api.pusherapp.com',
 		'port' => 80,
 		'timeout' => 30,
 		'debug' => false
@@ -72,33 +73,55 @@ class Pusher
 	* @param bool $options [optional]
 	*		Options to configure the Pusher instance.
 	* 	Was previously a debug flag. Legacy support for this exists if a boolean is passed.
-	* 	host - the host including the http/https scheme. No trailing forward slash.
+	* 	scheme - e.g. http or https
+	* 	host - the host e.g. api.pusherapp.com. No trailing forward slash.
 	* 	port - the http port
 	* 	timeout - the http timout
+	* 	encrypted - quick option to use scheme of https and port 443.
 	* @param string $host [optional] - deprecated
 	* @param int $port [optional] - deprecated
 	* @param int $timeout [optional] - deprecated
 	*/
-	public function __construct( $auth_key, $secret, $app_id, $options = array(), $host = 'http://api.pusherapp.com', $port = '80', $timeout = 30 )
+	public function __construct( $auth_key, $secret, $app_id, $options = array(), $host = null, $port = null, $timeout = null )
 	{
 		$this->check_compatibility();
 
+		/** Start backward compatibility with old constructor **/
 		if( is_bool( $options ) === true ) {
 			$options = array(
 				'debug' => $options
 			);
 		}
 
-		if( $host !== $this->settings[ 'host' ] ) {
-			$this->settings[ 'host' ] = $host;
+		if( !is_null( $host ) ) {
+			$match = null;
+			preg_match("/(http[s]?)\:\/\/(.*)/", $host, $match);
+			
+			if( count( $match ) !== 3 ) {
+				throw new PusherException( "$host is an invalid host. For legacy constructor support it must provide a scheme e.g. http://api.pusherapp.com where 'http://' identifies the scheme." );
+			}
+			
+			$this->settings[ 'scheme' ] = $match[ 1 ];
+			$this->settings[ 'host' ] = $match[ 2 ];
 		}
 
-		if( $port !== $this->settings[ 'port' ] ) {
-			$this->settings[ 'port' ] = $port;
+		if( !is_null( $port ) ) {
+			$options[ 'port' ] = $port;
 		}
 
-		if( $port !== $this->settings[ 'timeout' ] ) {
-			$this->settings[ 'timeout' ] = $port;
+		if( !is_null( $timeout ) ) {
+			$options[ 'timeout' ] = $timeout;
+		}
+		
+		/** End backward compatibility with old constructor **/
+		
+		if( isset( $options[ 'encrypted' ] ) &&
+				$options[ 'encrypted' ] === true &&
+				!isset( $options[ 'scheme' ] ) &&
+				!isset( $options[ 'port' ] ) ) {
+						
+			$options[ 'scheme' ] = 'https';
+			$options[ 'port' ] = '443';
 		}
 
 		$this->settings['auth_key'] 	= $auth_key;
@@ -169,7 +192,9 @@ class Pusher
 			$s_url,
 			$query_params);
 
-		$full_url = $this->settings['host'] . ':' . $this->settings['port'] . $s_url . '?' . $signed_query;
+		$full_url = $this->settings['scheme'] . '://' .
+								$this->settings['host'] . ':' . 
+								$this->settings['port'] . $s_url . '?' . $signed_query;
 
 		$this->log( 'curl_init( ' . $full_url . ' )' );
 		
