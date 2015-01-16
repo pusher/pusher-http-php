@@ -25,7 +25,7 @@ Use the credentials from your Pusher application to create a new `Pusher` instan
 
 By default calls will be made over a non-encrypted connection. To change this to make calls over HTTPS:
 
-    $pusher = new Pusher( $app_key, $app_secret, $app_id, false, 'https://api.pusherapp.com', 443 );
+    $pusher = new Pusher( $app_key, $app_secret, $app_id, array( 'encrypted' => true ) );
 
 ## Publishing/Triggering events
 
@@ -214,4 +214,3 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
 ## License
 
 Copyright 2010, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php 
-
