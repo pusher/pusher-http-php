@@ -62,26 +62,26 @@ class Pusher
 	private $logger = null;
 
 	/**
-	* PHP5 Constructor. 
-	* 
-	* Initializes a new Pusher instance with key, secret , app ID and channel. 
-	* You can optionally turn on debugging for all requests by setting debug to true.
-	* 
-	* @param string $auth_key
-	* @param string $secret
-	* @param int $app_id
-	* @param bool $options [optional]
-	*		Options to configure the Pusher instance.
-	* 	Was previously a debug flag. Legacy support for this exists if a boolean is passed.
-	* 	scheme - e.g. http or https
-	* 	host - the host e.g. api.pusherapp.com. No trailing forward slash.
-	* 	port - the http port
-	* 	timeout - the http timout
-	* 	encrypted - quick option to use scheme of https and port 443.
-	* @param string $host [optional] - deprecated
-	* @param int $port [optional] - deprecated
-	* @param int $timeout [optional] - deprecated
-	*/
+	 * PHP5 Constructor. 
+	 * 
+	 * Initializes a new Pusher instance with key, secret , app ID and channel. 
+	 * You can optionally turn on debugging for all requests by setting debug to true.
+	 * 
+	 * @param string $auth_key
+	 * @param string $secret
+	 * @param int $app_id
+	 * @param bool $options [optional]
+	 *		Options to configure the Pusher instance.
+	 * 	Was previously a debug flag. Legacy support for this exists if a boolean is passed.
+	 * 	scheme - e.g. http or https
+	 * 	host - the host e.g. api.pusherapp.com. No trailing forward slash.
+	 * 	port - the http port
+	 * 	timeout - the http timout
+	 * 	encrypted - quick option to use scheme of https and port 443.
+	 * @param string $host [optional] - deprecated
+	 * @param int $port [optional] - deprecated
+	 * @param int $timeout [optional] - deprecated
+	 */
 	public function __construct( $auth_key, $secret, $app_id, $options = array(), $host = null, $port = null, $timeout = null )
 	{
 		$this->check_compatibility();
@@ -285,16 +285,16 @@ class Pusher
 	}
 
 	/**
-	* Trigger an event by providing event name and payload. 
-	* Optionally provide a socket ID to exclude a client (most likely the sender).
-	*
-	* @param array $channel An array of channel names to publish the event on.
-	* @param string $event
-	* @param mixed $data Event data
-	* @param int $socket_id [optional]
-	* @param bool $debug [optional]
-	* @return bool|string
-	*/
+	 * Trigger an event by providing event name and payload. 
+	 * Optionally provide a socket ID to exclude a client (most likely the sender).
+	 *
+	 * @param array $channel An array of channel names to publish the event on.
+	 * @param string $event
+	 * @param mixed $data Event data
+	 * @param int $socket_id [optional]
+	 * @param bool $debug [optional]
+	 * @return bool|string
+	 */
 	public function trigger( $channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false )
 	{
 		if( is_string( $channels ) === true ) {
@@ -351,12 +351,12 @@ class Pusher
 	}
 	
 	/**
-	  *	Fetch channel information for a specific channel.
-	  *
-	  * @param string $channel The name of the channel
-	  * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
-	  *	@return object
-	  */
+	 *	Fetch channel information for a specific channel.
+	 *
+	 * @param string $channel The name of the channel
+	 * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
+	 *	@return object
+	 */
 	public function get_channel_info($channel, $params = array() )
 	{
 		$response = $this->get( '/channels/' . $channel, $params );
@@ -399,12 +399,12 @@ class Pusher
 
 	/**
 	 * GET arbitrary REST API resource using a synchronous http client.
-   * All request signing is handled automatically.
-   *  
-   * @param string path Path excluding /apps/APP_ID
-   * @param params array API params (see http://pusher.com/docs/rest_api)
-   *
-   * @return See Pusher API docs
+	 * All request signing is handled automatically.
+	 *	
+	 * @param string path Path excluding /apps/APP_ID
+	 * @param params array API params (see http://pusher.com/docs/rest_api)
+	 *
+	 * @return See Pusher API docs
 	 */
 	public function get( $path, $params = array() ) {
 		$s_url = $this->settings['base_path'] . $path;	
@@ -426,12 +426,12 @@ class Pusher
 	}
 
 	/**
-	* Creates a socket signature
-	* 
-	* @param int $socket_id
-	* @param string $custom_data
-	* @return string
-	*/
+	 * Creates a socket signature
+	 * 
+	 * @param int $socket_id
+	 * @param string $custom_data
+	 * @return string
+	 */
 	public function socket_auth( $channel, $socket_id, $custom_data = false )
 	{
 		if($custom_data == true)
@@ -453,13 +453,13 @@ class Pusher
 	}
 
 	/**
-	* Creates a presence signature (an extension of socket signing)
-	*
-	* @param int $socket_id
-	* @param string $user_id
-	* @param mixed $user_info
-	* @return string
-	*/
+	 * Creates a presence signature (an extension of socket signing)
+	 *
+	 * @param int $socket_id
+	 * @param string $user_id
+	 * @param mixed $user_info
+	 * @return string
+	 */
 	public function presence_auth( $channel, $socket_id, $user_id, $user_info = false )
 	{
 
