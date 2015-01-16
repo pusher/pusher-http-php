@@ -147,7 +147,7 @@ class Pusher
 	}
 
 	/**
-	 * Set a logger to be informed of interal log messages.
+	 * Set a logger to be informed of internal log messages.
 	 */
 	public function set_logger( $logger ) {
 		$this->logger = $logger;
