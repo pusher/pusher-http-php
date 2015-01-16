@@ -1,6 +1,4 @@
 <?php
-
-	require_once( dirname(__FILE__) . '/../test_includes.php' );
 	
 	class PusherSocketAuthTest extends PHPUnit_Framework_TestCase
 	{
