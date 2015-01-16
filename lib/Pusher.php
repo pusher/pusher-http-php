@@ -121,7 +121,7 @@ class Pusher
 				!isset( $options[ 'port' ] ) ) {
 						
 			$options[ 'scheme' ] = 'https';
-			$options[ 'port' ] = '443';
+			$options[ 'port' ] = 443;
 		}
 
 		$this->settings['auth_key'] 	= $auth_key;
@@ -230,15 +230,16 @@ class Pusher
 	}
 	
 	/**
-	 *	Build the required HMAC'd auth string
+	 * Build the required HMAC'd auth string
 	 *
-	 *	@param string $auth_key
-	 *	@param string $auth_secret
-	 *	@param string $request_path
-	 *	@param array $query_params
-	 *	@param string $auth_version [optional]
-	 *	@param string $auth_timestamp [optional]
-	 *	@return string
+	 * @param string $auth_key
+	 * @param string $auth_secret
+	 * @param string $request_method
+	 * @param string $request_path
+	 * @param array $query_params
+	 * @param string $auth_version [optional]
+	 * @param string $auth_timestamp [optional]
+	 * @return string
 	 */
 	public static function build_auth_query_string($auth_key, $auth_secret, $request_method, $request_path,
 		$query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
@@ -288,7 +289,7 @@ class Pusher
 	 * Trigger an event by providing event name and payload. 
 	 * Optionally provide a socket ID to exclude a client (most likely the sender).
 	 *
-	 * @param array $channel An array of channel names to publish the event on.
+	 * @param array $channels An array of channel names to publish the event on.
 	 * @param string $event
 	 * @param mixed $data Event data
 	 * @param int $socket_id [optional]
