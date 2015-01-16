@@ -11,7 +11,7 @@ else
   define('PUSHERAPP_SECRET' , getenv('PUSHERAPP_SECRET'));
   define('PUSHERAPP_APPID'  , getenv('PUSHERAPP_APPID'));
 
-  define('PUSHERAPP_HOST', 'api.pusherapp.com');
+  define('PUSHERAPP_HOST', 'http://api.pusherapp.com');
 }
 
 require_once($dir . '/../lib/Pusher.php');

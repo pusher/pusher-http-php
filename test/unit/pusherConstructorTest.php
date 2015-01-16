@@ -25,10 +25,7 @@
 			$this->assertEquals( $host, $settings[ 'host' ] );
 		}
 		
-		/**
-		 * @expectedException     PusherException
-		 */
-		public function testSchemeMustBeSuppliedWhenUsingLegacyHostParameter() {
+		public function testLegacyHostParamWithNoSchemeCanBeUsedResultsInHostBeingUsedWithDefaultScheme() {
 			$host = 'test.com';
 			$pusher = new Pusher( 'app_key', 'app_secret', 'app_id', false, $host );
 			
@@ -86,6 +83,17 @@
 			$this->assertEquals( 'http', $settings[ 'scheme' ] );
 			$this->assertEquals( $options[ 'host' ], $settings[ 'host' ] );
 			$this->assertEquals( $options[ 'port' ], $settings[ 'port' ] );
+		}	
+		
+		public function testSchemeIsStrippedAndIgnoredFromHostInOptions() {
+			$options = array(
+				'host' => 'https://test.com'
+			);
+			$pusher = new Pusher( 'app_key', 'app_secret', 'app_id', $options );
+			
+			$settings = $pusher->getSettings();
+			$this->assertEquals( 'http', $settings[ 'scheme' ] );
+			$this->assertEquals( 'test.com', $settings[ 'host' ] );
 		}		
 
 	}

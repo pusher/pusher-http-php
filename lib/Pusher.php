@@ -97,12 +97,15 @@ class Pusher
 			$match = null;
 			preg_match("/(http[s]?)\:\/\/(.*)/", $host, $match);
 			
-			if( count( $match ) !== 3 ) {
-				throw new PusherException( "$host is an invalid host. For legacy constructor support it must provide a scheme e.g. http://api.pusherapp.com where 'http://' identifies the scheme." );
+			if( count( $match ) === 3 ) {
+				$this->settings[ 'scheme' ] = $match[ 1 ];
+				$host = $match[ 2 ];
 			}
 			
-			$this->settings[ 'scheme' ] = $match[ 1 ];
-			$this->settings[ 'host' ] = $match[ 2 ];
+			$this->settings[ 'host' ] = $host;
+			
+			$this->log( 'Legacy $host parameter provided: ' . 
+									$this->settings[ 'scheme' ] + ' host: ' + $this->settings[ 'host' ] );
 		}
 
 		if( !is_null( $port ) ) {
@@ -135,7 +138,10 @@ class Pusher
 				$this->settings[ $key ] = $value;
 			}
 		}
-
+		
+		// ensure host doesn't have a scheme prefix
+		$this->settings[ 'host' ] = 
+			preg_replace( '/http[s]?\:\/\//', '', $this->settings[ 'host' ], 1 );
 	}
 
 	/**
