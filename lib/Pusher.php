@@ -229,6 +229,10 @@ class Pusher
 		$response[ 'status' ] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 		$this->log( 'exec_curl response: ' . print_r( $response, true ) );
+		
+		if( $response[ 'body' ] === false ) {
+			$this->log( 'exec_curl error: ' . curl_error( $ch ) );
+		}
 
 		curl_close( $ch );
 
