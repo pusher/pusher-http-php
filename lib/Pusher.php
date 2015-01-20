@@ -76,7 +76,7 @@ class Pusher
 	 * 	scheme - e.g. http or https
 	 * 	host - the host e.g. api.pusherapp.com. No trailing forward slash.
 	 * 	port - the http port
-	 * 	timeout - the http timout
+	 * 	timeout - the http timeout
 	 * 	encrypted - quick option to use scheme of https and port 443.
 	 * @param string $host [optional] - deprecated
 	 * @param int $port [optional] - deprecated
