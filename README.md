@@ -1,8 +1,10 @@
 # Pusher PHP Library
 
-This is a PHP library for interacting with the Pusher REST API.
+[![Build Status](https://travis-ci.org/pusher/pusher-php-server.svg)](https://travis-ci.org/pusher/pusher-php-server)
 
-Register at <http://pusher.com> and use the application credentials within your app as shown below.
+PHP library for interacting with the Pusher HTTP API.
+
+Register at <https://pusher.com> and use the application credentials within your app as shown below.
 
 ## Installation
 
