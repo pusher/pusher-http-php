@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.0 (2015-01-20)
+
+[CHANGED] `new Pusher($app_key, $app_secret, $app_id, $options)` - The `$options` parameter
+has been added as the forth parameter to the constructor and other additional 
+parameters are now deprecated.
+
 ## 2.1.3 (2012-12-22)
 
 [NEW] `$pusher->trigger` can now take an `array` of channel names as a first parameter to allow the same event to be published on multiple channels.
