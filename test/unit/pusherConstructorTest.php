@@ -1,5 +1,7 @@
 <?php
-	
+
+use Pusher\Pusher;
+
 	class PusherConstructorTest extends PHPUnit_Framework_TestCase
 	{
 
@@ -24,11 +26,11 @@
 			$this->assertEquals( $scheme, $settings[ 'scheme' ] );
 			$this->assertEquals( $host, $settings[ 'host' ] );
 		}
-		
+
 		public function testLegacyHostParamWithNoSchemeCanBeUsedResultsInHostBeingUsedWithDefaultScheme() {
 			$host = 'test.com';
 			$pusher = new Pusher( 'app_key', 'app_secret', 'app_id', false, $host );
-			
+
 			$settings = $pusher->getSettings();
 			$this->assertEquals( $host, $settings[ 'host' ] );
 		}
@@ -37,7 +39,7 @@
 			$host = 'https://test.com';
 			$port = 90;
 			$pusher = new Pusher( 'app_key', 'app_secret', 'app_id', false, $host, $port );
-			
+
 			$settings = $pusher->getSettings();
 			$this->assertEquals( 'https', $settings[ 'scheme' ] );
 		}
@@ -60,17 +62,17 @@
 			$settings = $pusher->getSettings();
 			$this->assertEquals( $timeout, $settings[ 'timeout' ] );
 		}
-		
+
 		public function testEncryptedOptionWillSetHostAndPort() {
 			$options = array( 'encrypted' => true );
 			$pusher = new Pusher( 'app_key', 'app_secret', 'app_id', $options );
-			
+
 			$settings = $pusher->getSettings();
 			$this->assertEquals( 'https', $settings[ 'scheme' ], 'https' );
 			$this->assertEquals( 'api.pusherapp.com', $settings[ 'host' ] );
 			$this->assertEquals( '443', $settings[ 'port' ] );
 		}
-		
+
 		public function testEncryptedOptionWillBeOverwrittenByHostAndPortOptionsSetHostAndPort() {
 			$options = array(
 				'encrytped' => true,
@@ -78,22 +80,22 @@
 				'port' => '3000'
 			);
 			$pusher = new Pusher( 'app_key', 'app_secret', 'app_id', $options );
-			
+
 			$settings = $pusher->getSettings();
 			$this->assertEquals( 'http', $settings[ 'scheme' ] );
 			$this->assertEquals( $options[ 'host' ], $settings[ 'host' ] );
 			$this->assertEquals( $options[ 'port' ], $settings[ 'port' ] );
-		}	
-		
+		}
+
 		public function testSchemeIsStrippedAndIgnoredFromHostInOptions() {
 			$options = array(
 				'host' => 'https://test.com'
 			);
 			$pusher = new Pusher( 'app_key', 'app_secret', 'app_id', $options );
-			
+
 			$settings = $pusher->getSettings();
 			$this->assertEquals( 'http', $settings[ 'scheme' ] );
 			$this->assertEquals( 'test.com', $settings[ 'host' ] );
-		}		
+		}
 
 	}
