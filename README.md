@@ -270,6 +270,10 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
 * Got to the `tests` directory
 * Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
 * Execute `phpunit .` to run all the tests.
+
+## Framework Integrations
+- **Laravel 4** - https://github.com/artdarek/pusherer
+- **Laravel 5** - https://github.com/vinkla/pusher
     
 ## License
 
