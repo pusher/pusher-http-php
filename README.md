@@ -1,7 +1,7 @@
 Puser REST library for PHP5
 ===========================
 
-**STATUS: WORK IN PROGRESS**
+**STATUS: WORK IN PROGRESS. See [TODO](TODO.md)**
 
 This is the next-gen official client library for our REST API.
 See http://pusher.com/docs/rest_api for the documentation of the API.
