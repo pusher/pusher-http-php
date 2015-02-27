@@ -317,9 +317,7 @@ class Pusher
 			throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
 		}
 
-		$query_params = array();
-		
-		$s_url = $this->settings['base_path'] . '/events';		
+		$query_params = array();		
 		
 		$data_encoded = $already_encoded ? $data : json_encode( $data );
 
@@ -336,15 +334,8 @@ class Pusher
 		$post_value = json_encode( $post_params );
 
 		$query_params['body_md5'] = md5( $post_value );
-
-		$ch = $this->create_curl( $s_url, 'POST', $query_params );
-
-		$this->log( 'trigger POST: ' . $post_value );
-
-		curl_setopt( $ch, CURLOPT_POST, 1 );
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_value );
-
-		$response = $this->exec_curl( $ch );
+		
+		$response = $this->post('/events', $query_params, $post_value);
 
 		if ( $response[ 'status' ] == 200 && $debug == false )
 		{
@@ -407,6 +398,29 @@ class Pusher
 		
 		return $response;
 	}
+	
+	private function request($method, $path, $query_params = array(), $body = null)
+	{
+		$s_url = $this->settings['base_path'] . $path;	
+		
+		$ch = $this->create_curl( $s_url, $method, $query_params, $body );
+		
+		$this->log( "request ->" .
+								"\nMethod: $method" .		
+								"\nPath: $path" .
+								"\nQuery Params: " . print_r($query_params) .
+								"\nBody: $body" );
+		
+		if($method === 'POST')
+		{
+			curl_setopt( $ch, CURLOPT_POST, 1 );
+			curl_setopt( $ch, CURLOPT_POSTFIELDS, $body );
+		}
+		
+		$response = $this->exec_curl( $ch );
+		
+		return $response;
+	}
 
 	/**
 	 * GET arbitrary REST API resource using a synchronous http client.
@@ -418,11 +432,7 @@ class Pusher
 	 * @return See Pusher API docs
 	 */
 	public function get( $path, $params = array() ) {
-		$s_url = $this->settings['base_path'] . $path;	
-
-		$ch = $this->create_curl( $s_url, 'GET', $params );
-
-		$response = $this->exec_curl( $ch );
+		$response = $this->request('GET', $path, $params);
 		
 		if( $response[ 'status' ] == 200)
 		{
@@ -434,6 +444,11 @@ class Pusher
 		}
 		
 		return $response;
+	}
+	
+	private function post($path, $params = array(), $body = null)
+	{
+		return $this->request('POST', $path, $params, $body);
 	}
 
 	/**
