@@ -94,6 +94,31 @@ If your data is already encoded in JSON format, you can avoid a second encoding 
 $pusher->trigger('my-channel', 'event', 'data', null, false, true)
 ```
 
+### Event Buffer
+
+Version 3.0.0 of the library introduced support for event buffering. The purpose of this functionality is
+to ensure that events that are triggered during whilst a client is offline for a short period of time will still be delivered.
+
+*Note: this requires your Pusher application to be on a cluster that has the Event Buffer capability*
+
+As part of this the `trigger` function now returns a set of `event_id` values for each event triggered on a channel. These can then be used by the client to tell the Pusher service the last event it has received. If additional events have been triggered after that event ID the service has the opportunity to provide the client with those IDs.
+
+For detailed information please see the [Event Buffer Documentation **TODO**](#).
+
+The event ID values are accessed via a `TriggerResult` object that is returned from the `trigger` call.
+
+```php
+// Trigger on single channel
+$triggerResult = $pusher.trigger('ch1', 'my-event' ['some' => 'data']);
+$eventId = $triggerResult->eventIds['ch1'];
+
+// Trigger on multiple channels
+$multiTriggerResult = $pusher.trigger(['ch1', 'ch2', 'ch3'], 'my-event' ['some' => 'data']);
+$ch1EventId = $triggerResult->eventIds['ch1'];
+$ch1EventId = $triggerResult->eventIds['ch2'];
+$ch1EventId = $triggerResult->eventIds['ch3'];
+```
+
 ## Authenticating Private channels
 
 To authorise your users to access private channels on Pusher, you can use the socket_auth function:
