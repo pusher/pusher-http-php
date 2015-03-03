@@ -1,6 +1,6 @@
 # Pusher PHP Library
 
-[![Build Status](https://travis-ci.org/pusher/pusher-php-server.svg)](https://travis-ci.org/pusher/pusher-php-server)
+[![Build Status](https://travis-ci.org/pusher/pusher-http-php.svg)](https://travis-ci.org/pusher/pusher-http-php)
 
 PHP library for interacting with the Pusher HTTP API.
 
