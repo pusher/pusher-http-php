@@ -13,7 +13,11 @@
 			}
 			else
 			{
-				$this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true, PUSHERAPP_HOST);
+				$options = array(
+					'host' => PUSHERAPP_HOST,
+					'debug' => true
+				);
+				$this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options );
 				$this->pusher->set_logger( new TestLogger() );
 			}
 		}
