@@ -20,9 +20,9 @@
 		+ Phil Leggetter (phil@leggetter.co.uk)
 */
 
-class PusherException extends Exception
-{
-}
+require_once('PusherException.php');
+require_once('PusherHTTPException.php');
+require_once('TriggerResult.php');
 
 class PusherInstance {
 	
@@ -304,7 +304,9 @@ class Pusher
 	 * @param mixed $data Event data
 	 * @param int $socket_id [optional]
 	 * @param bool $debug [optional]
-	 * @return bool|string
+	 * 
+	 * @throws PusherHTTPException on unexpected responses from the HTTP API
+	 * @return TriggerResult
 	 */
 	public function trigger( $channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false )
 	{
@@ -336,20 +338,15 @@ class Pusher
 		$query_params['body_md5'] = md5( $post_value );
 		
 		$response = $this->post('/events', $query_params, $post_value);
-
-		if ( $response[ 'status' ] == 200 && $debug == false )
+		
+		if( $response[ 'status' ] != 200)
 		{
-			return true;
+			throw new PusherHTTPException($response);
 		}
-		elseif ( $debug == true || $this->settings['debug'] == true )
-		{
-			return $response;
-		}
-		else
-		{
-			return false;
-		}
-
+		
+		$decodedJson = json_decode( $response[ 'body' ], true );
+		
+		return new TriggerResult($decodedJson);
 	}
 	
 	/**
@@ -357,6 +354,8 @@ class Pusher
 	 *
 	 * @param string $channel The name of the channel
 	 * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
+	 *
+	 * @throws PusherHTTPException on unexpected responses from the HTTP API
 	 *	@return object
 	 */
 	public function get_channel_info($channel, $params = array() )
@@ -369,7 +368,7 @@ class Pusher
 		}
 		else
 		{
-			$response = false;
+			throw new PusherHTTPException($response);
 		}
 		
 		return $response;
@@ -379,6 +378,8 @@ class Pusher
 	 * Fetch a list containing all channels
 	 * 
 	 * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
+	 *
+	 * @throws PusherHTTPException on unexpected responses from the HTTP API
 	 *
 	 * @return array
 	 */
@@ -393,7 +394,7 @@ class Pusher
 		}
 		else
 		{
-			$response = false;
+			throw new PusherHTTPException($response);
 		}
 		
 		return $response;
@@ -438,17 +439,15 @@ class Pusher
 		{
 			$response[ 'result' ] = json_decode( $response[ 'body' ], true );
 		}
-		else
-		{
-			$response = false;
-		}
 		
 		return $response;
 	}
 	
 	private function post($path, $params = array(), $body = null)
 	{
-		return $this->request('POST', $path, $params, $body);
+		$response = $this->request('POST', $path, $params, $body);
+		
+		return $response;
 	}
 
 	/**

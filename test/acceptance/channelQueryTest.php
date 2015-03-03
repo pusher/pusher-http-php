@@ -67,17 +67,19 @@
 		  
 			$this->assertEquals( 1, count( $channels ), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against' );
 		}
-
-
+		
 		public function test_providing_info_parameter_with_prefix_query_fails_for_public_channel()
 		{
 			$options = array(
 				'filter_by_prefix' => 'test_',
 				'info' => 'user_count'
 			);
-		  $result = $this->pusher->get_channels( $options );
-		  
-			$this->assertFalse( $result, 'query should fail' );
+			try {
+				$result = $this->pusher->get_channels( $options );
+			}
+			catch(PusherHTTPException $e) {
+				$this->assertEquals( $e->status, 400, 'query should fail' );
+			}
 		}
 
 		public function test_channel_list_using_generic_get() {
