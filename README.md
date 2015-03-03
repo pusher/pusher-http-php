@@ -10,6 +10,10 @@ Register at <https://pusher.com> and use the application credentials within your
 
 You can get the Pusher PHP library via a composer package called `pusher-php-server`. See <https://packagist.org/packages/pusher/pusher-php-server>
 
+```
+php composer.phar require pusher/pusher-php-server
+```
+
 Or you can clone or download the library files.
 
 **We recommend you [use composer](http://getcomposer.org/).**
