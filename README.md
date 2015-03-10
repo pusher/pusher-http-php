@@ -113,11 +113,11 @@ The event ID values are accessed via a `TriggerResult` object that is returned f
 
 ```php
 // Trigger on single channel
-$triggerResult = $pusher.trigger('ch1', 'my-event' ['some' => 'data']);
+$triggerResult = $pusher->trigger('ch1', 'my-event', ['some' => 'data']);
 $eventId = $triggerResult->eventIds['ch1'];
 
 // Trigger on multiple channels
-$multiTriggerResult = $pusher.trigger(['ch1', 'ch2', 'ch3'], 'my-event' ['some' => 'data']);
+$multiTriggerResult = $pusher->trigger(['ch1', 'ch2', 'ch3'], 'my-event', ['some' => 'data']);
 $ch1EventId = $triggerResult->eventIds['ch1'];
 $ch1EventId = $triggerResult->eventIds['ch2'];
 $ch1EventId = $triggerResult->eventIds['ch3'];
