@@ -17,6 +17,9 @@ class PusherTriggerResult {
 	 * @param array $decodedJson The decoded JSON triggerresponse from the Pusher HTTP API.
 	 */
 	public function __construct($decodedJson) {
+		if (empty($decodedJson['event_ids'])) {
+			return;
+		}
 		foreach($decodedJson['event_ids'] as $channel => $eventId ) {
 			$this->eventIds[ $channel ] = $eventId;
 		}
