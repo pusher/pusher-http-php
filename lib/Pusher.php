@@ -302,7 +302,7 @@ class Pusher
 	 * @param bool $debug [optional]
 	 *
 	 * @throws PusherHTTPException on unexpected responses from the HTTP API
-	 * @return TriggerResult
+	 * @return PusherTriggerResult
 	 */
 	public function trigger( $channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false )
 	{
@@ -342,7 +342,7 @@ class Pusher
 
 		$decodedJson = json_decode( $response[ 'body' ], true );
 
-		return new TriggerResult($decodedJson);
+		return new PusherTriggerResult($decodedJson);
 	}
 
 	/**

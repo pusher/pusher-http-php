@@ -109,7 +109,7 @@ As part of this the `trigger` function now returns a set of `event_id` values fo
 
 For detailed information please see the [Event Buffer Documentation **TODO**](#).
 
-The event ID values are accessed via a `TriggerResult` object that is returned from the `trigger` call.
+The event ID values are accessed via a `PusherTriggerResult` object that is returned from the `trigger` call.
 
 ```php
 // Trigger on single channel

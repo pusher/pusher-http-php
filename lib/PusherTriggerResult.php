@@ -3,8 +3,8 @@
 /**
  * Represents the result of a call to {@link Pusher::trigger}.
  */
-class TriggerResult {
-  
+class PusherTriggerResult {
+
   /**
   * A lookup of the event ID of a trigger on a given channel.
   * e.g. $ch1EventId = $triggerResult['ch1'];

@@ -25,13 +25,13 @@
 		public function testStringPush()
 		{
 			$triggerResult = $this->pusher->trigger('test_channel', 'my_event', 'Test string');
-			$this->assertInstanceOf('TriggerResult', $triggerResult, 'Trigger with string payload');
+			$this->assertInstanceOf('PusherTriggerResult', $triggerResult, 'Trigger with string payload');
 		}
 		
 		public function testArrayPush()
 		{
 			$triggerResult = $this->pusher->trigger('test_channel', 'my_event', array( 'test' => 1 ));
-			$this->assertInstanceOf('TriggerResult', $triggerResult, 'Trigger with structured payload');
+			$this->assertInstanceOf('PusherTriggerResult', $triggerResult, 'Trigger with structured payload');
 		}
 		
 		public function testTriggeringOnSingleChannelReturnsEventId() {
@@ -62,7 +62,7 @@
 			$pusher->set_logger( new TestLogger() );
 			
 			$triggerResult = $pusher->trigger('test_channel', 'my_event', array( 'encrypted' => 1 ));
-			$this->assertInstanceOf('TriggerResult', $triggerResult, 'Trigger with over encrypted connection');
+			$this->assertInstanceOf('PusherTriggerResult', $triggerResult, 'Trigger with over encrypted connection');
 		}
 		
 		public function testSendingOver10kBMessageReturns413() {
@@ -94,7 +94,7 @@
 			$channels = array( 'test_channel_1', 'test_channel_2' );
 			$triggerResult = $this->pusher->trigger( $channels, 'my_event', $data );
 			
-			$this->assertInstanceOf('TriggerResult', $triggerResult);
+			$this->assertInstanceOf('PusherTriggerResult', $triggerResult);
 		}
 	}
 
