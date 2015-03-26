@@ -1,4 +1,9 @@
-# Changelog
+
+## 3.0.0 (2015-03-26)
+
+[CHANGED] HTTP requests now throw an exception on error
+[NEW] Support for Event Buffer
+[NEW] Compatible with composer
 
 ## 2.2.0 (2015-01-20)
 
