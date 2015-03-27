@@ -119,8 +119,8 @@ $eventId = $triggerResult->eventIds['ch1'];
 // Trigger on multiple channels
 $multiTriggerResult = $pusher->trigger(['ch1', 'ch2', 'ch3'], 'my-event', ['some' => 'data']);
 $ch1EventId = $triggerResult->eventIds['ch1'];
-$ch1EventId = $triggerResult->eventIds['ch2'];
-$ch1EventId = $triggerResult->eventIds['ch3'];
+$ch2EventId = $triggerResult->eventIds['ch2'];
+$ch3EventId = $triggerResult->eventIds['ch3'];
 ```
 
 ## Authenticating Private channels
