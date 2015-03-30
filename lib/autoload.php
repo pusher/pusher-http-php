@@ -4,7 +4,7 @@ class PusherAutoloader
 {
     private static $classMap = array(
         'Pusher' => 'Pusher.php',
-        'PusherInstance' => 'Pusher.php',
+        'PusherInstance' => 'PusherInstance.php',
         'PusherException' => 'PusherException.php',
         'PusherHTTPException' => 'PusherHTTPException.php',
         'TriggerResult' => 'TriggerResult.php',
