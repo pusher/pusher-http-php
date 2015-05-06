@@ -15,4 +15,4 @@ install: travis_retry composer install --no-interaction --prefer-source
 script: vendor/bin/phpunit --testsuite unit
 
 notifications:
-  webhooks: $ZAPIER_WEBHOOK
+  webhooks: $ZAPIER_WEBHOOK_URL
