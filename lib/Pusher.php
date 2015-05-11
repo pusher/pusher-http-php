@@ -186,6 +186,16 @@ class Pusher
 	}
 
 	/**
+	 * Ensure a channel name is valid based on our spec
+	 */
+	private function validate_channel( $channel )
+	{
+		if ( ! preg_match( '/\A[-a-zA-Z0-9_=@,.;]+\z/', $channel ) ) {
+			throw new PusherException( 'Invalid channel name ' . $channel );
+		}
+	}
+
+	/**
 	 * Ensure a socket_id is valid based on our spec
 	 */
 	private function validate_socket_id( $socket_id )
@@ -327,6 +337,8 @@ class Pusher
 			throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
 		}
 
+		array_walk( $channels, array( $this, 'validate_channel' ) );
+
 		$query_params = array();
 		
 		$s_url = $this->settings['base_path'] . '/events';		
@@ -456,6 +468,7 @@ class Pusher
 	 */
 	public function socket_auth( $channel, $socket_id, $custom_data = false )
 	{
+		$this->validate_channel( $channel );
 		$this->validate_socket_id( $socket_id );
 
 		if($custom_data == true)
