@@ -184,6 +184,16 @@ class Pusher
 		}
 
 	}
+
+	/**
+	 * Ensure a socket_id is valid based on our spec
+	 */
+	private function validate_socket_id( $socket_id )
+	{
+		if ( ! preg_match( '/\A\d+\.\d+\z/', $socket_id ) ) {
+			throw new PusherException( 'Invalid socket ID ' . $socket_id );
+		}
+	}
 	
 	/**
 	 * Utility function used to create the curl object with common settings
@@ -330,6 +340,7 @@ class Pusher
 
 		if ( $socket_id !== null )
 		{
+			$this->validate_socket_id( $socket_id );
 			$post_params[ 'socket_id' ] = $socket_id;
 		}
 
@@ -445,6 +456,8 @@ class Pusher
 	 */
 	public function socket_auth( $channel, $socket_id, $custom_data = false )
 	{
+		$this->validate_socket_id( $socket_id );
+
 		if($custom_data == true)
 		{
 			$signature = hash_hmac( 'sha256', $socket_id . ':' . $channel . ':' . $custom_data, $this->settings['secret'], false );

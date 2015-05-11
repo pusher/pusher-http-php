@@ -15,12 +15,19 @@
 
 		public function testSocketAuthKey()
 		{
-			$socket_auth = $this->pusher->socket_auth('testing_pusher-php', 'testing_socket_auth');
+			$socket_auth = $this->pusher->socket_auth('testing_pusher-php', '1.1');
 			$this->assertEquals($socket_auth, 
-				'{"auth":"thisisaauthkey:ee548cf60217ed18281da39a8eb23609105f1bde29372650cb67bd91c284aae1"}',
+				'{"auth":"thisisaauthkey:751ccc12aeaa79d46f7c199bced5fa47527d3480b51fe61a0bd10438241bd52d"}',
 				'Socket auth key valid');
 		}
-		
+
+		/**
+		 * @expectedException PusherException
+		 */
+		public function testInvalidSocketThrowsException()
+		{
+			$this->pusher->socket_auth('testing_pusher-php', 'invalid');
+		}
 	}
 
 ?>
