@@ -191,9 +191,9 @@ class Pusher
 	private function validate_channels($channels) {
 		if( count( $channels ) > 100 ) {
 			throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
-			
-			array_walk( $channels, array( $this, 'validate_channel' ) );
 		}
+		
+		array_walk( $channels, array( $this, 'validate_channel' ) );
 	}
 
 	/**
