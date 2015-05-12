@@ -47,7 +47,39 @@
 		*/
 		public function testChannelArrayThrowsException()
 		{
-			$this->pusher->trigger(['this_one_is_okay', 'test_channel\n:'], $this->eventName, $this->data);
+			$this->pusher->trigger(array('this_one_is_okay', 'test_channel\n:'), $this->eventName, $this->data);
+		}
+		
+		/**
+		 * @expectedException PusherException
+		 */
+		public function testTrailingColonSocketIDThrowsException()
+		{
+			$this->pusher->trigger('test_channel:', $this->eventName, $this->data, '1.1:');
+		}
+
+		/**
+		 * @expectedException PusherException
+		 */
+		public function testLeadingColonSocketIDThrowsException()
+		{
+			$this->pusher->trigger('test_channel:', $this->eventName, $this->data, ':1.1');
+		}
+
+		/**
+		 * @expectedException PusherException
+		 */
+		public function testLeadingColonNLSocketIDThrowsException()
+		{
+			$this->pusher->trigger('test_channel:', $this->eventName, $this->data, ':\n1.1');
+		}
+
+		/**
+		 * @expectedException PusherException
+		 */
+		public function testTrailingColonNLSocketIDThrowsException()
+		{
+			$this->pusher->trigger('test_channel:', $this->eventName, $this->data, '1.1\n:');
 		}
     
   }
