@@ -81,5 +81,28 @@
 		{
 			$this->pusher->trigger('test_channel:', $this->eventName, $this->data, '1.1\n:');
 		}
+
+		public function testNullSocketID()
+		{
+			// Check this does not throw an exception
+			$this->pusher->trigger('test_channel', $this->eventName, $this->data, null);
+		}
+
+		/**
+		 * @expectedException PusherException
+		 */
+		public function testFalseSocketIDThrowsException()
+		{
+			$this->pusher->trigger('test_channel', $this->eventName, $this->data, false);
+
+		}
+
+		/**
+		 * @expectedException PusherException
+		 */
+		public function testEmptyStrSocketIDThrowsException()
+		{
+			$this->pusher->trigger('test_channel', $this->eventName, $this->data, "");
+		}
     
   }
