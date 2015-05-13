@@ -10,9 +10,13 @@ Register at <https://pusher.com> and use the application credentials within your
 
 You can get the Pusher PHP library via a composer package called `pusher-php-server`. See <https://packagist.org/packages/pusher/pusher-php-server>
 
-Or you can clone or download the library files.
+```
+php composer.phar require pusher/pusher-php-server
+```
 
-**We recommend you [use composer](http://getcomposer.org/).**
+Or you can clone or download the library files. When using the library this way, you need to require the ``lib/autoload.php`` file of the library to register the autoloader (this is not needed when using Composer as it handles the autoloading).
+
+**We recommend you [use composer](https://getcomposer.org/).**
 
 
 ## Pusher constructor
@@ -26,7 +30,7 @@ $app_secret = 'YOUR_APP_SECRET';
 
 $pusher = new Pusher( $app_key, $app_secret, $app_id );
 ```
-    
+
 A forth parameter `$options` parameter can also be passed. The available options are:
 
 * `scheme` - e.g. http or https
@@ -51,7 +55,7 @@ To trigger an event on one or more channels use the `trigger` function.
 
 ### A single channel
 
-```php    
+```php
 $pusher->trigger( 'my-channel', 'my_event', 'hello world' );
 ```
 
@@ -85,13 +89,37 @@ In order to avoid duplicates you can optionally specify the sender's socket id w
 ```php
 $pusher->trigger('my-channel','event','data','socket_id');
 ```
-    
+
 ### JSON format
-    
+
 If your data is already encoded in JSON format, you can avoid a second encoding step by setting the sixth argument true, like so:
 
-```php    
+```php
 $pusher->trigger('my-channel', 'event', 'data', null, false, true)
+```
+
+### Event Buffer
+
+Version 3.0.0 of the library introduced support for [event buffering](https://pusher.com/docs/event_buffer). The purpose of this functionality is to ensure that events that are triggered whilst a client is offline for a short period of time will still be delivered.
+
+*Note: this requires your Pusher application to be on a cluster that has the Event Buffer capability*
+
+As part of this the `trigger` function now returns a set of `event_id` values for each event triggered on a channel. These can then be used by the client upon subscribing to a channel to tell the Pusher service the last event it has received. If additional events have been triggered after that event ID the service has the opportunity to provide the client with those IDs.
+
+For detailed information please see the [Event Buffer Documentation](https://pusher.com/docs/event_buffer).
+
+The event ID values are accessed via a `PusherTriggerResult` object that is returned from the `trigger` call.
+
+```php
+// Trigger on single channel
+$triggerResult = $pusher->trigger('ch1', 'my-event', ['some' => 'data']);
+$eventId = $triggerResult->eventIds['ch1'];
+
+// Trigger on multiple channels
+$multiTriggerResult = $pusher->trigger(['ch1', 'ch2', 'ch3'], 'my-event', ['some' => 'data']);
+$ch1EventId = $triggerResult->eventIds['ch1'];
+$ch2EventId = $triggerResult->eventIds['ch2'];
+$ch3EventId = $triggerResult->eventIds['ch3'];
 ```
 
 ## Authenticating Private channels
@@ -174,7 +202,7 @@ This can also be achieved using the generic `pusher->get` function:
 ```php
 $pusher->get( '/channels/channel-name' );
 ```
-    
+
 ### Get a list of application channels
 
 ```php
@@ -193,7 +221,7 @@ This can also be achieved using the generic `pusher->get` function:
 ```php
 $pusher->get( '/channels' );
 ```
-  
+
 ### Get a filtered list of application channels
 
 ```php
@@ -234,7 +262,7 @@ Array
                         (
                             [id] => a_user_id
                         )
-                    /* Additional users */    
+                    /* Additional users */
                 )
         )
 )
@@ -262,7 +290,7 @@ $pusher->set_logger( new MyLogger() );
 If you use the above example in code executed from the console/terminal the debug
 information will be output there. If you use this within a web app then the output
 will appear within the generated app output e.g. HTML.
-    
+
 ## Running the tests
 
 Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
@@ -274,11 +302,11 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
 ## Framework Integrations
 - **Laravel 4** - https://github.com/artdarek/pusherer
 - **Laravel 5** - https://github.com/vinkla/pusher
-    
+
 ## License
 
 Copyright 2014, Pusher. Licensed under the MIT license:
-http://www.opensource.org/licenses/mit-license.php 
+http://www.opensource.org/licenses/mit-license.php
 
 Copyright 2010, Squeeks. Licensed under the MIT license:
-http://www.opensource.org/licenses/mit-license.php 
+http://www.opensource.org/licenses/mit-license.php
