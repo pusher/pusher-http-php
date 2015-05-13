@@ -14,6 +14,4 @@ else
   define('PUSHERAPP_HOST', 'http://api.pusherapp.com');
 }
 
-require_once($dir . '/../lib/autoload.php');
-
 require_once( $dir . '/TestLogger.php' );

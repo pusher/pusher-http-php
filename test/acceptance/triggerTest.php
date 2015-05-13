@@ -51,6 +51,13 @@ class PusherPushTest extends PHPUnit_Framework_TestCase
 		$this->assertNotNull($triggerResult->eventIds['ch2']);
 		$this->assertNotNull($triggerResult->eventIds['ch3']);
 	}
+	
+	public function testNullSocketID()
+	{
+		// Check this does not throw an exception
+		$triggerResult = $this->pusher->trigger('test_channel', 'my_event', array('fish' => 'pie'), null);
+		$this->assertInstanceOf('PusherTriggerResult', $triggerResult, 'Trigger with null $socket_id');
+	}
 
 	public function testEncryptedPush()
 	{

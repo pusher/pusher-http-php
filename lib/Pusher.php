@@ -1,5 +1,4 @@
 <?php
-
 /*
 		Pusher PHP Library
 	/////////////////////////////////
@@ -158,6 +157,37 @@ class Pusher
 	}
 
 	/**
+	 * validate number of channels and channel name format.
+	 */	
+	private function validate_channels($channels) {
+		if( count( $channels ) > 100 ) {
+			throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
+		}
+		
+		array_walk( $channels, array( $this, 'validate_channel' ) );
+	}
+
+	/**
+	 * Ensure a channel name is valid based on our spec
+	 */
+	private function validate_channel( $channel )
+	{
+		if ( ! preg_match( '/\A[-a-zA-Z0-9_=@,.;]+\z/', $channel ) ) {
+			throw new PusherException( 'Invalid channel name ' . $channel );
+		}
+	}
+
+	/**
+	 * Ensure a socket_id is valid based on our spec
+	 */
+	private function validate_socket_id( $socket_id )
+	{
+		if ( $socket_id !== null && !preg_match( '/\A\d+\.\d+\z/', $socket_id ) ) {
+			throw new PusherException( 'Invalid socket ID ' . $socket_id );
+		}
+	}
+	
+	/**
 	 * Utility function used to create the curl object with common settings
 	 */
 	private function create_curl($s_url, $request_method = 'GET', $query_params = array() )
@@ -286,10 +316,9 @@ class Pusher
 			$this->log( '->trigger received string channel "' . $channels . '". Converting to array.' );
 			$channels = array( $channels );
 		}
-
-		if( count( $channels ) > 100 ) {
-			throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
-		}
+		
+		$this->validate_channels( $channels );
+		$this->validate_socket_id( $socket_id );
 
 		$query_params = array();
 
@@ -332,6 +361,8 @@ class Pusher
 	 */
 	public function get_channel_info($channel, $params = array() )
 	{
+		$this->validate_channel($channel);
+		
 		$response = $this->get( '/channels/' . $channel, $params );
 
 		if( $response[ 'status' ] == 200)
@@ -431,6 +462,9 @@ class Pusher
 	 */
 	public function socket_auth( $channel, $socket_id, $custom_data = false )
 	{
+		$this->validate_channel( $channel );
+		$this->validate_socket_id( $socket_id );
+
 		if($custom_data == true)
 		{
 			$signature = hash_hmac( 'sha256', $socket_id . ':' . $channel . ':' . $custom_data, $this->settings['secret'], false );
