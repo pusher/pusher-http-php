@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1 (2015-05-13)
+
+[FIXED] Channel name and socket_id values are now validated.
+
 ## 2.2.0 (2015-01-20)
 
 [CHANGED] `new Pusher($app_key, $app_secret, $app_id, $options)` - The `$options` parameter
