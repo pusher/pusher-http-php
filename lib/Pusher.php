@@ -50,7 +50,7 @@ class PusherInstance {
 
 class Pusher
 {
-	public static $VERSION = '2.2.1';
+	public static $VERSION = '2.2.2';
 
 	private $settings = array(
 		'scheme' => 'http',
@@ -192,8 +192,10 @@ class Pusher
 		if( count( $channels ) > 100 ) {
 			throw new PusherException('An event can be triggered on a maximum of 100 channels in a single call.');
 		}
-		
-		array_walk( $channels, array( $this, 'validate_channel' ) );
+
+		foreach ($channels as $channel) {
+			$this->validate_channel($channel);
+		}
 	}
 
 	/**

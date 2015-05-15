@@ -1,8 +1,13 @@
 # Changelog
 
+## 2.2.2 (2015-05-15)
+
+[FIXED] Fixed a PHP 5.2 incompatibility caused by referencing a private method in array_walk.
+
 ## 2.2.1 (2015-05-13)
 
 [FIXED] Channel name and socket_id values are now validated.
+[BROKE] Inadvertently broke PHP 5.2 compatibility by referencing a private method in array_walk.
 
 ## 2.2.0 (2015-01-20)
 
