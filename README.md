@@ -27,7 +27,7 @@ $app_secret = 'YOUR_APP_SECRET';
 $pusher = new Pusher( $app_key, $app_secret, $app_id );
 ```
     
-A forth parameter `$options` parameter can also be passed. The available options are:
+A fourth parameter `$options` parameter can also be passed. The available options are:
 
 * `scheme` - e.g. http or https
 * `host` - the host e.g. api.pusherapp.com. No trailing forward slash.
