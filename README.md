@@ -1,5 +1,4 @@
-Puser REST library for PHP5
-===========================
+# Pusher HTTP API library for PHP5
 
 **STATUS: WORK IN PROGRESS. See [TODO](TODO.md)**
 
