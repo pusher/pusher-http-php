@@ -31,5 +31,11 @@
         "psr-4": {
             "pusher\\Tests\\": "tests/"
         }
+    },
+
+    "extra": {
+        "branch-alias": {
+            "dev-new-lib": "3.0-dev"
+        }
     }
 }
