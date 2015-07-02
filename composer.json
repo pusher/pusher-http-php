@@ -37,5 +37,5 @@
         "branch-alias": {
             "dev-new-lib": "3.0-dev"
         }
-    },
+    }
 }
