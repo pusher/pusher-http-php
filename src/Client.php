@@ -147,10 +147,7 @@ class Client {
             'auth_version' => '1.0',
         ));
 
-        if (
-            !array_key_exists('auth_timestamp', $params) ||
-            is_null($params['auth_timestamp'])
-        ) {
+        if (!isset($params['auth_timestamp'])) {
             $params['auth_timestamp'] = time();
         }
 
