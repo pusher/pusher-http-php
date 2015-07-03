@@ -2,7 +2,6 @@
 
 namespace Pusher;
 
-use Pusher\HTTPAdapter;
 use Pusher\Exception\AdapterError;
 
 /**

@@ -2,8 +2,6 @@
 
 namespace Pusher;
 
-use Pusher\HTTPAdapter;
-
 /**
  * A HTTP client that uses the file_get_contents method. This adapter is
  * useful on Google AppEngine or other environments where the cUrl extension
