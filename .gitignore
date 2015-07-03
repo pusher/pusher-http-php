@@ -1,11 +1,6 @@
-.DS_STORE
-.idea
-/nbproject/private/
-artifacts/
-build/
-composer-test.lock
+artifacts
+build
 composer.lock
-composer.phar
-docs/
+docs
 phpunit.xml
-vendor/
+vendor
