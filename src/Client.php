@@ -149,7 +149,10 @@ class Client {
             'auth_version' => '1.0',
         ));
 
-        if (is_null($params['auth_timestamp'])) {
+        if (
+            !array_key_exists('auth_timestamp', $params) ||
+            is_null($params['auth_timestamp'])
+        ) {
             $params['auth_timestamp'] = time();
         }
 
@@ -178,10 +181,10 @@ class Client {
      * @return string
      */
     private function path_join($a, $b) {
-        if ($a[-1] == "/" ^ $b[0] == "/") {
+        if (substr($a, -1) == "/" ^ substr($b, 1) == "/") {
             return $a . $b;
         }
-        if ($b[0] == "/") {
+        if (substr($b, 1) == "/") {
             return $a . substr($b, 1);
         }
         return $a . "/" . $b;
