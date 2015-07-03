@@ -2,8 +2,6 @@
 
 namespace Pusher;
 
-use Pusher\Version;
-
 /**
  * Simple HTTP client that encode and decodes request/responses using the
  * pusher conventions.

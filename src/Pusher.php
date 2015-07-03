@@ -2,9 +2,6 @@
 
 namespace Pusher;
 
-use Pusher\Config;
-use Pusher\Client;
-
 /**
  * Main class used to interact with the pusher API and related constructs.
  */

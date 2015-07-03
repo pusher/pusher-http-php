@@ -2,7 +2,6 @@
 
 namespace Pusher;
 
-use Pusher\KeyPair;
 use Pusher\Exception\ConfigurationError;
 
 /**
