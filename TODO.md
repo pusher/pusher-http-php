@@ -1,7 +1,6 @@
 
 ## Required for release
 
-* Rename the namespace from ‘pusher’ to ‘Pusher’
 * Renames to follow the PSR-2 like you mentioned / general styling
 * FIXME and TODO in the curl adapter
 * Add cluster config heuristic
