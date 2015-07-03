@@ -1,8 +1,8 @@
 <?php
 
-namespace pusher\Tests;
+namespace Pusher\Tests;
 
-use pusher\KeyPair;
+use Pusher\KeyPair;
 
 /**
  * @covers pusher\KeyPair

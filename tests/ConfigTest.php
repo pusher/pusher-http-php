@@ -1,8 +1,8 @@
 <?php
 
-namespace pusher\Tests;
+namespace Pusher\Tests;
 
-use pusher\Config;
+use Pusher\Config;
 
 /**
  * @covers pusher\Config

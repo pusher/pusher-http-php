@@ -1,8 +1,8 @@
 <?php
 
-namespace pusher;
+namespace Pusher;
 
-use pusher\Version;
+use Pusher\Version;
 
 /**
  * Simple HTTP client that encode and decodes request/responses using the

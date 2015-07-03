@@ -23,13 +23,13 @@
 
     "autoload": {
         "psr-4": {
-            "pusher\\": "src/"
+            "Pusher\\": "src/"
         }
     },
 
     "autoload-dev": {
         "psr-4": {
-            "pusher\\Tests\\": "tests/"
+            "Pusher\\Tests\\": "tests/"
         }
     },
 

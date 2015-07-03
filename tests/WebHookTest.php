@@ -1,9 +1,9 @@
 <?php
 
-namespace pusher\Tests;
+namespace Pusher\Tests;
 
-use pusher\Config;
-use pusher\WebHook;
+use Pusher\Config;
+use Pusher\WebHook;
 
 /**
  * @covers pusher\WebHook

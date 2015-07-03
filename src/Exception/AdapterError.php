@@ -1,7 +1,7 @@
 <?php
 
-namespace pusher\Exception;
+namespace Pusher\Exception;
 
 class AdapterError extends Exception {
-    
+
 }
