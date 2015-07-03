@@ -5,7 +5,7 @@ header('OK', true, 200);
 <!DOCTYPE html>
 <head>
     <meta charset="utf-8">
-    <title>PusherREST Example</title>
+    <title>Pusher + PHP Example</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 </head>
 <body class="container">

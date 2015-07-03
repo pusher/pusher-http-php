@@ -113,7 +113,7 @@ class Pusher {
      *
      * GET /apps/[id]/channels
      *
-     * @param $params array Hash of parameters for the API - see REST API docs
+     * @param $params array Hash of parameters for the API - see HTTP API docs
      * @throws Exception\HTTPError on invalid responses
      * @return array See Pusher API docs
      */

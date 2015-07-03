@@ -1,9 +1,9 @@
 {
-    "name": "pusher/pusher-rest",
+    "name": "pusher/pusher-http",
     "type": "library",
     "description": "Client code for the REST API",
     "keywords": ["pusher", "http", "rest", "web service"],
-    "homepage": "https://github.com/pusher/pusher-rest-php/",
+    "homepage": "https://github.com/pusher/pusher-http-php/",
     "license": "MIT",
 
     "require": {

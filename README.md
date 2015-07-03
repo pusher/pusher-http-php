@@ -2,7 +2,7 @@
 
 **STATUS: WORK IN PROGRESS. See [TODO](TODO.md)**
 
-This is the next-gen official client library for our REST API.
+This is the next-gen official client library for our HTTP API.
 See http://pusher.com/docs/rest_api for the documentation of the API.
 
 Installation
@@ -11,14 +11,14 @@ Installation
 Use [composer](http://getcomposer.org) to install this bundle.
 
 ```
-$ composer require pusher/pusher-rest
+$ composer require pusher/pusher-http
 ```
 
 Usage
 -----
 
 ```php
-$pusher = new PusherREST\Client(getenv('PUSHER_URL'));
+$pusher = new Pusher\Pusher(getenv('PUSHER_URL'));
 $pusher->trigger('channel_name', 'event_name', array('my' => 'data'));
 ```
 
@@ -134,9 +134,9 @@ Note: this assumes that you store your users in a table called `users` and that 
 
     pusher->get( $path, $params )
 
-Used to make `GET` queries against the Pusher REST API. Handles authentication.
+Used to make `GET` queries against the Pusher HTTP API. Handles authentication.
 
-Response is an associative array with a `result` index. The contents of this index is dependent on the REST method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
+Response is an associative array with a `result` index. The contents of this index is dependent on the HTTP method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
 
     $response = $pusher->get( '/channels' );
     $http_status_code = $response[ 'status' ];
@@ -146,7 +146,7 @@ Response is an associative array with a `result` index. The contents of this ind
 
     get_channel_info( $name )
 
-It's also possible to get information about a channel from the Pusher REST API.
+It's also possible to get information about a channel from the Pusher HTTP API.
 
     $info = $pusher->get_channel_info('channel-name');
     $channel_occupied = $info->occupied;
@@ -159,7 +159,7 @@ This can also be achieved using the generic `pusher->get` function:
 
     get_channels()
 
-It's also possible to get a list of channels for an application from the Pusher REST API.
+It's also possible to get a list of channels for an application from the Pusher HTTP API.
 
     $result = $pusher->get_channels();
     $channel_count = count($result->channels); // $channels is an Array

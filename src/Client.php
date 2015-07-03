@@ -109,7 +109,7 @@ class Client {
      * @return string
      */
     private function userAgent() {
-        return 'pusher-rest-php/' . Version::VERSION .
+        return 'pusher-http-php/' . Version::VERSION .
                 ' ' . $this->adapter->adapterId() .
                 ' PHP/' . PHP_VERSION;
     }
