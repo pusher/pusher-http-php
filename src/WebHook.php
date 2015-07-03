@@ -1,6 +1,6 @@
 <?php
 
-namespace pusher;
+namespace Pusher;
 
 /**
  * Webhook data validator and extractor.

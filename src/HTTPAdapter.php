@@ -1,6 +1,6 @@
 <?php
 
-namespace pusher;
+namespace Pusher;
 
 /**
  * Adapter interface used to abstract the HTTP client.

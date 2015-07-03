@@ -1,9 +1,9 @@
 <?php
 
-namespace pusher;
+namespace Pusher;
 
-use pusher\Config;
-use pusher\Client;
+use Pusher\Config;
+use Pusher\Client;
 
 /**
  * Main class used to interact with the pusher API and related constructs.

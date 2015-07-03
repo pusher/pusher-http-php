@@ -1,9 +1,9 @@
 <?php
 
-namespace pusher;
+namespace Pusher;
 
-use pusher\KeyPair;
-use pusher\Exception\ConfigurationError;
+use Pusher\KeyPair;
+use Pusher\Exception\ConfigurationError;
 
 /**
  * A configuration store used by pusher\Client and pusher\Pusher

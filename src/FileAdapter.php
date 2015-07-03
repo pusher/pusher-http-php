@@ -1,8 +1,8 @@
 <?php
 
-namespace pusher;
+namespace Pusher;
 
-use pusher\HTTPAdapter;
+use Pusher\HTTPAdapter;
 
 /**
  * A HTTP client that uses the file_get_contents method. This adapter is

@@ -1,6 +1,6 @@
 <?php
 
-namespace pusher;
+namespace Pusher;
 
 /**
  * Container for the library version

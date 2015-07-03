@@ -1,9 +1,9 @@
 <?php
 
-namespace pusher;
+namespace Pusher;
 
-use pusher\HTTPAdapter;
-use pusher\Exception\AdapterError;
+use Pusher\HTTPAdapter;
+use Pusher\Exception\AdapterError;
 
 /**
  * A HTTP client that uses the venerable cURL library. This adapter supports
