@@ -181,13 +181,7 @@ class Client {
      * @return string
      */
     private function path_join($a, $b) {
-        if (substr($a, -1) == "/" ^ substr($b, 1) == "/") {
-            return $a . $b;
-        }
-        if (substr($b, 1) == "/") {
-            return $a . substr($b, 1);
-        }
-        return $a . "/" . $b;
+        return rtrim($a, "/") . "/" . ltrim($b, "/");
     }
 
 }
