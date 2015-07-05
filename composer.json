@@ -8,7 +8,8 @@
 
     "require": {
         "php": ">=5.3.3",
-        "ext-json": "*"
+        "ext-json": "*",
+        "squizlabs/php_codesniffer": "2.x"
     },
 
     "suggest": {

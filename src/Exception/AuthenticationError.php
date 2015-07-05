@@ -2,6 +2,6 @@
 
 namespace Pusher\Exception;
 
-class AuthenticationError extends Exception {
-
+class AuthenticationError extends Exception
+{
 }

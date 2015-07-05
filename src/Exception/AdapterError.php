@@ -2,6 +2,6 @@
 
 namespace Pusher\Exception;
 
-class AdapterError extends Exception {
-
+class AdapterError extends Exception
+{
 }

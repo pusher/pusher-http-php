@@ -5,7 +5,8 @@ namespace Pusher;
 /**
  * Main class used to interact with the pusher API and related constructs.
  */
-class Pusher {
+class Pusher
+{
 
     /**
      * @var Config
@@ -15,7 +16,8 @@ class Pusher {
     /**
      * @throws Exception\ConfigurationError
      */
-    public function __construct($config) {
+    public function __construct($config)
+    {
         $config = Config::ensure($config);
         $this->config = $config;
         $this->client = new Client($config);
@@ -24,7 +26,8 @@ class Pusher {
     /**
      * @return KeyPair
      */
-    public function keyPair() {
+    public function keyPair()
+    {
         return $this->config->firstKeyPair();
     }
 
@@ -37,7 +40,8 @@ class Pusher {
      * @param $channel_data array|null
      * @return string
      */
-    public function authenticate($socket_id, $channel_name, $channel_data = null) {
+    public function authenticate($socket_id, $channel_name, $channel_data = null)
+    {
         $kp = $this->keyPair();
 
         if (!is_null($channel_data)) {
@@ -65,7 +69,8 @@ class Pusher {
      * @param $body_file string where to read the body from
      * @return pusher\WebHook
      */
-    public function webhook($server = null, $body_file = 'php://input') {
+    public function webhook($server = null, $body_file = 'php://input')
+    {
         if (is_null($server)) {
             $server = $_SERVER;
         }
@@ -84,10 +89,11 @@ class Pusher {
      * @throws Exception\HTTPError on invalid responses
      * @return array
      */
-    public function trigger($channels, $event, $data, $socket_id = null) {
+    public function trigger($channels, $event, $data, $socket_id = null)
+    {
         if (is_string($channels)) {
             $channels = array($channels);
-        } else if (count($channels) > 10) {
+        } elseif (count($channels) > 10) {
             throw new PusherException('An event can be triggered on a maximum of 10 channels in a single call.');
         }
 
@@ -114,7 +120,8 @@ class Pusher {
      * @throws Exception\HTTPError on invalid responses
      * @return array See Pusher API docs
      */
-    public function channels($params = array()) {
+    public function channels($params = array())
+    {
         return $this->client->get('/channels', $params);
     }
 
@@ -126,7 +133,8 @@ class Pusher {
      * @throws Exception\HTTPError on invalid responses
      * @return array
      */
-    public function channelInfo($channel_name, $params = array()) {
+    public function channelInfo($channel_name, $params = array())
+    {
         return $this->client->get("/channels/$channel_name", $params);
     }
 
@@ -140,15 +148,16 @@ class Pusher {
      * @throws Exception\HTTPError on invalid responses
      * @return array
      */
-    public function presenceUsers($channel_name, $params = array()) {
+    public function presenceUsers($channel_name, $params = array())
+    {
         return $this->client->get("/channels/$channel_name/users", $params);
     }
 
     /**
      * @return boolean true if the channel is a presence channel.
      */
-    private function is_presence($channel_name) {
+    private function isPresence($channel_name)
+    {
         return strncmp("presence-", $channel_name, 0) == 0;
     }
-
 }

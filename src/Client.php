@@ -6,7 +6,8 @@ namespace Pusher;
  * Simple HTTP client that encode and decodes request/responses using the
  * pusher conventions.
  */
-class Client {
+class Client
+{
 
     /**
      * @var string
@@ -36,7 +37,8 @@ class Client {
     /**
      * @param $config Config
      */
-    public function __construct($config) {
+    public function __construct($config)
+    {
         $config = Config::ensure($config);
         $this->baseUrl = $config->baseUrl;
         $this->adapter = $config->adapter;
@@ -49,7 +51,8 @@ class Client {
      * @param $rel_path string
      * @param $params array
      */
-    public function get($rel_path, $params) {
+    public function get($rel_path, $params)
+    {
         return $this->request('GET', $rel_path, $params);
     }
 
@@ -57,7 +60,8 @@ class Client {
      * @param $rel_path string
      * @param $body string
      */
-    public function post($rel_path, $body) {
+    public function post($rel_path, $body)
+    {
         return $this->request('POST', $rel_path, array(), $body);
     }
 
@@ -69,7 +73,8 @@ class Client {
      * @throws Exception\HTTPError on invalid responses
      * @return mixed
      */
-    public function request($method, $rel_path, $params = array(), $body = null) {
+    public function request($method, $rel_path, $params = array(), $body = null)
+    {
         $method = strtoupper($method);
         if (!is_null($body)) {
             $body = json_encode($body);
@@ -80,7 +85,13 @@ class Client {
         $full_url = $this->path_join($this->baseUrl, $rel_path) . '?' . http_build_query($params);
 
         $response = $this->adapter->request(
-                $method, $full_url, $this->requestHeaders(!is_null($body)), $body, $this->timeout, $this->proxyUrl);
+            $method,
+            $full_url,
+            $this->requestHeaders(!is_null($body)),
+            $body,
+            $this->timeout,
+            $this->proxyUrl
+        );
 
         switch ($response['status']) {
             case 200:
@@ -106,7 +117,8 @@ class Client {
      *
      * @return string
      */
-    private function userAgent() {
+    private function userAgent()
+    {
         return 'pusher-http-php/' . Version::VERSION .
                 ' ' . $this->adapter->adapterId() .
                 ' PHP/' . PHP_VERSION;
@@ -118,7 +130,8 @@ class Client {
      * @param $has_body boolean
      * @return string[]
      */
-    private function requestHeaders($has_body) {
+    private function requestHeaders($has_body)
+    {
         $headers = array(
             'User-Agent: ' . $this->userAgent(),
             'Accept: application/json',
@@ -139,7 +152,8 @@ class Client {
      * @param $body string|null HTTP body
      * @return array a new set of params.
      */
-    private function signedParams($method, $path, $params, $body) {
+    private function signedParams($method, $path, $params, $body)
+    {
         $method = strtoupper($method);
 
         $params = array_replace($params, array(
@@ -175,8 +189,8 @@ class Client {
      * @param $b string
      * @return string
      */
-    private function path_join($a, $b) {
+    private function pathJoin($a, $b)
+    {
         return rtrim($a, "/") . "/" . ltrim($b, "/");
     }
-
 }
