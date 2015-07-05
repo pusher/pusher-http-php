@@ -8,9 +8,30 @@ namespace Pusher;
 class Pusher {
 
     /**
-     * @var Config
+     * The singleton instance of the Pusher client.
+     *
+     * @var \Pusher\Pusher
+     */
+    protected static $instance = null;
+
+    /**
+     * @var \Pusher\Config
      */
     public $config;
+
+    /**
+     * Creates and returns the singleton object.
+     *
+     * @param array $config The client config.
+     * @return \Pusher\Pusher
+     */
+    public static function instance($config = array()) {
+        if (empty(self::$instance)) {
+            self::$instance = new Pusher($config);
+        }
+
+        return self::$instance;
+    }
 
     /**
      * @throws Exception\ConfigurationError

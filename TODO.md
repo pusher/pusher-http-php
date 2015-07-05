@@ -9,7 +9,6 @@
 
 # Bonus
 
-* Add a Pusher::instance() singleton
 * Library-side exceptions for unsupported values (bad channel names, messages too big, ..)
 * Support for most popular framework (or link to support)
 

@@ -21,7 +21,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException pusher\Exception\ConfigurationError
+     * @expectedException Pusher\Exception\ConfigurationError
      */
     public function testValidationError() {
         $c = new Config();
