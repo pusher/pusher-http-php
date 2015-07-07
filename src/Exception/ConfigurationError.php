@@ -2,6 +2,6 @@
 
 namespace Pusher\Exception;
 
-class ConfigurationError extends Exception {
-
+class ConfigurationError extends Exception
+{
 }

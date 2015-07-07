@@ -7,12 +7,14 @@ namespace Pusher;
  * useful on Google AppEngine or other environments where the cUrl extension
  * is not available.
  */
-class FileAdapter implements HTTPAdapter {
+class FileAdapter implements HTTPAdapter
+{
 
     /**
      * @see HTTPAdapter
      */
-    public static function isSupported() {
+    public static function isSupported()
+    {
         // for SSL support also check:
         //   extension_loaded('openssl') and in_array('https', $w)
         $w = stream_get_wrappers();
@@ -24,7 +26,8 @@ class FileAdapter implements HTTPAdapter {
     /**
      * @param $options array options to be merged in during request.
      */
-    public function __construct($options = array()) {
+    public function __construct($options = array())
+    {
         if (is_array($options)) {
             $this->options = $options;
         }
@@ -33,7 +36,8 @@ class FileAdapter implements HTTPAdapter {
     /**
      * @see HTTPAdapter
      */
-    public function request($method, $url, $headers, $body, $timeout, $proxy_url) {
+    public function request($method, $url, $headers, $body, $timeout, $proxy_url)
+    {
         $options = [
             'http' => [
                 'method' => $method,
@@ -70,8 +74,8 @@ class FileAdapter implements HTTPAdapter {
         return array('status' => $status[1], 'body' => $body, 'headers' => $headers);
     }
 
-    public function adapterId() {
+    public function adapterId()
+    {
         return 'file/0.0.0';
     }
-
 }

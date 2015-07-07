@@ -8,12 +8,14 @@ use Pusher\Exception\AdapterError;
  * A HTTP client that uses the venerable cURL library. This adapter supports
  * Keep-Alive.
  */
-class CurlAdapter implements HTTPAdapter {
+class CurlAdapter implements HTTPAdapter
+{
 
     /**
      * @see HTTPAdapter
      */
-    public static function isSupported() {
+    public static function isSupported()
+    {
         return extension_loaded('curl');
     }
 
@@ -31,7 +33,8 @@ class CurlAdapter implements HTTPAdapter {
      * @param $options array options to be merged in during request.
      * @throws Exception\AdapterError if curl_init() didn't work
      */
-    public function __construct($options = array()) {
+    public function __construct($options = array())
+    {
         if (is_array($options)) {
             $this->options = $options;
         }
@@ -41,7 +44,8 @@ class CurlAdapter implements HTTPAdapter {
         }
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         curl_close($this->ch);
     }
 
@@ -49,7 +53,8 @@ class CurlAdapter implements HTTPAdapter {
      * @see HTTPAdapter
      * @throws Exception\AdapterError on invalid curl_setopt options
      */
-    public function request($method, $url, $headers, $body, $timeout, $proxy_url) {
+    public function request($method, $url, $headers, $body, $timeout, $proxy_url)
+    {
 
         $options = array_replace($this->options, array(
             CURLOPT_URL => $url,
@@ -95,9 +100,9 @@ class CurlAdapter implements HTTPAdapter {
         return $response;
     }
 
-    public function adapterId() {
+    public function adapterId()
+    {
         $curl_version = curl_version();
         return 'curl/' . $curl_version['version'];
     }
-
 }

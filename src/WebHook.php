@@ -7,7 +7,8 @@ namespace Pusher;
  *
  * On normal cases use $pusher->webhook($_SERVER); to instanciate this class.
  */
-class WebHook {
+class WebHook
+{
 
     /**
      * @var string
@@ -35,7 +36,8 @@ class WebHook {
      * @param $signature string extracted from the X-Pusher-Signature header
      * @param $body_file string file to read the body from
      */
-    public function __construct($config, $api_key, $signature, $body_file = 'php://input') {
+    public function __construct($config, $api_key, $signature, $body_file = 'php://input')
+    {
         $this->signature = $signature;
         $this->keyPair = $config->keyPair($api_key);
         $this->bodyFile = $body_file;
@@ -46,7 +48,8 @@ class WebHook {
      *
      * @return boolean
      */
-    public function valid() {
+    public function valid()
+    {
         if (empty($this->keyPair) || empty($this->signature)) {
             return false;
         }
@@ -59,7 +62,8 @@ class WebHook {
      *
      * @return array
      */
-    public function events() {
+    public function events()
+    {
         $this->readBody();
         return $this->data['events'];
     }
@@ -69,16 +73,17 @@ class WebHook {
      *
      * @return int
      */
-    public function timestamp() {
+    public function timestamp()
+    {
         $this->readBody();
         return (int) ($this->data['time_ms'] / 1000);
     }
 
-    private function readBody() {
+    private function readBody()
+    {
         if (!isset($this->body)) {
             $this->body = file_get_contents($this->bodyFile);
             $this->data = json_decode($this->body, true);
         }
     }
-
 }

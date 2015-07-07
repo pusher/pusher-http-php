@@ -2,14 +2,11 @@
 
 namespace Pusher;
 
-if (!in_array('sha256', hash_algos())) {
-    throw new Exception('SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.');
-}
-
 /**
  * Container for the Pusher key:secret token
  */
-class KeyPair {
+class KeyPair
+{
 
     /** @var string */
     public $key;
@@ -24,7 +21,13 @@ class KeyPair {
      * @param $key string Pusher API key
      * @param $secret string Pusher API secret
      */
-    public function __construct($key, $secret) {
+    public function __construct($key, $secret)
+    {
+        if (!in_array('sha256', hash_algos())) {
+            throw new Exception(
+                'SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.'
+            );
+        }
         $this->key = $key;
         $this->secret = $secret;
     }
@@ -35,7 +38,8 @@ class KeyPair {
      * @param $string_to_sign string
      * @return string hmac signature
      */
-    public function sign($string_to_sign) {
+    public function sign($string_to_sign)
+    {
         return hash_hmac('sha256', $string_to_sign, $this->secret, false);
     }
 
@@ -47,9 +51,10 @@ class KeyPair {
      * @param $string_to_sign string content to verify
      * @return bool true if the signature matches
      */
-    public function verify($signature, $string_to_sign) {
+    public function verify($signature, $string_to_sign)
+    {
         $s2 = $this->sign($string_to_sign);
-        return $this->constant_compare($signature, $s2);
+        return $this->constantCompare($signature, $s2);
     }
 
     /**
@@ -61,7 +66,8 @@ class KeyPair {
      * @param $channel_data null|string Additional data to authorize
      * @return string hmac sha256 signature
      */
-    public function authenticate($socket_id, $channel_name, $channel_data = null) {
+    public function authenticate($socket_id, $channel_name, $channel_data = null)
+    {
         $string_to_sign = $socket_id . ':' . $channel_name;
 
         if (is_string($channel_data)) {
@@ -79,7 +85,8 @@ class KeyPair {
      * @param b string
      * @return boolean true if the two strings are equal
      */
-    private function constant_compare($a, $b) {
+    private function constantCompare($a, $b)
+    {
         if (strlen($a) != strlen($b)) {
             return false;
         }
@@ -90,5 +97,4 @@ class KeyPair {
         }
         return $result == 0;
     }
-
 }

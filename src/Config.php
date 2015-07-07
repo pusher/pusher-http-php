@@ -25,7 +25,8 @@ use Pusher\Exception\ConfigurationError;
  *   ))
  *
  */
-class Config {
+class Config
+{
 
     /**
      * @var string
@@ -59,7 +60,8 @@ class Config {
      * @param $config string|array|Config
      * @return Config
      */
-    public static function ensure($config) {
+    public static function ensure($config)
+    {
         if (!$config instanceof Config) {
             $config = new Config($config);
             $config->validate();
@@ -75,7 +77,8 @@ class Config {
      * @param $adapter_options array array('curl_adapter' => array(), 'file_adapter' => array())
      * @return CurlAdapter|FileAdapter|null
      */
-    public static function detectAdapter($adapter_options) {
+    public static function detectAdapter($adapter_options)
+    {
         if (CurlAdapter::isSupported()) {
             $opts = isset($adapter_options['curl_adapter']) ? $adapter_options['curl_adapter'] : array();
             return new CurlAdapter($opts);
@@ -90,7 +93,8 @@ class Config {
     /**
      * @param $config array|string
      */
-    public function __construct($config = array()) {
+    public function __construct($config = array())
+    {
         if (is_string($config)) {
             $config = array('base_url' => $config);
         }
@@ -140,7 +144,8 @@ class Config {
      * @param string
      * @return boolean
      */
-    function setBaseUrl($base_url) {
+    public function setBaseUrl($base_url)
+    {
         $parts = parse_url($base_url);
         if ($parts === false) {
             return false;
@@ -157,7 +162,7 @@ class Config {
         unset($parts['user']);
         unset($parts['pass']);
 
-        $this->baseUrl = $this->unparse_url($parts);
+        $this->baseUrl = $this->unparseUrl($parts);
         return true;
     }
 
@@ -168,7 +173,8 @@ class Config {
      * @param $api_key string
      * @return KeyPair|null
      */
-    function keyPair($api_key) {
+    public function keyPair($api_key)
+    {
         return $this->keys[$api_key];
     }
 
@@ -177,7 +183,8 @@ class Config {
      *
      * @return KeyPair|null
      */
-    function firstKeyPair() {
+    public function firstKeyPair()
+    {
         return reset($this->keys);
     }
 
@@ -188,7 +195,8 @@ class Config {
      * @param secret string
      * @return void
      */
-    function setKeyPair($key, $secret) {
+    public function setKeyPair($key, $secret)
+    {
         $this->keys[$key] = new KeyPair($key, $secret);
     }
 
@@ -197,7 +205,8 @@ class Config {
      *
      * @throws Exception\ConfigurationError
      */
-    public function validate() {
+    public function validate()
+    {
         if (empty($this->baseUrl)) {
             throw new ConfigurationError("baseUrl is missing");
         }
@@ -222,7 +231,8 @@ class Config {
      * @param $parsed_url array
      * @return string
      */
-    private function unparse_url($parsed_url) {
+    private function unparseUrl($parsed_url)
+    {
         $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
         $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
         $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
@@ -234,7 +244,4 @@ class Config {
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
-
 }
-
-

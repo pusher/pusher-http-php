@@ -8,8 +8,11 @@ use Pusher\WebHook;
 /**
  * @covers pusher\WebHook
  */
-class WebHookTest extends \PHPUnit_Framework_TestCase {
-    public function testSimple() {
+class WebHookTest extends \PHPUnit_Framework_TestCase
+{
+
+    public function testSimple()
+    {
         $config = new Config(array(
             'keys' => array('4d2c3d146b1b662605b7' => '2063025205ec9774f5e1')
         ));

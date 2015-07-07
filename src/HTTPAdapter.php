@@ -5,7 +5,8 @@ namespace Pusher;
 /**
  * Adapter interface used to abstract the HTTP client.
  */
-interface HTTPAdapter {
+interface HTTPAdapter
+{
 
     /**
      * Used to determine if this adapter is available. Depending on the PHP

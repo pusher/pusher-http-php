@@ -7,9 +7,11 @@ use Pusher\Config;
 /**
  * @covers pusher\Config
  */
-class ConfigTest extends \PHPUnit_Framework_TestCase {
+class ConfigTest extends \PHPUnit_Framework_TestCase
+{
 
-    public function testSimpleConstructor() {
+    public function testSimpleConstructor()
+    {
         $c = new Config('http://a:b@foobar.com');
         $this->assertEquals('http://foobar.com', $c->baseUrl);
         $c->validate();
@@ -23,12 +25,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException pusher\Exception\ConfigurationError
      */
-    public function testValidationError() {
+    public function testValidationError()
+    {
         $c = new Config();
         $c->validate();
     }
 
-    public function testTimeout() {
+    public function testTimeout()
+    {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
             'timeout' => 30
@@ -37,7 +41,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(30, $c->timeout);
     }
 
-    public function testKeyPairs() {
+    public function testKeyPairs()
+    {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
             'keys' => array(
@@ -49,5 +54,4 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('b', $c->firstKeyPair()->secret);
         $this->assertEquals('d', $c->keyPair('c')->secret);
     }
-
 }
