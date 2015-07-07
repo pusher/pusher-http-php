@@ -162,7 +162,7 @@ class Config
         unset($parts['user']);
         unset($parts['pass']);
 
-        $this->baseUrl = $this->unparse_url($parts);
+        $this->baseUrl = $this->unparseUrl($parts);
         return true;
     }
 

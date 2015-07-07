@@ -80,9 +80,9 @@ class Client
             $body = json_encode($body);
         }
         $base_path = parse_url($this->baseUrl, PHP_URL_PATH);
-        $full_path = $this->path_join($base_path, $rel_path);
+        $full_path = $this->pathJoin($base_path, $rel_path);
         $params = $this->signedParams($method, $full_path, $params, $body);
-        $full_url = $this->path_join($this->baseUrl, $rel_path) . '?' . http_build_query($params);
+        $full_url = $this->pathJoin($this->baseUrl, $rel_path) . '?' . http_build_query($params);
 
         $response = $this->adapter->request(
             $method,

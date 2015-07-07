@@ -54,7 +54,7 @@ class KeyPair
     public function verify($signature, $string_to_sign)
     {
         $s2 = $this->sign($string_to_sign);
-        return $this->constant_compare($signature, $s2);
+        return $this->constantCompare($signature, $s2);
     }
 
     /**
