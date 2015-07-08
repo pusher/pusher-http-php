@@ -151,9 +151,6 @@ class Config
             return false;
         }
 
-        // $parts['host'] = 'localhost';
-        // $parts['port'] = '1234';
-
         $user = $parts['user'];
         $pass = $parts['pass'];
         if (!empty($user) && !empty($pass)) {
