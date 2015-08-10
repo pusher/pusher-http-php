@@ -23,11 +23,44 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException pusher\Exception\ConfigurationError
+     * @expectedException \Pusher\Exception\ConfigurationError
      */
-    public function testValidationError()
+    public function testBaseUrlValidationError()
     {
         $c = new Config();
+        $c->validate();
+    }
+
+    /**
+     * @expectedException \Pusher\Exception\ConfigurationError
+     */
+    public function testMissingKeysValidationError() {
+        $c = new Config(array(
+            'base_url' => 'http://foobar.com',
+        ));
+        $c->validate();
+    }
+
+    /**
+     * @expectedException \Pusher\Exception\ConfigurationError
+     */
+    public function testMissingAdapterError() {
+        $c = new Config(array(
+            'base_url' => 'http://a:b@foobar.com',
+        ));
+        $c->adapter = null;
+        $c->validate();
+    }
+
+    /**
+     * @expectedException \Pusher\Exception\ConfigurationError
+     */
+    public function testTimeoutConfigError() {
+        $c = new Config(array(
+            'base_url' => 'http://a:b@foobar.com',
+            'adapter' => new \Pusher\FileAdapter(),
+        ));
+        $c->timeout = null;
         $c->validate();
     }
 
@@ -53,5 +86,35 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         // The first key is always the one from the URL
         $this->assertEquals('b', $c->firstKeyPair()->secret);
         $this->assertEquals('d', $c->keyPair('c')->secret);
+    }
+
+    public function testInstanceWithProxy() {
+        $c = new Config(array(
+            'base_url' => 'http://a:b@foobar.com',
+            'proxy_url' => 'http://myproxy.com',
+        ));
+
+        $this->assertEquals('http://myproxy.com', $c->proxyUrl);
+    }
+
+    public function testWithAdapterOption() {
+        $c = new Config(array(
+            'base_url' => 'http://a:b@foobar.com',
+            'adapter' => new \Pusher\FileAdapter(),
+        ));
+
+        $this->assertInstanceOf('Pusher\FileAdapter', $c->adapter);
+    }
+
+    public function testSetBaseUrl() {
+        $c = new Config(array(
+            'base_url' => 'http://a:b@foobar.com',
+        ));
+
+        $this->assertFalse($c->setBaseUrl('http://'));
+
+        $c->setBaseUrl('http://e:f@barfoo.com');
+        $this->assertEquals('f', $c->keyPair('e')->secret);
+        $this->assertEquals('http://barfoo.com', $c->baseUrl);
     }
 }

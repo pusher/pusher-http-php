@@ -74,17 +74,17 @@ class Config
      * PHP runtime.
      *
      * @todo Make the resolution extensible
-     * @param $adapter_options array array('curl_adapter' => array(), 'file_adapter' => array())
+     * @param $adapterOptions array array('curl_adapter' => array(), 'file_adapter' => array())
      * @return CurlAdapter|FileAdapter|null
      */
-    public static function detectAdapter($adapter_options)
+    public static function detectAdapter($adapterOptions)
     {
         if (CurlAdapter::isSupported()) {
-            $opts = isset($adapter_options['curl_adapter']) ? $adapter_options['curl_adapter'] : array();
+            $opts = isset($adapterOptions['curl_adapter']) ? $adapterOptions['curl_adapter'] : array();
             return new CurlAdapter($opts);
         }
         if (FileAdapter::isSupported()) {
-            $opts = isset($adapter_options['file_adapter']) ? $adapter_options['file_adapter'] : array();
+            $opts = isset($adapterOptions['file_adapter']) ? $adapterOptions['file_adapter'] : array();
             return new FileAdapter($opts);
         }
         return null;
@@ -151,13 +151,12 @@ class Config
             return false;
         }
 
-        $user = $parts['user'];
-        $pass = $parts['pass'];
-        if (!empty($user) && !empty($pass)) {
-            $this->setKeyPair($user, $pass);
+        if (!empty($parts['user']) && !empty($parts['pass'])) {
+            $this->setKeyPair($parts['user'], $parts['pass']);
+
+            unset($parts['user']);
+            unset($parts['pass']);
         }
-        unset($parts['user']);
-        unset($parts['pass']);
 
         $this->baseUrl = $this->unparseUrl($parts);
         return true;
