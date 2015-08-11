@@ -93,7 +93,7 @@ class Pusher
         $channels = (array)$channels;
 
         if (count($channels) > 10) {
-            throw new PusherException('An event can be triggered on a maximum of 10 channels in a single call.');
+            throw new Exception\Exception('An event can be triggered on a maximum of 10 channels in a single call.');
         }
 
         $data = json_encode($data);
@@ -150,13 +150,5 @@ class Pusher
     public function presenceUsers($channel_name, $params = array())
     {
         return $this->client->get("/channels/$channel_name/users", $params);
-    }
-
-    /**
-     * @return boolean true if the channel is a presence channel.
-     */
-    private function isPresence($channel_name)
-    {
-        return strncmp("presence-", $channel_name, 0) == 0;
     }
 }

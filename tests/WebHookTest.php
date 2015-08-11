@@ -26,5 +26,9 @@ class WebHookTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($body, $wh->body);
         $this->assertEquals(1, count($wh->events()));
         $this->assertEquals(1404402287, $wh->timestamp());
+
+        $wh->keyPair = null;
+        $wh->signature = null;
+        $this->assertFalse($wh->valid());
     }
 }
