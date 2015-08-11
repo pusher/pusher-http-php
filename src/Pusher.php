@@ -14,13 +14,12 @@ class Pusher
     public $config;
 
     /**
-     * @throws Exception\ConfigurationError
+     * @throws \Pusher\Exception\ConfigurationError
      */
     public function __construct($config)
     {
-        $config = Config::ensure($config);
-        $this->config = $config;
-        $this->client = new Client($config);
+        $this->config = Config::ensure($config);
+        $this->client = new Client($this->config);
     }
 
     /**
@@ -86,14 +85,14 @@ class Pusher
      * @param $event string name of the event
      * @param $data array data associated to the event
      * @param $socket_id string|null
-     * @throws Exception\HTTPError on invalid responses
+     * @throws \Exception\HTTPError on invalid responses
      * @return array
      */
     public function trigger($channels, $event, $data, $socket_id = null)
     {
-        if (is_string($channels)) {
-            $channels = array($channels);
-        } elseif (count($channels) > 10) {
+        $channels = (array)$channels;
+
+        if (count($channels) > 10) {
             throw new PusherException('An event can be triggered on a maximum of 10 channels in a single call.');
         }
 

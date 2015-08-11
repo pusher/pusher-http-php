@@ -38,21 +38,21 @@ class FileAdapter implements HTTPAdapter
      */
     public function request($method, $url, $headers, $body, $timeout, $proxy_url)
     {
-        $options = [
-            'http' => [
+        $options = array(
+            'http' => array(
                 'method' => $method,
                 'header' => join("\r\n", $headers),
                 'ignore_errors' => true,
                 'follow_location' => 0,
                 'timeout' => $timeout,
-            ],
-            'ssl' => [
+            ),
+            'ssl' => array(
                 'verify_peer' => true,
                 'cafile' => __dir__ . DIRECTORY_SEPARATOR . "cacert.pem",
                 'ciphers' => 'HIGH:!SSLv2:!SSLv3',
                 'disable_compression' => true,
-            ],
-        ];
+            ),
+        );
         $options = array_merge_recursive($this->options, $options);
 
         if (!is_null($body)) {

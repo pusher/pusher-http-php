@@ -28,11 +28,16 @@ class KeyPairTest extends \PHPUnit_Framework_TestCase
         $signature = $this->kp->sign('ahoi');
         $this->assertTrue($this->kp->verify($signature, 'ahoi'));
         $this->assertFalse($this->kp->verify($signature, 'ahoi2'));
+
+        $this->assertFalse($this->kp->verify('sdfqw2wkj1', 'ahoi'));
     }
 
     public function testAuthenticate()
     {
         $signature = $this->kp->authenticate('38087.11062758', 'private-messages');
         $this->assertEquals('413ad362eff8e6d4688b64f91ed99b31faa442ff54ba0048755da649219540a1', $signature);
+
+        $signature = $this->kp->authenticate('38087.11062758', 'private-messages', 'additional->auth');
+        $this->assertEquals('3055f3b60f05326fa668b3fa606cdd61ae4832203fb021643e5e9de7c12f9a9b', $signature);
     }
 }
