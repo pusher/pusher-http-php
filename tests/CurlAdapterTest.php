@@ -6,6 +6,14 @@ use Pusher\CurlAdapter;
 
 class CurlAdapterTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function setUp()
+    {
+        if (!extension_loaded('curl')) {
+            $this->markTestSkipped();
+        }
+    }
+
     public function testIsSupported()
     {
         $this->assertTrue(CurlAdapter::isSupported());

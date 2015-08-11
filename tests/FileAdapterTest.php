@@ -6,6 +6,14 @@ use Pusher\FileAdapter;
 
 class FileAdapterTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function setUp()
+    {
+        if (getenv('TRAVIS')) {
+            $this->markTestSkipped();
+        }
+    }
+
     public function testIsSupported()
     {
         $this->assertTrue(FileAdapter::isSupported());
@@ -13,7 +21,9 @@ class FileAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testRequest()
     {
-        $Adapter = new FileAdapter(array('http' => array('timeout' => 30)));
+        $Adapter = new FileAdapter(array(
+            'http' => array('timeout' => 30),
+        ));
         $result = $Adapter->request(
             'GET',
             'https://pusher.com',
