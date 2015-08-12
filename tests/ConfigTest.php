@@ -34,7 +34,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Pusher\Exception\ConfigurationError
      */
-    public function testMissingKeysValidationError() {
+    public function testMissingKeysValidationError()
+    {
         $c = new Config(array(
             'base_url' => 'http://foobar.com',
         ));
@@ -44,7 +45,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Pusher\Exception\ConfigurationError
      */
-    public function testMissingAdapterError() {
+    public function testMissingAdapterError()
+    {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
         ));
@@ -55,7 +57,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Pusher\Exception\ConfigurationError
      */
-    public function testTimeoutConfigError() {
+    public function testTimeoutConfigError()
+    {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
             'adapter' => new \Pusher\FileAdapter(),
@@ -88,7 +91,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('d', $c->keyPair('c')->secret);
     }
 
-    public function testInstanceWithProxy() {
+    public function testInstanceWithProxy()
+    {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
             'proxy_url' => 'http://myproxy.com',
@@ -97,7 +101,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('http://myproxy.com', $c->proxyUrl);
     }
 
-    public function testWithAdapterOption() {
+    public function testWithAdapterOption()
+    {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
             'adapter' => new \Pusher\FileAdapter(),
@@ -106,7 +111,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Pusher\FileAdapter', $c->adapter);
     }
 
-    public function testSetBaseUrl() {
+    public function testSetBaseUrl()
+    {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
         ));
