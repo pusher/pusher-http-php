@@ -19,7 +19,6 @@ use Pusher\Exception\ConfigurationError;
  *     'app_id' => '1234',
  *     'timeout' => 5,
  *     'proxy_url' => 'http://localhost:8080',
- *     'adapter' => new CurlAdapter(array(CURLOPT_SSL_VERIFYPEER => 0)),
  *     'keys' => array(
  *       '75e854969fc5d1eef71b' => 'ea1fbae4b428e56e87b8',
  *     ),
