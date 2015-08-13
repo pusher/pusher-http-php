@@ -9,11 +9,18 @@ class Pusher
 {
 
     /**
-     *
+     * The configuration object.
      *
      * @var Config
      */
     public $config;
+
+    /**
+     * The api client instance.
+     *
+     * @var Client
+     */
+    public $client;
 
     /**
      * Entry point of the api. Simply instantiates the library Config object.

@@ -50,7 +50,7 @@ class Config
     public $adapter;
 
     /**
-     *
+     * Default components of the baseUrl.
      *
      * @var array
      */

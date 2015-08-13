@@ -83,7 +83,6 @@ class PusherTest extends \PHPUnit_Framework_TestCase
                         )
                     ),
                 )
-
             );
 
         $this->Pusher->trigger('my-message', 'new-message', array('body' => 'Hello'));
