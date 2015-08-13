@@ -9,16 +9,31 @@ class Pusher
 {
 
     /**
+     *
+     *
      * @var Config
      */
     public $config;
 
     /**
-     * @throws \Pusher\Exception\ConfigurationError
+     * Entry point of the api. Simply instantiates the library Config object.
+     *
+     * @param string $appId
+     * @param string $key
+     * @param string $secret
+     * @param array $options
+     * @return void
      */
-    public function __construct($config)
+    public function __construct($appId, $key, $secret, $options = array())
     {
-        $this->config = Config::ensure($config);
+        $options = array_merge($options, array(
+            'app_id' => $appId,
+            'keys' => array(
+                $key => $secret,
+            ),
+        ));
+
+        $this->config = new Config($options);
         $this->client = new Client($this->config);
     }
 
@@ -84,11 +99,11 @@ class Pusher
      * @param $channels string|array A list of channels to send the event to
      * @param $event string name of the event
      * @param $data array data associated to the event
-     * @param $socket_id string|null
-     * @throws \Exception\HTTPError on invalid responses
+     * @param $socketId string|null
+     * @throws \Exception\Exception on invalid responses
      * @return array
      */
-    public function trigger($channels, $event, $data, $socket_id = null)
+    public function trigger($channels, $event, $data, $socketId = null)
     {
         $channels = (array)$channels;
 
@@ -103,8 +118,8 @@ class Pusher
         $body['data'] = $data;
         $body['channels'] = $channels;
 
-        if ($socket_id) {
-            $body['socket_id'] = $socket_id;
+        if ($socketId) {
+            $body['socket_id'] = $socketId;
         }
 
         return $this->client->post('events', $body);
