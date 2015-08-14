@@ -9,7 +9,7 @@ class FileAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (getenv('TRAVIS')) {
+        if (getenv('TRAVIS') || ini_get('allow_url_fopen') != '1') {
             $this->markTestSkipped();
         }
     }
