@@ -97,6 +97,10 @@ class Config
             $config = array('base_url' => $config);
         }
 
+        if (isset($config['encrypted'])) {
+            $this->defaults['scheme'] = ($config['encrypted'] === true) ? 'https' : 'http';
+        }
+
         if (!isset($config['base_url'])) {
             $config['base_url'] = $this->defaults['scheme'] . '://' . $this->defaults['host'];
         }

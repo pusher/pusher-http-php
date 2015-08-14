@@ -38,6 +38,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'keys' => array('a' => 'b'),
         ));
         $this->assertEquals('https://api.pusherapp.com/apps/1234', $c->baseUrl);
+
+        $c = new Config(array(
+            'app_id' => '1234',
+            'keys' => array('a' => 'b'),
+            'encrypted' => false,
+        ));
+        $this->assertEquals('http://api.pusherapp.com/apps/1234', $c->baseUrl);
     }
 
     /**
