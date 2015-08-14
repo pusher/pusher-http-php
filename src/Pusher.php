@@ -2,6 +2,8 @@
 
 namespace Pusher;
 
+use Pusher\Exception\ConfigurationError;
+
 /**
  * Main class used to interact with the pusher API and related constructs.
  */
@@ -31,16 +33,25 @@ class Pusher
      * @param array $options
      * @return void
      */
-    public function __construct($appId, $key, $secret, $options = array())
+    public function __construct($appId, $key = null, $secret = null, $options = array())
     {
-        $options = array_merge($options, array(
-            'app_id' => $appId,
-            'keys' => array(
-                $key => $secret,
-            ),
-        ));
+        if ($appId instanceof Config) {
+            $this->config = $appId;
+        } else {
+            if (!is_string($key) && !is_string($secret)) {
+                throw new ConfigurationError('Missing app key and secret.');
+            }
 
-        $this->config = new Config($options);
+            $options = array_merge($options, array(
+                'app_id' => $appId,
+                'keys' => array(
+                    $key => $secret,
+                ),
+            ));
+
+            $this->config = new Config($options);
+        }
+
         $this->client = new Client($this->config);
     }
 

@@ -14,6 +14,23 @@ class PusherTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
+    /**
+     * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedExceptionMessage Missing app key and secret.
+     */
+    public function testMissingParamsError()
+    {
+        new Pusher('1234');
+    }
+
+    public function testConstructorWithConfigObject()
+    {
+        $config = new Config('http://a:b@foobar.com/apps/1234');
+        $pusher = new Pusher($config);
+
+        $this->assertEquals($config, $pusher->config);
+    }
+
     public function testConstructor()
     {
         $this->assertInstanceOf('Pusher\Config', $this->Pusher->config);
