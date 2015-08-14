@@ -54,7 +54,7 @@ class Config
      * @var array
      */
     protected $defaults = array(
-        'scheme' => 'http',
+        'scheme' => 'https',
         'host' => 'api.pusherapp.com',
     );
 
