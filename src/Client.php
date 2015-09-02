@@ -39,7 +39,6 @@ class Client
      */
     public function __construct($config)
     {
-        $config = Config::ensure($config);
         $this->baseUrl = $config->baseUrl;
         $this->adapter = $config->adapter;
         $this->timeout = $config->timeout;

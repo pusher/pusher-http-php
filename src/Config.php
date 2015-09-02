@@ -15,10 +15,10 @@ use Pusher\Exception\ConfigurationError;
  *
  * Full example:
  *   new Config(array(
- *     'base_url' => 'http://api.pusherapp.com/apps/78225',
+ *     'base_url' => 'http://api.pusherapp.com',
+ *     'app_id' => '1234',
  *     'timeout' => 5,
  *     'proxy_url' => 'http://localhost:8080',
- *     'adapter' => new CurlAdapter(array(CURLOPT_SSL_VERIFYPEER => 0)),
  *     'keys' => array(
  *       '75e854969fc5d1eef71b' => 'ea1fbae4b428e56e87b8',
  *     ),
@@ -49,25 +49,19 @@ class Config
     public $adapter;
 
     /**
+     * Default components of the baseUrl.
+     *
+     * @var array
+     */
+    protected $defaults = array(
+        'scheme' => 'https',
+        'host' => 'api.pusherapp.com',
+    );
+
+    /**
      * @var array of kind array(string => KeyPair)
      */
     private $keys = array();
-
-    /**
-     * Makes sure to return a Config object. If $config is already a Config
-     * instance it just returns it, otherwise a new one is created.
-     *
-     * @param $config string|array|Config
-     * @return Config
-     */
-    public static function ensure($config)
-    {
-        if (!$config instanceof Config) {
-            $config = new Config($config);
-            $config->validate();
-        }
-        return $config;
-    }
 
     /**
      * Returns an instance of the first adapter that is supported in the current
@@ -93,18 +87,28 @@ class Config
     /**
      * @param $config array|string
      */
-    public function __construct($config = array())
+    public function __construct($config)
     {
+        if (!is_string($config) && !is_array($config)) {
+            throw new ConfigurationError('You have not provided a valid configuration.');
+        }
+
         if (is_string($config)) {
             $config = array('base_url' => $config);
         }
 
-        if (isset($config['base_url'])) {
-            $url = $config['base_url'];
-            if (!empty($url)) {
-                $this->setBaseUrl($url);
-            }
+        if (isset($config['encrypted'])) {
+            $this->defaults['scheme'] = ($config['encrypted'] === true) ? 'https' : 'http';
         }
+
+        if (!isset($config['base_url'])) {
+            $config['base_url'] = $this->defaults['scheme'] . '://' . $this->defaults['host'];
+        }
+
+        $appUrl = (isset($config['app_id'])) ?
+            $config['base_url'] . '/apps/' . $config['app_id'] : $config['base_url'];
+
+        $this->setBaseUrl($appUrl);
 
         if (isset($config['keys']) && is_array($config['keys'])) {
             foreach ($config['keys'] as $key => $secret) {
@@ -116,21 +120,13 @@ class Config
             $this->proxyUrl = $config['proxy_url'];
         }
 
-        $adapter = null;
-        if (isset($config['adapter'])) {
-            $adapter = $config['adapter'];
-        }
-        if (empty($adapter)) {
-            $adapter = Config::detectAdapter($config);
-        }
-        $this->adapter = $adapter;
+        $this->adapter = Config::detectAdapter($config);
 
-        if (isset($config['timeout'])) {
-            $timeout = $config['timeout'];
-            if (is_int($timeout)) {
-                $this->timeout = $timeout;
-            }
+        if (isset($config['timeout']) && is_int($config['timeout'])) {
+            $this->timeout = $config['timeout'];
         }
+
+        $this->validate();
     }
 
     /**
@@ -204,19 +200,19 @@ class Config
     public function validate()
     {
         if (empty($this->baseUrl)) {
-            throw new ConfigurationError("baseUrl is missing");
+            throw new ConfigurationError("baseUrl is missing.");
         }
 
         if (empty($this->keys)) {
-            throw new ConfigurationError("keys are missing");
+            throw new ConfigurationError("keys are missing.");
         }
 
         if (empty($this->adapter)) {
-            throw new ConfigurationError("adapter is missing");
+            throw new ConfigurationError("adapter is missing.");
         }
 
         if (empty($this->timeout)) {
-            throw new ConfigurationError("timeout is not set");
+            throw new ConfigurationError("timeout is not set.");
         }
     }
 

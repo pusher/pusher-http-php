@@ -3,36 +3,55 @@
 namespace Pusher\Tests;
 
 use Pusher\Pusher;
+use Pusher\Config;
 
 class PusherTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        $this->Pusher = new Pusher('1234', 'a', 'b', array(
+            'base_url' => 'http://foobar.com',
+        ));
+    }
+
+    /**
+     * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedExceptionMessage Missing app key and secret.
+     */
+    public function testMissingParamsError()
+    {
+        new Pusher('1234');
+    }
+
+    public function testConstructorWithConfigObject()
+    {
+        $config = new Config('http://a:b@foobar.com/apps/1234');
+        $pusher = new Pusher($config);
+
+        $this->assertEquals($config, $pusher->config);
+    }
 
     public function testConstructor()
     {
-        $Pusher = new Pusher('http://a:b@foobar.com');
-
-        $this->assertInstanceOf('Pusher\Config', $Pusher->config);
-        $this->assertInstanceOf('Pusher\Client', $Pusher->client);
+        $this->assertInstanceOf('Pusher\Config', $this->Pusher->config);
+        $this->assertInstanceOf('Pusher\Client', $this->Pusher->client);
     }
 
     public function testKeyPair()
     {
-        $Pusher = new Pusher('http://a:b@foobar.com');
-
-        $this->assertInstanceOf('Pusher\KeyPair', $Pusher->keyPair());
+        $this->assertInstanceOf('Pusher\KeyPair', $this->Pusher->keyPair());
     }
 
     public function testAuthenticate()
     {
-        $Pusher = new Pusher('http://a:b@foobar.com');
         $this->assertEquals(
             '{"auth":"a:a9e583c6fad5e38b69465bcff22fd809aac8b95fbdb9f7cae4bb27cb8e512f88"}',
-            $Pusher->authenticate('38087.11062758', 'private-messages')
+            $this->Pusher->authenticate('38087.11062758', 'private-messages')
         );
 
         $this->assertEquals(
             '{"auth":"a:8c30292debfdfdbc169bc7866a979936c886ea9fd70eb397f1facd55da5e3d2a","channel_data":"\"channel-data\""}',
-            $Pusher->authenticate('38087.11062758', 'private-messages', 'channel-data')
+            $this->Pusher->authenticate('38087.11062758', 'private-messages', 'channel-data')
         );
     }
 
@@ -43,8 +62,7 @@ class PusherTest extends \PHPUnit_Framework_TestCase
             'HTTP_X_PUSHER_SIGNATURE' => 'sdfkjq2jnk12je',
         );
 
-        $Pusher = new Pusher('http://a:b@foobar.com');
-        $result = $Pusher->webhook(null, __DIR__ . '/body1.txt');
+        $result = $this->Pusher->webhook(null, __DIR__ . '/body1.txt');
 
         $this->assertInstanceOf('Pusher\WebHook', $result);
         $this->assertEquals('sdfkjq2jnk12je', $result->signature);
@@ -55,10 +73,9 @@ class PusherTest extends \PHPUnit_Framework_TestCase
 
     public function testTrigger()
     {
-        $Pusher = new Pusher('http://a:b@foobar.com');
-
-        $Pusher->client = $this->getMock('Pusher\Client', array('post'), array('http://a:b@foobar.com'));
-        $Pusher->client
+        $config = new Config(array('base_url' => 'http://a:b@foobar.com'));
+        $this->Pusher->client = $this->getMock('Pusher\Client', array('post'), array($config));
+        $this->Pusher->client
             ->expects($this->exactly(2))
             ->method('post')
             ->withConsecutive(
@@ -83,11 +100,10 @@ class PusherTest extends \PHPUnit_Framework_TestCase
                         )
                     ),
                 )
-
             );
 
-        $Pusher->trigger('my-message', 'new-message', array('body' => 'Hello'));
-        $Pusher->trigger('my-message', 'new-message', array('body' => 'Hello'), '12345');
+        $this->Pusher->trigger('my-message', 'new-message', array('body' => 'Hello'));
+        $this->Pusher->trigger('my-message', 'new-message', array('body' => 'Hello'), '12345');
     }
 
     /**
@@ -96,8 +112,7 @@ class PusherTest extends \PHPUnit_Framework_TestCase
      */
     public function testTriggerThrowsError()
     {
-        $Pusher = new Pusher('http://a:b@foobar.com');
-        $Pusher->trigger(
+        $this->Pusher->trigger(
             array(
                 'my-message1',
                 'my-message2',
@@ -118,43 +133,43 @@ class PusherTest extends \PHPUnit_Framework_TestCase
 
     public function testChannels()
     {
-        $Pusher = new Pusher('http://a:b@foobar.com');
-        $Pusher->client = $this->getMock('Pusher\Client', array('get'), array('http://a:b@foobar.com'));
-        $Pusher->client
+        $config = new Config(array('base_url' => 'http://a:b@foobar.com'));
+        $this->Pusher->client = $this->getMock('Pusher\Client', array('get'), array($config));
+        $this->Pusher->client
             ->expects($this->once())
             ->method('get')
             ->with(
                 $this->equalTo('/channels'),
                 $this->equalTo(array('bill' => 'ben'))
             );
-        $Pusher->channels(array('bill' => 'ben'));
+        $this->Pusher->channels(array('bill' => 'ben'));
     }
 
     public function testChannelInfo()
     {
-        $Pusher = new Pusher('http://a:b@foobar.com');
-        $Pusher->client = $this->getMock('Pusher\Client', array('get'), array('http://a:b@foobar.com'));
-        $Pusher->client
+        $config = new Config(array('base_url' => 'http://a:b@foobar.com'));
+        $this->Pusher->client = $this->getMock('Pusher\Client', array('get'), array($config));
+        $this->Pusher->client
             ->expects($this->once())
             ->method('get')
             ->with(
                 $this->equalTo('/channels/foo'),
                 $this->equalTo(array('bill' => 'ben'))
             );
-        $Pusher->channelInfo('foo', array('bill' => 'ben'));
+        $this->Pusher->channelInfo('foo', array('bill' => 'ben'));
     }
 
     public function testPresenceUsers()
     {
-        $Pusher = new Pusher('http://a:b@foobar.com');
-        $Pusher->client = $this->getMock('Pusher\Client', array('get'), array('http://a:b@foobar.com'));
-        $Pusher->client
+        $config = new Config(array('base_url' => 'http://a:b@foobar.com'));
+        $this->Pusher->client = $this->getMock('Pusher\Client', array('get'), array($config));
+        $this->Pusher->client
             ->expects($this->once())
             ->method('get')
             ->with(
                 $this->equalTo('/channels/foo/users'),
                 $this->equalTo(array('bill' => 'ben'))
             );
-        $Pusher->presenceUsers('foo', array('bill' => 'ben'));
+        $this->Pusher->presenceUsers('foo', array('bill' => 'ben'));
     }
 }

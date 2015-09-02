@@ -24,15 +24,32 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedExceptionMessage You have not provided a valid configuration.
      */
-    public function testBaseUrlValidationError()
+    public function testInvalidConstructor()
     {
-        $c = new Config();
-        $c->validate();
+        $c = new Config(123456);
+    }
+
+    public function testDefaultUrlInConstructor()
+    {
+        $c = new Config(array(
+            'app_id' => '1234',
+            'keys' => array('a' => 'b'),
+        ));
+        $this->assertEquals('https://api.pusherapp.com/apps/1234', $c->baseUrl);
+
+        $c = new Config(array(
+            'app_id' => '1234',
+            'keys' => array('a' => 'b'),
+            'encrypted' => false,
+        ));
+        $this->assertEquals('http://api.pusherapp.com/apps/1234', $c->baseUrl);
     }
 
     /**
      * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedExceptionMessage keys are missing.
      */
     public function testMissingKeysValidationError()
     {
@@ -44,6 +61,20 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedExceptionMessage baseUrl is missing.
+     */
+    public function testMissingBaseUrlError()
+    {
+        $c = new Config(array(
+            'base_url' => 'http://a:b@foobar.com',
+        ));
+        $c->baseUrl = null;
+        $c->validate();
+    }
+
+    /**
+     * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedExceptionMessage adapter is missing.
      */
     public function testMissingAdapterError()
     {
@@ -56,6 +87,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedExceptionMessage timeout is not set.
      */
     public function testTimeoutConfigError()
     {
@@ -99,16 +131,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->assertEquals('http://myproxy.com', $c->proxyUrl);
-    }
-
-    public function testWithAdapterOption()
-    {
-        $c = new Config(array(
-            'base_url' => 'http://a:b@foobar.com',
-            'adapter' => new \Pusher\FileAdapter(),
-        ));
-
-        $this->assertInstanceOf('Pusher\FileAdapter', $c->adapter);
     }
 
     public function testSetBaseUrl()
