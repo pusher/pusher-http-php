@@ -55,7 +55,7 @@ class Config
      */
     protected $defaults = array(
         'scheme' => 'https',
-        'host' => 'api-useast2.pusher.com',
+        'host' => 'api.pusherapp.com',
     );
 
     /**
@@ -102,7 +102,7 @@ class Config
         }
 
         if (isset($config['cluster'])) {
-            $this->defaults['host'] = str_replace('useast2', $config['cluster'], $this->defaults['host']);
+            $this->defaults['host'] = 'api-' . $config['cluster'] . '.pusher.com';
         }
 
         if (!isset($config['base_url'])) {
