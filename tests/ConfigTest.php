@@ -47,6 +47,16 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('http://api.pusherapp.com/apps/1234', $c->baseUrl);
     }
 
+    public function testClusterUrl()
+    {
+        $c = new Config(array(
+            'app_id' => '1234',
+            'keys' => array('a' => 'b'),
+            'cluster' => 'eu',
+        ));
+        $this->assertEquals('https://api-eu.pusher.com/apps/1234', $c->baseUrl);
+    }
+
     /**
      * @expectedException \Pusher\Exception\ConfigurationError
      * @expectedExceptionMessage keys are missing.

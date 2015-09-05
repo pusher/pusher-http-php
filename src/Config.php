@@ -101,6 +101,10 @@ class Config
             $this->defaults['scheme'] = ($config['encrypted'] === true) ? 'https' : 'http';
         }
 
+        if (isset($config['cluster'])) {
+            $this->defaults['host'] = 'api-' . $config['cluster'] . '.pusher.com';
+        }
+
         if (!isset($config['base_url'])) {
             $config['base_url'] = $this->defaults['scheme'] . '://' . $this->defaults['host'];
         }
