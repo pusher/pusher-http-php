@@ -136,18 +136,20 @@ Next, create the following in presence_auth.php:
 
 ```php
 <?php
-header('Content-Type: application/json');
 if (isset($_SESSION['user_id'])) {
   $stmt = $pdo->prepare("SELECT * FROM `users` WHERE id = :id");
-  $stmt->bindValue(':id', $_SESSION['user_id'], \PDO::PARAM_INT);
+  $stmt->bindValue(':id', $_SESSION['user_id'], PDO::PARAM_INT);
   $stmt->execute();
   $user = $stmt->fetch();
 } else {
   die('aaargh, no-one is logged in')
 }
 
+header('Content-Type: application/json');
+
 $pusher = new Pusher($key, $secret, $app_id);
 $presence_data = array('name' => $user['name']);
+
 echo $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
 ```
 
