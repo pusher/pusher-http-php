@@ -137,10 +137,11 @@ Next, create the following in presence_auth.php:
 ```php
 <?php
 header('Content-Type: application/json');
-if ($_SESSION['user_id']){
-  $sql = "SELECT * FROM `users` WHERE id='$_SESSION[user_id]'";
-  $result = mysql_query($sql,$mysql);
-  $user = mysql_fetch_assoc($result);
+if (isset($_SESSION['user_id'])) {
+  $stmt = $pdo->prepare("SELECT * FROM `users` WHERE id = :id");
+  $stmt->bindValue(':id', $_SESSION['user_id'], \PDO::PARAM_INT);
+  $stmt->execute();
+  $user = $stmt->fetch();
 } else {
   die('aaargh, no-one is logged in')
 }
