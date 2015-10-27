@@ -20,7 +20,9 @@
 		+ Phil Leggetter (phil@leggetter.co.uk)
 */
 
-class PusherException extends Exception
+namespace Pusher;
+
+class PusherException extends \Exception
 {
 }
 
