@@ -57,7 +57,8 @@ class Pusher
 		'host' => 'api.pusherapp.com',
 		'port' => 80,
 		'timeout' => 30,
-		'debug' => false
+		'debug' => false,
+		'proxy' => null
 	);
 	private $logger = null;
 
@@ -253,6 +254,7 @@ class Pusher
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json", "Expect:" ) );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
+		if ( $this->settings['proxy'] ) curl_setopt( $ch, CURLOPT_PROXY,  $this->settings['proxy'] );
 
 		return $ch;
 	}
