@@ -94,7 +94,7 @@ The output of this will be:
 
 ### Socket id
 
-In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event ([http://pusherapp.com/docs/duplicates](http://pusherapp.com/docs/duplicates)):
+In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event ([https://pusher.com/docs/duplicates](http://pusherapp.com/docs/duplicates)):
 
 ```php
 $pusher->trigger('my-channel','event','data','socket_id');
@@ -157,22 +157,6 @@ Note: this assumes that you store your users in a table called `users` and that 
 
 ## Application State Queries
 
-### Generic get function
-
-```php
-$pusher->get( $path, $params );
-```
-
-Used to make `GET` queries against the Pusher REST API. Handles authentication.
-
-Response is an associative array with a `result` index. The contents of this index is dependent on the REST method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
-
-```php
-$response = $pusher->get( '/channels' );
-$http_status_code = $response[ 'status' ];
-$result = $response[ 'result' ];
-```
-
 ### Get information about a channel
 
 ```php
@@ -186,10 +170,18 @@ $info = $pusher->get_channel_info('channel-name');
 $channel_occupied = $info->occupied;
 ```
 
-This can also be achieved using the generic `pusher->get` function:
+For [presence channels](https://pusher.com/docs/presence_channels) you can also query the number of distinct users currently subscribed to this channel (a single user may be subscribed many times, but will only count as one):
 
 ```php
-$pusher->get( '/channels/channel-name' );
+$info = $pusher->get_channel_info('presence-channel-name', array('info' => 'user_count'));
+$user_count = $info->user_count;
+```
+
+If you have enabled the ability to query the `subscription_count` (the number of connections currently subscribed to this channel) then you can query this value as follows:
+
+```php
+$info = $pusher->get_channel_info('presence-channel-name', array('info' => 'subscription_count'));
+$user_count = $info->subscription_count;
 ```
     
 ### Get a list of application channels
@@ -203,12 +195,6 @@ It's also possible to get a list of channels for an application from the Pusher 
 ```php
 $result = $pusher->get_channels();
 $channel_count = count($result->channels); // $channels is an Array
-```
-
-This can also be achieved using the generic `pusher->get` function:
-
-```php
-$pusher->get( '/channels' );
 ```
   
 ### Get a filtered list of application channels
@@ -255,6 +241,22 @@ Array
                 )
         )
 )
+```
+
+### Generic get function
+
+```php
+$pusher->get( $path, $params );
+```
+
+Used to make `GET` queries against the Pusher REST API. Handles authentication.
+
+Response is an associative array with a `result` index. The contents of this index is dependent on the REST method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
+
+```php
+$response = $pusher->get( '/channels' );
+$http_status_code = $response[ 'status' ];
+$result = $response[ 'result' ];
 ```
 
 ## Debugging & Logging
