@@ -181,7 +181,7 @@ If you have enabled the ability to query the `subscription_count` (the number of
 
 ```php
 $info = $pusher->get_channel_info('presence-channel-name', array('info' => 'subscription_count'));
-$user_count = $info->subscription_count;
+$subscription_count = $info->subscription_count;
 ```
     
 ### Get a list of application channels
