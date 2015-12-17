@@ -249,7 +249,9 @@ class Pusher
 		}
 
 		// curl handle is not reusable unless reset
-		curl_reset($ch);
+		if (function_exists('curl_reset')) {
+			curl_reset($ch);
+		}
 
 		# Set cURL opts and execute request
 		curl_setopt( $ch, CURLOPT_URL, $full_url );
