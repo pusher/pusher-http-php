@@ -248,6 +248,11 @@ class Pusher
 			throw new PusherException('Could not initialise cURL!');
 		}
 
+		// curl handle is not reusable unless reset
+		if (function_exists('curl_reset')) {
+			curl_reset($ch);
+		}
+
 		# Set cURL opts and execute request
 		curl_setopt( $ch, CURLOPT_URL, $full_url );
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json", "Expect:" ) );
