@@ -44,7 +44,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Bad request
      */
     public function testRequest400Error()
@@ -58,7 +58,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Authentication error
      */
     public function testRequest401Error()
@@ -72,7 +72,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Not Found
      */
     public function testRequest404Error()
@@ -86,7 +86,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Proxy Authentication Required
      */
     public function testRequest407Error()
@@ -100,7 +100,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Unknown error
      */
     public function testRequestUnknownError()

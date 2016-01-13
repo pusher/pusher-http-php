@@ -2,7 +2,7 @@
 
 namespace Pusher\Http;
 
-use Pusher\Exception\AdapterError;
+use Pusher\Exception\AdapterException;
 
 /**
  * A HTTP client that uses the venerable cURL library. This adapter supports
@@ -31,7 +31,7 @@ class CurlAdapter implements Adapter
 
     /**
      * @param $options array options to be merged in during request.
-     * @throws \Pusher\Exception\AdapterError if curl_init() didn't work
+     * @throws \Pusher\Exception\AdapterException if curl_init() didn't work
      */
     public function __construct($options = array())
     {
@@ -40,7 +40,7 @@ class CurlAdapter implements Adapter
         }
         $this->ch = curl_init();
         if (!$this->ch) {
-            throw new AdapterError('curl_init: Could not initialise cURL');
+            throw new AdapterException('curl_init: Could not initialise cURL');
         }
     }
 
@@ -51,7 +51,7 @@ class CurlAdapter implements Adapter
 
     /**
      * @see Adapter
-     * @throws \Pusher\Exception\AdapterError on invalid curl_setopt options
+     * @throws \Pusher\Exception\AdapterException on invalid curl_setopt options
      */
     public function request($method, $url, $headers, $body, $timeout, $proxy_url)
     {
@@ -79,14 +79,14 @@ class CurlAdapter implements Adapter
 
         foreach ($options as $key => $value) {
             if (!curl_setopt($this->ch, $key, $value)) {
-                throw new AdapterError("curl_setopt_array: Invalid cURL option $key => $value");
+                throw new AdapterException("curl_setopt_array: Invalid cURL option $key => $value");
             }
         }
 
         $body = curl_exec($this->ch);
 
         if (curl_errno($this->ch) > 0) {
-            throw new AdapterError("curl: " . curl_error($this->ch));
+            throw new AdapterException("curl: " . curl_error($this->ch));
         }
 
         $info = curl_getinfo($this->ch);

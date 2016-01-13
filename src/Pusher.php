@@ -2,7 +2,7 @@
 
 namespace Pusher;
 
-use Pusher\Exception\ConfigurationError;
+use Pusher\Exception\ConfigurationException;
 use Pusher\Http\Client;
 
 /**
@@ -40,7 +40,7 @@ class Pusher
             $this->config = $appId;
         } else {
             if (!is_string($key) && !is_string($secret)) {
-                throw new ConfigurationError('Missing app key and secret.');
+                throw new ConfigurationException('Missing app key and secret.');
             }
 
             $options = array_merge($options, array(
@@ -150,7 +150,7 @@ class Pusher
      * GET /apps/[id]/channels
      *
      * @param $params array Hash of parameters for the API - see HTTP API docs
-     * @throws Exception\HTTPError on invalid responses
+     * @throws Exception\HttpException on invalid responses
      * @return array See Pusher API docs
      */
     public function channels($params = array())
@@ -163,7 +163,7 @@ class Pusher
      *
      * @param $channel_name string
      * @param $params array
-     * @throws Exception\HTTPError on invalid responses
+     * @throws Exception\HttpException on invalid responses
      * @return array
      */
     public function channelInfo($channel_name, $params = array())
@@ -178,7 +178,7 @@ class Pusher
      *
      * @param $channel_name string
      * @param $params array
-     * @throws Exception\HTTPError on invalid responses
+     * @throws Exception\HttpException on invalid responses
      * @return array
      */
     public function presenceUsers($channel_name, $params = array())

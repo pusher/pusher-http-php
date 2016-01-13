@@ -2,7 +2,7 @@
 
 namespace Pusher\Exception;
 
-class HTTPError extends Exception
+class HttpException extends Exception
 {
 
     /**

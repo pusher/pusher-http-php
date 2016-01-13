@@ -15,7 +15,7 @@ class PusherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedException \Pusher\Exception\ConfigurationException
      * @expectedExceptionMessage Missing app key and secret.
      */
     public function testMissingParamsError()

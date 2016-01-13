@@ -2,7 +2,7 @@
 
 namespace Pusher;
 
-use Pusher\Exception\ConfigurationError;
+use Pusher\Exception\ConfigurationException;
 use Pusher\Http\CurlAdapter;
 use Pusher\Http\FileAdapter;
 
@@ -92,7 +92,7 @@ class Config
     public function __construct($config)
     {
         if (!is_string($config) && !is_array($config)) {
-            throw new ConfigurationError('You have not provided a valid configuration.');
+            throw new ConfigurationException('You have not provided a valid configuration.');
         }
 
         if (is_string($config)) {
@@ -201,24 +201,24 @@ class Config
     /**
      * Checks that no config variable is missing.
      *
-     * @throws Exception\ConfigurationError
+     * @throws Exception\ConfigurationException
      */
     public function validate()
     {
         if (empty($this->baseUrl)) {
-            throw new ConfigurationError("baseUrl is missing.");
+            throw new ConfigurationException("baseUrl is missing.");
         }
 
         if (empty($this->keys)) {
-            throw new ConfigurationError("keys are missing.");
+            throw new ConfigurationException("keys are missing.");
         }
 
         if (empty($this->adapter)) {
-            throw new ConfigurationError("adapter is missing.");
+            throw new ConfigurationException("adapter is missing.");
         }
 
         if (empty($this->timeout)) {
-            throw new ConfigurationError("timeout is not set.");
+            throw new ConfigurationException("timeout is not set.");
         }
     }
 
