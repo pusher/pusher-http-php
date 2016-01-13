@@ -2,7 +2,7 @@
 
 namespace Pusher\Tests;
 
-use Pusher\FileAdapter;
+use Pusher\Http\FileAdapter;
 
 class FileAdapterTest extends \PHPUnit_Framework_TestCase
 {

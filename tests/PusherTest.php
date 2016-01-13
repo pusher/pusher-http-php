@@ -34,7 +34,7 @@ class PusherTest extends \PHPUnit_Framework_TestCase
     public function testConstructor()
     {
         $this->assertInstanceOf('Pusher\Config', $this->Pusher->config);
-        $this->assertInstanceOf('Pusher\Client', $this->Pusher->client);
+        $this->assertInstanceOf('Pusher\Http\Client', $this->Pusher->httpClient);
     }
 
     public function testKeyPair()
@@ -74,8 +74,8 @@ class PusherTest extends \PHPUnit_Framework_TestCase
     public function testTrigger()
     {
         $config = new Config(array('base_url' => 'http://a:b@foobar.com'));
-        $this->Pusher->client = $this->getMock('Pusher\Client', array('post'), array($config));
-        $this->Pusher->client
+        $this->Pusher->httpClient = $this->getMock('Pusher\Http\Client', array('post'), array($config));
+        $this->Pusher->httpClient
             ->expects($this->exactly(2))
             ->method('post')
             ->withConsecutive(
@@ -134,8 +134,8 @@ class PusherTest extends \PHPUnit_Framework_TestCase
     public function testChannels()
     {
         $config = new Config(array('base_url' => 'http://a:b@foobar.com'));
-        $this->Pusher->client = $this->getMock('Pusher\Client', array('get'), array($config));
-        $this->Pusher->client
+        $this->Pusher->httpClient = $this->getMock('Pusher\Http\Client', array('get'), array($config));
+        $this->Pusher->httpClient
             ->expects($this->once())
             ->method('get')
             ->with(
@@ -148,8 +148,8 @@ class PusherTest extends \PHPUnit_Framework_TestCase
     public function testChannelInfo()
     {
         $config = new Config(array('base_url' => 'http://a:b@foobar.com'));
-        $this->Pusher->client = $this->getMock('Pusher\Client', array('get'), array($config));
-        $this->Pusher->client
+        $this->Pusher->httpClient = $this->getMock('Pusher\Http\Client', array('get'), array($config));
+        $this->Pusher->httpClient
             ->expects($this->once())
             ->method('get')
             ->with(
@@ -162,8 +162,8 @@ class PusherTest extends \PHPUnit_Framework_TestCase
     public function testPresenceUsers()
     {
         $config = new Config(array('base_url' => 'http://a:b@foobar.com'));
-        $this->Pusher->client = $this->getMock('Pusher\Client', array('get'), array($config));
-        $this->Pusher->client
+        $this->Pusher->httpClient = $this->getMock('Pusher\Http\Client', array('get'), array($config));
+        $this->Pusher->httpClient
             ->expects($this->once())
             ->method('get')
             ->with(

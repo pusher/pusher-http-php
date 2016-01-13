@@ -3,9 +3,11 @@
 namespace Pusher;
 
 use Pusher\Exception\ConfigurationError;
+use Pusher\Http\CurlAdapter;
+use Pusher\Http\FileAdapter;
 
 /**
- * A configuration store used by pusher\Client and pusher\Pusher
+ * A configuration store used by \Pusher\Http\Client and \Pusher\Pusher
  *
  * Heroku example:
  *   new Config(getenv('PUSHER_URL'));
@@ -44,7 +46,7 @@ class Config
     public $proxyUrl;
 
     /**
-     * @var HTTPAdapter
+     * @var \Pusher\Http\Adapter
      */
     public $adapter;
 
@@ -69,7 +71,7 @@ class Config
      *
      * @todo Make the resolution extensible
      * @param $adapterOptions array array('curl_adapter' => array(), 'file_adapter' => array())
-     * @return CurlAdapter|FileAdapter|null
+     * @return \Pusher\Http\CurlAdapter|\Pusher\Http\FileAdapter|null
      */
     public static function detectAdapter($adapterOptions)
     {

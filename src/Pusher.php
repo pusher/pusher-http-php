@@ -3,6 +3,7 @@
 namespace Pusher;
 
 use Pusher\Exception\ConfigurationError;
+use Pusher\Http\Client;
 
 /**
  * Main class used to interact with the pusher API and related constructs.
@@ -20,9 +21,9 @@ class Pusher
     /**
      * The api client instance.
      *
-     * @var Client
+     * @var Http\Client
      */
-    public $client;
+    public $httpClient;
 
     /**
      * Entry point of the api. Simply instantiates the library Config object.
@@ -52,7 +53,7 @@ class Pusher
             $this->config = new Config($options);
         }
 
-        $this->client = new Client($this->config);
+        $this->httpClient = new Client($this->config);
     }
 
     /**
@@ -140,7 +141,7 @@ class Pusher
             $body['socket_id'] = $socketId;
         }
 
-        return $this->client->post('events', $body);
+        return $this->httpClient->post('events', $body);
     }
 
     /**
@@ -154,7 +155,7 @@ class Pusher
      */
     public function channels($params = array())
     {
-        return $this->client->get('/channels', $params);
+        return $this->httpClient->get('/channels', $params);
     }
 
     /**
@@ -167,7 +168,7 @@ class Pusher
      */
     public function channelInfo($channel_name, $params = array())
     {
-        return $this->client->get("/channels/$channel_name", $params);
+        return $this->httpClient->get("/channels/$channel_name", $params);
     }
 
     /**
@@ -182,6 +183,6 @@ class Pusher
      */
     public function presenceUsers($channel_name, $params = array())
     {
-        return $this->client->get("/channels/$channel_name/users", $params);
+        return $this->httpClient->get("/channels/$channel_name/users", $params);
     }
 }

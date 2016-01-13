@@ -1,6 +1,6 @@
 <?php
 
-namespace Pusher;
+namespace Pusher\Http;
 
 use Pusher\Exception\AdapterError;
 
@@ -8,11 +8,11 @@ use Pusher\Exception\AdapterError;
  * A HTTP client that uses the venerable cURL library. This adapter supports
  * Keep-Alive.
  */
-class CurlAdapter implements HTTPAdapter
+class CurlAdapter implements Adapter
 {
 
     /**
-     * @see HTTPAdapter
+     * @see Adapter
      */
     public static function isSupported()
     {
@@ -31,7 +31,7 @@ class CurlAdapter implements HTTPAdapter
 
     /**
      * @param $options array options to be merged in during request.
-     * @throws Exception\AdapterError if curl_init() didn't work
+     * @throws \Pusher\Exception\AdapterError if curl_init() didn't work
      */
     public function __construct($options = array())
     {
@@ -50,8 +50,8 @@ class CurlAdapter implements HTTPAdapter
     }
 
     /**
-     * @see HTTPAdapter
-     * @throws Exception\AdapterError on invalid curl_setopt options
+     * @see Adapter
+     * @throws \Pusher\Exception\AdapterError on invalid curl_setopt options
      */
     public function request($method, $url, $headers, $body, $timeout, $proxy_url)
     {

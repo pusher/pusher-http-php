@@ -103,7 +103,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
-            'adapter' => new \Pusher\FileAdapter(),
+            'adapter' => new \Pusher\Http\FileAdapter(),
         ));
         $c->timeout = null;
         $c->validate();
