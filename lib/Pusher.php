@@ -58,7 +58,7 @@ class Pusher
 		'port' => 80,
 		'timeout' => 30,
 		'debug' => false,
-        'curl_options' => array()
+		'curl_options' => array()
 	);
 	private $logger = null;
 
@@ -260,14 +260,14 @@ class Pusher
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
 
-        // Set custom curl options
-        if ( ! empty($this->settings['curl_options']))
-        {
-            foreach ($this->settings['curl_options'] as $option => $value)
-            {
-                curl_setopt( $ch, $option, $value );
-            }
-        }
+		// Set custom curl options
+		if ( ! empty($this->settings['curl_options']))
+		{
+			foreach ($this->settings['curl_options'] as $option => $value)
+			{
+				curl_setopt( $ch, $option, $value );
+			}
+		}
 
 		return $ch;
 	}
