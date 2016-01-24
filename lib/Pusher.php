@@ -261,9 +261,9 @@ class Pusher
 		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
 
 		// Set custom curl options
-		if ( ! empty($this->settings['curl_options']))
+		if ( ! empty( $this->settings[ 'curl_options' ] ) )
 		{
-			foreach ($this->settings['curl_options'] as $option => $value)
+			foreach ( $this->settings[ 'curl_options' ] as $option => $value )
 			{
 				curl_setopt( $ch, $option, $value );
 			}
