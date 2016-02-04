@@ -18,6 +18,7 @@
 		+ Zack Kitzmiller (delicious@zackisamazing.com)
 		+ Andrew Bender (igothelp@gmail.com)
 		+ Phil Leggetter (phil@leggetter.co.uk)
+		+ Simaranjit Singh (simaranjit.singh@virdi.me)
 */
 
 class PusherException extends Exception
@@ -362,6 +363,11 @@ class Pusher
 		$s_url = $this->settings['base_path'] . '/events';
 
 		$data_encoded = $already_encoded ? $data : json_encode( $data );
+
+		// json_encode might return false on failure
+		if (!$data_encoded) {
+			$this->Log('Failed to perform json_encode on the the provided data: ' . print_r( $data, true ));
+		}
 
 		$post_params = array();
 		$post_params[ 'name' ] = $event;
