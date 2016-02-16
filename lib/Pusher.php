@@ -55,7 +55,6 @@ class Pusher
 
 	private $settings = array(
 		'scheme' => 'http',
-		'host' => 'api.pusherapp.com',
 		'port' => 80,
 		'timeout' => 30,
 		'debug' => false
@@ -73,12 +72,13 @@ class Pusher
 	 * @param int $app_id
 	 * @param bool $options [optional]
 	 *		Options to configure the Pusher instance.
-	 * 	Was previously a debug flag. Legacy support for this exists if a boolean is passed.
-	 * 	scheme - e.g. http or https
-	 * 	host - the host e.g. api.pusherapp.com. No trailing forward slash.
-	 * 	port - the http port
-	 * 	timeout - the http timeout
-	 * 	encrypted - quick option to use scheme of https and port 443.
+	 *	Was previously a debug flag. Legacy support for this exists if a boolean is passed.
+	 *	scheme - e.g. http or https
+	 *	host - the host e.g. api.pusherapp.com. No trailing forward slash.
+	 *	port - the http port
+	 *	timeout - the http timeout
+	 *	encrypted - quick option to use scheme of https and port 443.
+	 *	cluster - cluster name to connect to.
 	 * @param string $host [optional] - deprecated
 	 * @param int $port [optional] - deprecated
 	 * @param int $timeout [optional] - deprecated
@@ -128,15 +128,28 @@ class Pusher
 			$options[ 'port' ] = 443;
 		}
 
-		$this->settings['auth_key'] 	= $auth_key;
-		$this->settings['secret'] 		= $secret;
-		$this->settings['app_id'] 		= $app_id;
+		$this->settings['auth_key']		= $auth_key;
+		$this->settings['secret']			= $secret;
+		$this->settings['app_id']			= $app_id;
 		$this->settings['base_path']	= '/apps/' . $this->settings['app_id'];
 
 		foreach( $options as $key => $value ) {
 			// only set if valid setting/option
 			if( isset( $this->settings[ $key ] ) ) {
 				$this->settings[ $key ] = $value;
+			}
+		}
+
+		// handle the case when 'host' and 'cluster' are specified in the options.
+		if ( ! array_key_exists( 'host' , $this->settings ) ) {
+			if ( array_key_exists( 'host' , $options ) ) {
+				$this->settings[ 'host' ] = $options[ 'host' ];
+			}
+			else if ( array_key_exists( 'cluster', $options ) ) {
+				$this->settings[ 'host' ] = 'api-' . $options[ 'cluster' ] . '.pusher.com';
+			}
+			else {
+				$this->settings[ 'host' ] = 'api.pusherapp.com';
 			}
 		}
 
