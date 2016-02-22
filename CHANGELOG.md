@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.0 (2015-02-16)
+
+[ADDED] A new `cluster` option for the Pusher constructor.
+
 ## 2.2.2 (2015-05-15)
 
 [FIXED] Fixed a PHP 5.2 incompatibility caused by referencing a private method in array_walk.
