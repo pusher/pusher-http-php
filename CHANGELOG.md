@@ -12,7 +12,7 @@
 ## 2.2.0 (2015-01-20)
 
 [CHANGED] `new Pusher($app_key, $app_secret, $app_id, $options)` - The `$options` parameter
-has been added as the forth parameter to the constructor and other additional 
+has been added as the forth parameter to the constructor and other additional
 parameters are now deprecated.
 
 ## 2.1.3 (2012-12-22)
