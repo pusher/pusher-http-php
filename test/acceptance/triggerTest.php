@@ -22,19 +22,19 @@
 		{
 			$this->assertNotNull($this->pusher, 'Created new Pusher object');
 		}
-		
+
 		public function testStringPush()
 		{
 			$string_trigger = $this->pusher->trigger('test_channel', 'my_event', 'Test string');
 			$this->assertTrue($string_trigger, 'Trigger with string payload');
 		}
-		
+
 		public function testArrayPush()
 		{
 			$structure_trigger = $this->pusher->trigger('test_channel', 'my_event', array( 'test' => 1 ));
 			$this->assertTrue($structure_trigger, 'Trigger with structured payload');
 		}
-		
+
 		public function testEncryptedPush()
 		{
 			$options = array(
@@ -43,7 +43,7 @@
 			);
 			$pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
 			$pusher->set_logger( new TestLogger() );
-			
+
 			$structure_trigger = $pusher->trigger('test_channel', 'my_event', array( 'encrypted' => 1 ));
 			$this->assertTrue($structure_trigger, 'Trigger with over encrypted connection');
 		}
@@ -54,7 +54,7 @@
 			$response = $this->pusher->trigger('test_channel', 'my_event', $data, null, true );
 			$this->assertEquals( 413, $response[ 'status' ] , '413 HTTP status response expected');
 		}
-		
+
 		/**
      * @expectedException PusherException
      */
@@ -66,12 +66,12 @@
 			$data = array( 'event_name' => 'event_data' );
 			$response = $this->pusher->trigger( $channels, 'my_event', $data );
 		}
-		
+
 		public function test_triggering_event_on_multiple_channels() {
 			$data = array( 'event_name' => 'event_data' );
 			$channels = array( 'test_channel_1', 'test_channel_2' );
 			$response = $this->pusher->trigger( $channels, 'my_event', $data );
-		
+
 			$this->assertTrue( $response );
 		}
 	}
