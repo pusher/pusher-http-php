@@ -176,7 +176,9 @@ class Pusher
 	}
 
 	/**
+	 * Log a string
 	 *
+	 * @param string $msg The message to log
 	 */
 	private function log( $msg ) {
 		if( is_null( $this->logger ) == false ) {
@@ -185,8 +187,10 @@ class Pusher
 	}
 
 	/**
-	* Check if the current PHP setup is sufficient to run this class
-	*/
+	 * Check if the current PHP setup is sufficient to run this class
+	 *
+	 * @throws PusherException if any required dependencies are missing
+	 */
 	private function check_compatibility()
 	{
 		if ( ! extension_loaded( 'curl' ) || ! extension_loaded( 'json' ) )
@@ -202,7 +206,10 @@ class Pusher
 	}
 
 	/**
-	 * validate number of channels and channel name format.
+	 * Validate number of channels and channel name format.
+	 *
+	 * @param string[] $channels An array of channel names to validate
+	 * @throws PusherException if $channels is too big or any channel is invalid
 	 */
 	private function validate_channels($channels) {
 		if( count( $channels ) > 100 ) {
@@ -216,6 +223,9 @@ class Pusher
 
 	/**
 	 * Ensure a channel name is valid based on our spec
+	 *
+	 * @param $channel The channel name to validate
+	 * @throws PusherException if $channel is invalid
 	 */
 	private function validate_channel( $channel )
 	{
@@ -226,6 +236,9 @@ class Pusher
 
 	/**
 	 * Ensure a socket_id is valid based on our spec
+	 *
+	 * @param string $socket_id The socket ID to validate
+	 * @throws PusherException if $socket_id is invalid
 	 */
 	private function validate_socket_id( $socket_id )
 	{
@@ -368,7 +381,7 @@ class Pusher
 	 * @param array $channels An array of channel names to publish the event on.
 	 * @param string $event
 	 * @param mixed $data Event data
-	 * @param int $socket_id [optional]
+	 * @param string $socket_id [optional]
 	 * @param bool $debug [optional]
 	 * @return bool|string
 	 */
@@ -511,7 +524,7 @@ class Pusher
 	/**
 	 * Creates a socket signature
 	 *
-	 * @param int $socket_id
+	 * @param string $socket_id
 	 * @param string $custom_data
 	 * @return string
 	 */
@@ -541,7 +554,7 @@ class Pusher
 	/**
 	 * Creates a presence signature (an extension of socket signing)
 	 *
-	 * @param int $socket_id
+	 * @param string $socket_id
 	 * @param string $user_id
 	 * @param mixed $user_info
 	 * @return string
