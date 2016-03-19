@@ -57,9 +57,11 @@ class Pusher
 		'scheme' => 'http',
 		'port' => 80,
 		'timeout' => 30,
-		'debug' => false
+		'debug' => false,
+		'curl_options' => array()
 	);
 	private $logger = null;
+    private $ch = null;
 
 	/**
 	 * PHP5 Constructor.
@@ -265,44 +267,53 @@ class Pusher
 		$this->log( 'curl_init( ' . $full_url . ' )' );
 
 		// Create or reuse existing curl handle
-		static $ch;
-		if (null === $ch) {
-			$ch = curl_init();
+		if ($this->ch === null) {
+			$this->ch = curl_init();
 		}
 
-		if ( $ch === false )
+		if ( $this->ch === false )
 		{
 			throw new PusherException('Could not initialise cURL!');
 		}
 
 		// curl handle is not reusable unless reset
 		if (function_exists('curl_reset')) {
-			curl_reset($ch);
+			curl_reset($this->ch);
 		}
 
 		# Set cURL opts and execute request
-		curl_setopt( $ch, CURLOPT_URL, $full_url );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json", "Expect:" ) );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
+		curl_setopt( $this->ch, CURLOPT_URL, $full_url );
+		curl_setopt( $this->ch, CURLOPT_HTTPHEADER, array ( "Content-Type: application/json", "Expect:" ) );
+		curl_setopt( $this->ch, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt( $this->ch, CURLOPT_TIMEOUT, $this->settings['timeout'] );
 
-		return $ch;
+		// Set custom curl options
+		if ( ! empty( $this->settings[ 'curl_options' ] ) )
+		{
+			foreach ( $this->settings[ 'curl_options' ] as $option => $value )
+			{
+				curl_setopt( $this->ch, $option, $value );
+			}
+		}
 	}
 
 	/**
 	 * Utility function to execute curl and create capture response information.
 	 */
-	private function exec_curl( $ch ) {
+	private function exec_curl() {
 		$response = array();
 
-		$response[ 'body' ] = curl_exec( $ch );
-		$response[ 'status' ] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$response[ 'body' ] = curl_exec( $this->ch );
+		$response[ 'status' ] = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 
 		$this->log( 'exec_curl response: ' . print_r( $response, true ) );
 
 		if( $response[ 'body' ] === false ) {
-			$this->log( 'exec_curl error: ' . curl_error( $ch ) );
+			$this->log( 'exec_curl error: ' . curl_error( $this->ch ) );
 		}
+
+        curl_close($this->ch);
+        $this->ch = null;
 
 		return $response;
 	}
@@ -409,14 +420,14 @@ class Pusher
 
 		$query_params['body_md5'] = md5( $post_value );
 
-		$ch = $this->create_curl( $s_url, 'POST', $query_params );
+		$this->create_curl( $s_url, 'POST', $query_params );
 
 		$this->log( 'trigger POST: ' . $post_value );
 
-		curl_setopt( $ch, CURLOPT_POST, 1 );
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_value );
+		curl_setopt( $this->ch, CURLOPT_POST, 1 );
+		curl_setopt( $this->ch, CURLOPT_POSTFIELDS, $post_value );
 
-		$response = $this->exec_curl( $ch );
+		$response = $this->exec_curl();
 
 		if ( $response[ 'status' ] == 200 && $debug == false )
 		{
@@ -494,9 +505,9 @@ class Pusher
 	public function get( $path, $params = array() ) {
 		$s_url = $this->settings['base_path'] . $path;
 
-		$ch = $this->create_curl( $s_url, 'GET', $params );
+		$this->create_curl( $s_url, 'GET', $params );
 
-		$response = $this->exec_curl( $ch );
+		$response = $this->exec_curl();
 
 		if( $response[ 'status' ] == 200)
 		{
