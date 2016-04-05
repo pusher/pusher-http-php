@@ -10,7 +10,6 @@ use Pusher\Http\Client;
  */
 class Pusher
 {
-
     /**
      * The configuration object.
      *
@@ -32,6 +31,7 @@ class Pusher
      * @param string $key
      * @param string $secret
      * @param array $options
+     *
      * @return void
      */
     public function __construct($appId, $key = null, $secret = null, $options = array())
@@ -71,6 +71,7 @@ class Pusher
      * @param $socket_id string
      * @param $channel_name string
      * @param $channel_data array|null
+     *
      * @return string
      */
     public function authenticate($socket_id, $channel_name, $channel_data = null)
@@ -83,11 +84,12 @@ class Pusher
 
         $signature = $kp->authenticate($socket_id, $channel_name, $channel_data);
 
-        $json = array('auth' => $kp->key . ':' . $signature);
+        $json = array('auth' => $kp->key.':'.$signature);
 
         if (!is_null($channel_data)) {
             $json['channel_data'] = $channel_data;
         }
+
         return json_encode($json);
     }
 
@@ -100,6 +102,7 @@ class Pusher
      *
      * @param $server array|null defaults to $_SERVER if null
      * @param $body_file string where to read the body from
+     *
      * @return pusher\WebHook
      */
     public function webhook($server = null, $body_file = 'php://input')
@@ -109,6 +112,7 @@ class Pusher
         }
         $api_key = $server['HTTP_X_PUSHER_KEY'];
         $signature = $server['HTTP_X_PUSHER_SIGNATURE'];
+
         return new WebHook($this->config, $api_key, $signature, $body_file);
     }
 
@@ -119,12 +123,14 @@ class Pusher
      * @param $event string name of the event
      * @param $data array data associated to the event
      * @param $socketId string|null
+     *
      * @throws \Exception\Exception on invalid responses
+     *
      * @return array
      */
     public function trigger($channels, $event, $data, $socketId = null)
     {
-        $channels = (array)$channels;
+        $channels = (array) $channels;
 
         if (count($channels) > 10) {
             throw new Exception\Exception('An event can be triggered on a maximum of 10 channels in a single call.');
@@ -145,12 +151,14 @@ class Pusher
     }
 
     /**
-     * Request a list of occupied channels from the API
+     * Request a list of occupied channels from the API.
      *
      * GET /apps/[id]/channels
      *
      * @param $params array Hash of parameters for the API - see HTTP API docs
+     *
      * @throws Exception\HttpException on invalid responses
+     *
      * @return array See Pusher API docs
      */
     public function channels($params = array())
@@ -159,11 +167,13 @@ class Pusher
     }
 
     /**
-     * Request information about a channel from the API
+     * Request information about a channel from the API.
      *
      * @param $channel_name string
      * @param $params array
+     *
      * @throws Exception\HttpException on invalid responses
+     *
      * @return array
      */
     public function channelInfo($channel_name, $params = array())
@@ -172,13 +182,15 @@ class Pusher
     }
 
     /**
-     * Request a list of users on a persence channel from the API
+     * Request a list of users on a persence channel from the API.
      *
      * @see http://pusher.com/docs/rest_api#method-get-users
      *
      * @param $channel_name string
      * @param $params array
+     *
      * @throws Exception\HttpException on invalid responses
+     *
      * @return array
      */
     public function presenceUsers($channel_name, $params = array())

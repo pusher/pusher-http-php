@@ -10,7 +10,6 @@ use Pusher\Exception\AdapterException;
  */
 class CurlAdapter implements Adapter
 {
-
     /**
      * @see Adapter
      */
@@ -31,6 +30,7 @@ class CurlAdapter implements Adapter
 
     /**
      * @param $options array options to be merged in during request.
+     *
      * @throws \Pusher\Exception\AdapterException if curl_init() didn't work
      */
     public function __construct($options = array())
@@ -51,11 +51,11 @@ class CurlAdapter implements Adapter
 
     /**
      * @see Adapter
+     *
      * @throws \Pusher\Exception\AdapterException on invalid curl_setopt options
      */
     public function request($method, $url, $headers, $body, $timeout, $proxy_url)
     {
-
         $options = array_replace($this->options, array(
             CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => $headers,
@@ -64,7 +64,7 @@ class CurlAdapter implements Adapter
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_SSL_VERIFYPEER => 1,
             CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_CAINFO => __dir__ . DIRECTORY_SEPARATOR . "cacert.pem"
+            CURLOPT_CAINFO => __dir__.DIRECTORY_SEPARATOR.'cacert.pem',
         ));
 
         if (!is_null($body)) {
@@ -86,7 +86,7 @@ class CurlAdapter implements Adapter
         $body = curl_exec($this->ch);
 
         if (curl_errno($this->ch) > 0) {
-            throw new AdapterException("curl: " . curl_error($this->ch));
+            throw new AdapterException('curl: '.curl_error($this->ch));
         }
 
         $info = curl_getinfo($this->ch);
@@ -103,6 +103,7 @@ class CurlAdapter implements Adapter
     public function adapterId()
     {
         $curl_version = curl_version();
-        return 'curl/' . $curl_version['version'];
+
+        return 'curl/'.$curl_version['version'];
     }
 }

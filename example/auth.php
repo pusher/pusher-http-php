@@ -5,7 +5,7 @@
 
  */
 
-require "_config.php";
+require '_config.php';
 
 // TODO: Add XSS check here
 // TODO: Check user auth here
@@ -13,11 +13,11 @@ require "_config.php";
 $socket_id = $_POST['socket_id'];
 $channel_name = $_POST['channel_name'];
 $channel_data = array(
-    'user_id' => rand()
+    'user_id' => rand(),
 );
 
 $data = $pusher->authenticate($socket_id, $channel_name, $channel_data);
 
 header('OK', true, 200);
 header('Content-Type: application/json');
-print($data);
+echo $data;

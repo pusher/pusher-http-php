@@ -7,7 +7,7 @@ use Pusher\Http\CurlAdapter;
 use Pusher\Http\FileAdapter;
 
 /**
- * A configuration store used by \Pusher\Http\Client and \Pusher\Pusher
+ * A configuration store used by \Pusher\Http\Client and \Pusher\Pusher.
  *
  * Heroku example:
  *   new Config(getenv('PUSHER_URL'));
@@ -25,11 +25,9 @@ use Pusher\Http\FileAdapter;
  *       '75e854969fc5d1eef71b' => 'ea1fbae4b428e56e87b8',
  *     ),
  *   ))
- *
  */
 class Config
 {
-
     /**
      * @var string
      */
@@ -70,20 +68,23 @@ class Config
      * PHP runtime.
      *
      * @todo Make the resolution extensible
+     *
      * @param $adapterOptions array array('curl_adapter' => array(), 'file_adapter' => array())
+     *
      * @return \Pusher\Http\CurlAdapter|\Pusher\Http\FileAdapter|null
      */
     public static function detectAdapter($adapterOptions)
     {
         if (CurlAdapter::isSupported()) {
             $opts = isset($adapterOptions['curl_adapter']) ? $adapterOptions['curl_adapter'] : array();
+
             return new CurlAdapter($opts);
         }
         if (FileAdapter::isSupported()) {
             $opts = isset($adapterOptions['file_adapter']) ? $adapterOptions['file_adapter'] : array();
+
             return new FileAdapter($opts);
         }
-        return null;
     }
 
     /**
@@ -104,15 +105,15 @@ class Config
         }
 
         if (isset($config['cluster'])) {
-            $this->defaults['host'] = 'api-' . $config['cluster'] . '.pusher.com';
+            $this->defaults['host'] = 'api-'.$config['cluster'].'.pusher.com';
         }
 
         if (!isset($config['base_url'])) {
-            $config['base_url'] = $this->defaults['scheme'] . '://' . $this->defaults['host'];
+            $config['base_url'] = $this->defaults['scheme'].'://'.$this->defaults['host'];
         }
 
         $appUrl = (isset($config['app_id'])) ?
-            $config['base_url'] . '/apps/' . $config['app_id'] : $config['base_url'];
+            $config['base_url'].'/apps/'.$config['app_id'] : $config['base_url'];
 
         $this->setBaseUrl($appUrl);
 
@@ -126,7 +127,7 @@ class Config
             $this->proxyUrl = $config['proxy_url'];
         }
 
-        $this->adapter = Config::detectAdapter($config);
+        $this->adapter = self::detectAdapter($config);
 
         if (isset($config['timeout']) && is_int($config['timeout'])) {
             $this->timeout = $config['timeout'];
@@ -144,7 +145,8 @@ class Config
      * change the value of $this->baseUrl and returns false.
      *
      * @param string
-     * @return boolean
+     *
+     * @return bool
      */
     public function setBaseUrl($base_url)
     {
@@ -161,6 +163,7 @@ class Config
         }
 
         $this->baseUrl = $this->unparseUrl($parts);
+
         return true;
     }
 
@@ -169,6 +172,7 @@ class Config
      * key.
      *
      * @param $api_key string
+     *
      * @return KeyPair|null
      */
     public function keyPair($api_key)
@@ -191,6 +195,7 @@ class Config
      *
      * @param key string
      * @param secret string
+     *
      * @return void
      */
     public function setKeyPair($key, $secret)
@@ -206,19 +211,19 @@ class Config
     public function validate()
     {
         if (empty($this->baseUrl)) {
-            throw new ConfigurationException("baseUrl is missing.");
+            throw new ConfigurationException('baseUrl is missing.');
         }
 
         if (empty($this->keys)) {
-            throw new ConfigurationException("keys are missing.");
+            throw new ConfigurationException('keys are missing.');
         }
 
         if (empty($this->adapter)) {
-            throw new ConfigurationException("adapter is missing.");
+            throw new ConfigurationException('adapter is missing.');
         }
 
         if (empty($this->timeout)) {
-            throw new ConfigurationException("timeout is not set.");
+            throw new ConfigurationException('timeout is not set.');
         }
     }
 
@@ -226,20 +231,23 @@ class Config
      * Utility function to recompose an array returns from parse_url into an URL.
      *
      * @see http://uk3.php.net/manual/en/function.parse-url.php#106731
+     *
      * @param $parsed_url array
+     *
      * @return string
      */
     private function unparseUrl($parsed_url)
     {
-        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'].'://' : '';
         $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $port = isset($parsed_url['port']) ? ':'.$parsed_url['port'] : '';
         $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+        $pass = isset($parsed_url['pass']) ? ':'.$parsed_url['pass'] : '';
         $pass = ($user || $pass) ? "$pass@" : '';
         $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-        $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+        $query = isset($parsed_url['query']) ? '?'.$parsed_url['query'] : '';
+        $fragment = isset($parsed_url['fragment']) ? '#'.$parsed_url['fragment'] : '';
+
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
 }

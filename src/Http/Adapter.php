@@ -7,12 +7,11 @@ namespace Pusher\Http;
  */
 interface Adapter
 {
-
     /**
      * Used to determine if this adapter is available. Depending on the PHP
      * installation some extensions might not be enabled.
      *
-     * @return boolean true if supported
+     * @return bool true if supported
      */
     public static function isSupported();
 
@@ -30,13 +29,14 @@ interface Adapter
      * @param $body string|null
      * @param $timeout int
      * @param $proxy_url string|null
+     *
      * @return array with array('status' => int, 'body' => string)
      */
     public function request($method, $url, $headers, $body, $timeout, $proxy_url);
 
     /**
      * Returns the name of the adapter which is added in the User-Agent header
-     * The format should be name/version. Eg: "curl/1.3.0"
+     * The format should be name/version. Eg: "curl/1.3.0".
      *
      * @return string
      */

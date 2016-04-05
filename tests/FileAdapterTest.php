@@ -6,10 +6,9 @@ use Pusher\Http\FileAdapter;
 
 class FileAdapterTest extends \PHPUnit_Framework_TestCase
 {
-
     public function setUp()
     {
-        if (getenv('TRAVIS') || ini_get('allow_url_fopen') != '1') {
+        if (getenv('TRAVIS') || ini_get('allow_url_fopen') !== '1') {
             $this->markTestSkipped();
         }
     }

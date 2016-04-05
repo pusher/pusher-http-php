@@ -11,7 +11,6 @@ use Pusher\Exception\AdapterException;
  */
 class FileAdapter implements Adapter
 {
-
     /**
      * @see Adapter
      */
@@ -20,6 +19,7 @@ class FileAdapter implements Adapter
         // for SSL support also check:
         //   extension_loaded('openssl') and in_array('https', $w)
         $w = stream_get_wrappers();
+
         return in_array('http', $w) && ini_get('allow_url_fopen');
     }
 
@@ -43,14 +43,14 @@ class FileAdapter implements Adapter
         $options = array(
             'http' => array(
                 'method' => $method,
-                'header' => join("\r\n", $headers),
+                'header' => implode("\r\n", $headers),
                 'ignore_errors' => true,
                 'follow_location' => 0,
                 'timeout' => $timeout,
             ),
             'ssl' => array(
                 'verify_peer' => true,
-                'cafile' => __dir__ . DIRECTORY_SEPARATOR . "cacert.pem",
+                'cafile' => __dir__.DIRECTORY_SEPARATOR.'cacert.pem',
                 'ciphers' => 'HIGH:!SSLv2:!SSLv3',
                 'disable_compression' => true,
             ),
@@ -68,7 +68,7 @@ class FileAdapter implements Adapter
 
         $context = stream_context_create($options);
         $body = @file_get_contents($url, false, $context);
-        if($body === FALSE) {
+        if ($body === false) {
             $error = error_get_last();
             throw new AdapterException($error['message'], $error['type']);
         }

@@ -2,8 +2,8 @@
 
 namespace Pusher\Tests;
 
-use Pusher\Pusher;
 use Pusher\Config;
+use Pusher\Pusher;
 
 class PusherTest extends \PHPUnit_Framework_TestCase
 {
@@ -62,7 +62,7 @@ class PusherTest extends \PHPUnit_Framework_TestCase
             'HTTP_X_PUSHER_SIGNATURE' => 'sdfkjq2jnk12je',
         );
 
-        $result = $this->Pusher->webhook(null, __DIR__ . '/body1.txt');
+        $result = $this->Pusher->webhook(null, __DIR__.'/body1.txt');
 
         $this->assertInstanceOf('Pusher\WebHook', $result);
         $this->assertEquals('sdfkjq2jnk12je', $result->signature);

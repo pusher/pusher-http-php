@@ -3,11 +3,10 @@
 namespace Pusher;
 
 /**
- * Container for the Pusher key:secret token
+ * Container for the Pusher key:secret token.
  */
 class KeyPair
 {
-
     /** @var string */
     public $key;
 
@@ -33,9 +32,10 @@ class KeyPair
     }
 
     /**
-     * Generates a signature of the given string
+     * Generates a signature of the given string.
      *
      * @param $string_to_sign string
+     *
      * @return string hmac signature
      */
     public function sign($string_to_sign)
@@ -49,11 +49,13 @@ class KeyPair
      * @param $api_key string
      * @param $signature string signature to verify
      * @param $string_to_sign string content to verify
+     *
      * @return bool true if the signature matches
      */
     public function verify($signature, $string_to_sign)
     {
         $s2 = $this->sign($string_to_sign);
+
         return $this->constantCompare($signature, $s2);
     }
 
@@ -64,14 +66,15 @@ class KeyPair
      * @param $socket_id string Id of the socket to authorize
      * @param $channel_name string Name of the channel to authorize
      * @param $channel_data null|string Additional data to authorize
+     *
      * @return string hmac sha256 signature
      */
     public function authenticate($socket_id, $channel_name, $channel_data = null)
     {
-        $string_to_sign = $socket_id . ':' . $channel_name;
+        $string_to_sign = $socket_id.':'.$channel_name;
 
         if (is_string($channel_data)) {
-            $string_to_sign .= ':' . $channel_data;
+            $string_to_sign .= ':'.$channel_data;
         }
 
         return $this->sign($string_to_sign);
@@ -83,11 +86,12 @@ class KeyPair
      *
      * @param a string
      * @param b string
-     * @return boolean true if the two strings are equal
+     *
+     * @return bool true if the two strings are equal
      */
     private function constantCompare($a, $b)
     {
-        if (strlen($a) != strlen($b)) {
+        if (strlen($a) !== strlen($b)) {
             return false;
         }
         $result = 0;
@@ -95,6 +99,7 @@ class KeyPair
         for ($i = 0; $i < $len; $i++) {
             $result |= ord($a[$i]) ^ ord($b[$i]);
         }
-        return $result == 0;
+
+        return $result === 0;
     }
 }
