@@ -9,7 +9,6 @@ use Pusher\Config;
  */
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testSimpleConstructor()
     {
         $c = new Config('http://a:b@foobar.com');
@@ -113,7 +112,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
-            'timeout' => 30
+            'timeout' => 30,
         ));
         $c->validate();
         $this->assertEquals(30, $c->timeout);
@@ -124,8 +123,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
             'keys' => array(
-                'c' => 'd'
-            )
+                'c' => 'd',
+            ),
         ));
 
         // The first key is always the one from the URL

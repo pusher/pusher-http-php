@@ -2,8 +2,8 @@
 
 namespace Pusher\Tests;
 
-use Pusher\Http\Client;
 use Pusher\Config;
+use Pusher\Http\Client;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {

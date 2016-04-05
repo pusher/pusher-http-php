@@ -4,7 +4,6 @@ namespace Pusher\Exception;
 
 class HttpException extends Exception
 {
-
     /**
      * @var array contains the http response as an array('status' => int, 'body' => string)
      */

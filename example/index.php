@@ -1,5 +1,5 @@
 <?php
-require "_config.php";
+require '_config.php';
 header('OK', true, 200);
 ?>
 <!DOCTYPE html>

@@ -2,8 +2,8 @@
 
 namespace Pusher\Http;
 
-use Pusher\Version;
 use Pusher\Exception\HttpException;
+use Pusher\Version;
 
 /**
  * Simple HTTP client that encode and decodes request/responses using the
@@ -11,7 +11,6 @@ use Pusher\Exception\HttpException;
  */
 class Client
 {
-
     /**
      * @var string
      */
@@ -72,7 +71,9 @@ class Client
      * @param $rel_path string
      * @param $params array
      * @param $body array|null
+     *
      * @throws Pusher\Exception\HttpException on invalid responses
+     *
      * @return mixed
      */
     public function request($method, $rel_path, $params = array(), $body = null)
@@ -84,7 +85,7 @@ class Client
         $base_path = parse_url($this->baseUrl, PHP_URL_PATH);
         $full_path = $this->pathJoin($base_path, $rel_path);
         $params = $this->signedParams($method, $full_path, $params, $body);
-        $full_url = $this->pathJoin($this->baseUrl, $rel_path) . '?' . http_build_query($params);
+        $full_url = $this->pathJoin($this->baseUrl, $rel_path).'?'.http_build_query($params);
 
         $response = $this->adapter->request(
             $method,
@@ -101,47 +102,49 @@ class Client
             case 202:
                 return true;
             case 400:
-                throw new HttpException("Bad request", $response);
+                throw new HttpException('Bad request', $response);
             case 401:
-                throw new HttpException("Authentication error", $response);
+                throw new HttpException('Authentication error', $response);
             case 404:
-                throw new HttpException("Not Found", $response);
+                throw new HttpException('Not Found', $response);
             case 407:
-                throw new HttpException("Proxy Authentication Required", $response);
+                throw new HttpException('Proxy Authentication Required', $response);
             default:
-                throw new HttpException("Unknown error", $response);
+                throw new HttpException('Unknown error', $response);
         }
     }
 
     /**
      * Returns the User-Agent identifier of this client library. Used in
-     * requestHeaders()
+     * requestHeaders().
      *
      * @return string
      */
     private function userAgent()
     {
-        return 'pusher-http-php/' . Version::VERSION .
-                ' ' . $this->adapter->adapterId() .
-                ' PHP/' . PHP_VERSION;
+        return 'pusher-http-php/'.Version::VERSION.
+                ' '.$this->adapter->adapterId().
+                ' PHP/'.PHP_VERSION;
     }
 
     /**
      * Returns HTTP headers used in all the requests.
      *
      * @param $has_body boolean
+     *
      * @return string[]
      */
     private function requestHeaders($has_body)
     {
         $headers = array(
-            'User-Agent: ' . $this->userAgent(),
+            'User-Agent: '.$this->userAgent(),
             'Accept: application/json',
             'Connection: keep-alive',
         );
         if ($has_body) {
             $headers[] = 'Content-Type: application/json';
         }
+
         return $headers;
     }
 
@@ -152,6 +155,7 @@ class Client
      * @param $path string path to the resource
      * @param $params array array(string => string) URL query params
      * @param $body string|null HTTP body
+     *
      * @return array a new set of params.
      */
     private function signedParams($method, $path, $params, $body)
@@ -181,18 +185,20 @@ class Client
         $string_to_sign = implode("\n", array($method, $path, $query));
 
         $params['auth_signature'] = $this->keyPair->sign($string_to_sign);
+
         return $params;
     }
 
     /**
-     * Util to join two strings a/b
+     * Util to join two strings a/b.
      *
      * @param $a string
      * @param $b string
+     *
      * @return string
      */
     private function pathJoin($a, $b)
     {
-        return rtrim($a, "/") . "/" . ltrim($b, "/");
+        return rtrim($a, '/').'/'.ltrim($b, '/');
     }
 }

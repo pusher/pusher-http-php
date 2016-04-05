@@ -9,7 +9,6 @@ namespace Pusher;
  */
 class WebHook
 {
-
     /**
      * @var string
      */
@@ -46,7 +45,7 @@ class WebHook
     /**
      * Checks the validity and signature of the data passed in the constructor.
      *
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {
@@ -54,6 +53,7 @@ class WebHook
             return false;
         }
         $this->readBody();
+
         return $this->keyPair->verify($this->signature, $this->body);
     }
 
@@ -65,6 +65,7 @@ class WebHook
     public function events()
     {
         $this->readBody();
+
         return $this->data['events'];
     }
 
@@ -76,6 +77,7 @@ class WebHook
     public function timestamp()
     {
         $this->readBody();
+
         return (int) ($this->data['time_ms'] / 1000);
     }
 
