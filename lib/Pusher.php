@@ -299,7 +299,7 @@ class Pusher
         {
             foreach ( $this->settings[ 'curl_options' ] as $option => $value )
             {
-                curl_setopt( $this->ch, $option, $value );
+                curl_setopt( $ch, $option, $value );
             }
         }
 
