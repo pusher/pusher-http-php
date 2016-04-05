@@ -294,6 +294,15 @@ class Pusher
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->settings['timeout']);
 
+        // Set custom curl options
+        if ( ! empty( $this->settings[ 'curl_options' ] ) )
+        {
+            foreach ( $this->settings[ 'curl_options' ] as $option => $value )
+            {
+                curl_setopt( $this->ch, $option, $value );
+            }
+        }
+
         return $ch;
     }
 
@@ -312,6 +321,9 @@ class Pusher
         if ($response['body'] === false) {
             $this->log('exec_curl error: '.curl_error($ch));
         }
+
+        curl_close($ch);
+        $ch = null;
 
         return $response;
     }
