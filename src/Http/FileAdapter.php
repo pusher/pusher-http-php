@@ -1,17 +1,19 @@
 <?php
 
-namespace Pusher;
+namespace Pusher\Http;
+
+use Pusher\Exception\AdapterException;
 
 /**
  * A HTTP client that uses the file_get_contents method. This adapter is
  * useful on Google AppEngine or other environments where the cUrl extension
  * is not available.
  */
-class FileAdapter implements HTTPAdapter
+class FileAdapter implements Adapter
 {
 
     /**
-     * @see HTTPAdapter
+     * @see Adapter
      */
     public static function isSupported()
     {
@@ -34,7 +36,7 @@ class FileAdapter implements HTTPAdapter
     }
 
     /**
-     * @see HTTPAdapter
+     * @see Adapter
      */
     public function request($method, $url, $headers, $body, $timeout, $proxy_url)
     {
@@ -65,7 +67,11 @@ class FileAdapter implements HTTPAdapter
         }
 
         $context = stream_context_create($options);
-        $body = file_get_contents($url, false, $context);
+        $body = @file_get_contents($url, false, $context);
+        if($body === FALSE) {
+            $error = error_get_last();
+            throw new AdapterException($error['message'], $error['type']);
+        }
         $headers = $http_response_header; // magic variable
         $response_line = array_shift($headers);
 

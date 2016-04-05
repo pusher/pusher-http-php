@@ -2,7 +2,8 @@
 
 namespace Pusher;
 
-use Pusher\Exception\ConfigurationError;
+use Pusher\Exception\ConfigurationException;
+use Pusher\Http\Client;
 
 /**
  * Main class used to interact with the pusher API and related constructs.
@@ -20,9 +21,9 @@ class Pusher
     /**
      * The api client instance.
      *
-     * @var Client
+     * @var Http\Client
      */
-    public $client;
+    public $httpClient;
 
     /**
      * Entry point of the api. Simply instantiates the library Config object.
@@ -39,7 +40,7 @@ class Pusher
             $this->config = $appId;
         } else {
             if (!is_string($key) && !is_string($secret)) {
-                throw new ConfigurationError('Missing app key and secret.');
+                throw new ConfigurationException('Missing app key and secret.');
             }
 
             $options = array_merge($options, array(
@@ -52,7 +53,7 @@ class Pusher
             $this->config = new Config($options);
         }
 
-        $this->client = new Client($this->config);
+        $this->httpClient = new Client($this->config);
     }
 
     /**
@@ -140,7 +141,7 @@ class Pusher
             $body['socket_id'] = $socketId;
         }
 
-        return $this->client->post('events', $body);
+        return $this->httpClient->post('events', $body);
     }
 
     /**
@@ -149,12 +150,12 @@ class Pusher
      * GET /apps/[id]/channels
      *
      * @param $params array Hash of parameters for the API - see HTTP API docs
-     * @throws Exception\HTTPError on invalid responses
+     * @throws Exception\HttpException on invalid responses
      * @return array See Pusher API docs
      */
     public function channels($params = array())
     {
-        return $this->client->get('/channels', $params);
+        return $this->httpClient->get('/channels', $params);
     }
 
     /**
@@ -162,12 +163,12 @@ class Pusher
      *
      * @param $channel_name string
      * @param $params array
-     * @throws Exception\HTTPError on invalid responses
+     * @throws Exception\HttpException on invalid responses
      * @return array
      */
     public function channelInfo($channel_name, $params = array())
     {
-        return $this->client->get("/channels/$channel_name", $params);
+        return $this->httpClient->get("/channels/$channel_name", $params);
     }
 
     /**
@@ -177,11 +178,11 @@ class Pusher
      *
      * @param $channel_name string
      * @param $params array
-     * @throws Exception\HTTPError on invalid responses
+     * @throws Exception\HttpException on invalid responses
      * @return array
      */
     public function presenceUsers($channel_name, $params = array())
     {
-        return $this->client->get("/channels/$channel_name/users", $params);
+        return $this->httpClient->get("/channels/$channel_name/users", $params);
     }
 }

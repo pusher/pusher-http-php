@@ -23,7 +23,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedException \Pusher\Exception\ConfigurationException
      * @expectedExceptionMessage You have not provided a valid configuration.
      */
     public function testInvalidConstructor()
@@ -58,7 +58,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedException \Pusher\Exception\ConfigurationException
      * @expectedExceptionMessage keys are missing.
      */
     public function testMissingKeysValidationError()
@@ -70,7 +70,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedException \Pusher\Exception\ConfigurationException
      * @expectedExceptionMessage baseUrl is missing.
      */
     public function testMissingBaseUrlError()
@@ -83,10 +83,10 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedException \Pusher\Exception\ConfigurationException
      * @expectedExceptionMessage adapter is missing.
      */
-    public function testMissingAdapterError()
+    public function testMissingAdapterException()
     {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
@@ -96,14 +96,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\ConfigurationError
+     * @expectedException \Pusher\Exception\ConfigurationException
      * @expectedExceptionMessage timeout is not set.
      */
     public function testTimeoutConfigError()
     {
         $c = new Config(array(
             'base_url' => 'http://a:b@foobar.com',
-            'adapter' => new \Pusher\FileAdapter(),
+            'adapter' => new \Pusher\Http\FileAdapter(),
         ));
         $c->timeout = null;
         $c->validate();

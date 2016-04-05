@@ -2,7 +2,7 @@
 
 namespace Pusher\Tests;
 
-use Pusher\CurlAdapter;
+use Pusher\Http\CurlAdapter;
 
 class CurlAdapterTest extends \PHPUnit_Framework_TestCase
 {

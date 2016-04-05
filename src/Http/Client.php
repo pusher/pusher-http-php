@@ -1,6 +1,9 @@
 <?php
 
-namespace Pusher;
+namespace Pusher\Http;
+
+use Pusher\Version;
+use Pusher\Exception\HttpException;
 
 /**
  * Simple HTTP client that encode and decodes request/responses using the
@@ -15,7 +18,7 @@ class Client
     public $baseUrl;
 
     /**
-     * @var HTTPAdapter
+     * @var Adapter
      */
     public $adapter;
 
@@ -69,7 +72,7 @@ class Client
      * @param $rel_path string
      * @param $params array
      * @param $body array|null
-     * @throws Exception\HTTPError on invalid responses
+     * @throws Pusher\Exception\HttpException on invalid responses
      * @return mixed
      */
     public function request($method, $rel_path, $params = array(), $body = null)
@@ -98,15 +101,15 @@ class Client
             case 202:
                 return true;
             case 400:
-                throw new Exception\HTTPError("Bad request", $response);
+                throw new HttpException("Bad request", $response);
             case 401:
-                throw new Exception\HTTPError("Authentication error", $response);
+                throw new HttpException("Authentication error", $response);
             case 404:
-                throw new Exception\HTTPError("Not Found", $response);
+                throw new HttpException("Not Found", $response);
             case 407:
-                throw new Exception\HTTPError("Proxy Authentication Required", $response);
+                throw new HttpException("Proxy Authentication Required", $response);
             default:
-                throw new Exception\HTTPError("Unknown error", $response);
+                throw new HttpException("Unknown error", $response);
         }
     }
 

@@ -2,10 +2,12 @@
 
 namespace Pusher;
 
-use Pusher\Exception\ConfigurationError;
+use Pusher\Exception\ConfigurationException;
+use Pusher\Http\CurlAdapter;
+use Pusher\Http\FileAdapter;
 
 /**
- * A configuration store used by pusher\Client and pusher\Pusher
+ * A configuration store used by \Pusher\Http\Client and \Pusher\Pusher
  *
  * Heroku example:
  *   new Config(getenv('PUSHER_URL'));
@@ -44,7 +46,7 @@ class Config
     public $proxyUrl;
 
     /**
-     * @var HTTPAdapter
+     * @var \Pusher\Http\Adapter
      */
     public $adapter;
 
@@ -69,7 +71,7 @@ class Config
      *
      * @todo Make the resolution extensible
      * @param $adapterOptions array array('curl_adapter' => array(), 'file_adapter' => array())
-     * @return CurlAdapter|FileAdapter|null
+     * @return \Pusher\Http\CurlAdapter|\Pusher\Http\FileAdapter|null
      */
     public static function detectAdapter($adapterOptions)
     {
@@ -90,7 +92,7 @@ class Config
     public function __construct($config)
     {
         if (!is_string($config) && !is_array($config)) {
-            throw new ConfigurationError('You have not provided a valid configuration.');
+            throw new ConfigurationException('You have not provided a valid configuration.');
         }
 
         if (is_string($config)) {
@@ -199,24 +201,24 @@ class Config
     /**
      * Checks that no config variable is missing.
      *
-     * @throws Exception\ConfigurationError
+     * @throws Exception\ConfigurationException
      */
     public function validate()
     {
         if (empty($this->baseUrl)) {
-            throw new ConfigurationError("baseUrl is missing.");
+            throw new ConfigurationException("baseUrl is missing.");
         }
 
         if (empty($this->keys)) {
-            throw new ConfigurationError("keys are missing.");
+            throw new ConfigurationException("keys are missing.");
         }
 
         if (empty($this->adapter)) {
-            throw new ConfigurationError("adapter is missing.");
+            throw new ConfigurationException("adapter is missing.");
         }
 
         if (empty($this->timeout)) {
-            throw new ConfigurationError("timeout is not set.");
+            throw new ConfigurationException("timeout is not set.");
         }
     }
 

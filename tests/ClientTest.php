@@ -2,7 +2,7 @@
 
 namespace Pusher\Tests;
 
-use Pusher\Client;
+use Pusher\Http\Client;
 use Pusher\Config;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
@@ -17,7 +17,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testConstrcutor()
     {
         $this->assertEquals('http://foobar.com', $this->c->baseUrl);
-        $this->assertInstanceOf('Pusher\HTTPAdapter', $this->c->adapter);
+        $this->assertInstanceOf('Pusher\Http\Adapter', $this->c->adapter);
         $this->assertEquals(5, $this->c->timeout);
         $this->assertNull($this->c->proxyUrl);
         $this->assertInstanceOf('Pusher\KeyPair', $this->c->keyPair);
@@ -25,7 +25,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testRequest()
     {
-        $this->c->adapter = $this->getMock('Pusher\CurlAdapter', array('request'));
+        $this->c->adapter = $this->getMock('Pusher\Http\CurlAdapter', array('request'));
         $this->c->adapter
             ->expects($this->once())
             ->method('request')
@@ -34,7 +34,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\stdClass', $result);
         $this->assertEquals('A Pusher message', $result->data);
 
-        $this->c->adapter = $this->getMock('Pusher\CurlAdapter', array('request'));
+        $this->c->adapter = $this->getMock('Pusher\Http\CurlAdapter', array('request'));
         $this->c->adapter
             ->expects($this->once())
             ->method('request')
@@ -44,12 +44,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Bad request
      */
     public function testRequest400Error()
     {
-        $this->c->adapter = $this->getMock('Pusher\CurlAdapter', array('request'));
+        $this->c->adapter = $this->getMock('Pusher\Http\CurlAdapter', array('request'));
         $this->c->adapter
             ->expects($this->once())
             ->method('request')
@@ -58,12 +58,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Authentication error
      */
     public function testRequest401Error()
     {
-        $this->c->adapter = $this->getMock('Pusher\CurlAdapter', array('request'));
+        $this->c->adapter = $this->getMock('Pusher\Http\CurlAdapter', array('request'));
         $this->c->adapter
             ->expects($this->once())
             ->method('request')
@@ -72,12 +72,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Not Found
      */
     public function testRequest404Error()
     {
-        $this->c->adapter = $this->getMock('Pusher\CurlAdapter', array('request'));
+        $this->c->adapter = $this->getMock('Pusher\Http\CurlAdapter', array('request'));
         $this->c->adapter
             ->expects($this->once())
             ->method('request')
@@ -86,12 +86,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Proxy Authentication Required
      */
     public function testRequest407Error()
     {
-        $this->c->adapter = $this->getMock('Pusher\CurlAdapter', array('request'));
+        $this->c->adapter = $this->getMock('Pusher\Http\CurlAdapter', array('request'));
         $this->c->adapter
             ->expects($this->once())
             ->method('request')
@@ -100,12 +100,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Pusher\Exception\HTTPError
+     * @expectedException \Pusher\Exception\HttpException
      * @expectedExceptionMessage Unknown error
      */
     public function testRequestUnknownError()
     {
-        $this->c->adapter = $this->getMock('Pusher\CurlAdapter', array('request'));
+        $this->c->adapter = $this->getMock('Pusher\Http\CurlAdapter', array('request'));
         $this->c->adapter
             ->expects($this->once())
             ->method('request')
@@ -115,7 +115,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRequest()
     {
-        $this->c->adapter = $this->getMock('Pusher\CurlAdapter', array('request'));
+        $this->c->adapter = $this->getMock('Pusher\Http\CurlAdapter', array('request'));
         $this->c->adapter
             ->expects($this->once())
             ->method('request')
@@ -127,7 +127,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testPostRequest()
     {
-        $this->c->adapter = $this->getMock('Pusher\CurlAdapter', array('request'));
+        $this->c->adapter = $this->getMock('Pusher\Http\CurlAdapter', array('request'));
         $this->c->adapter
             ->expects($this->once())
             ->method('request')
