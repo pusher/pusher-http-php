@@ -319,7 +319,7 @@ class Pusher
         if ($response['body'] === false) {
             $this->log('exec_curl error: '.curl_error($ch));
         }
-        
+
         return $response;
     }
 
