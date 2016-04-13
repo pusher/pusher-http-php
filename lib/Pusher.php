@@ -320,9 +320,6 @@ class Pusher
             $this->log('exec_curl error: '.curl_error($ch));
         }
 
-        curl_close($ch);
-        $ch = null;
-
         return $response;
     }
 
