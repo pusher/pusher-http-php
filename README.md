@@ -85,6 +85,18 @@ $pusher->trigger( 'my-channel', 'my_event', 'hello world' );
 $pusher->trigger( [ 'channel-1', 'channel-2' ], 'my_event', 'hello world' );
 ```
 
+### Batches
+
+It's also possible to send multiple events with a single API call (max 10
+events per call on multi-tenant clusters):
+
+```php
+$batch = array();
+$batch[] = array('channel' => 'my-channel', 'event' => 'my_event', 'data' => array('hello' => 'world'));
+$batch[] = array('channel' => 'my-channel', 'event' => 'my_event', 'data' => array('myname' => 'bob'));
+$pusher->triggerBatch($batch);
+```
+
 ### Arrays
 
 Objects are automatically converted to JSON format:
