@@ -395,6 +395,7 @@ class Pusher
      * @param mixed $data Event data
      * @param string $socket_id [optional]
      * @param bool $debug [optional]
+     * @param bool $already_encoded [optional]
      *
      * @return bool|string
      */
@@ -427,6 +428,54 @@ class Pusher
         if ($socket_id !== null) {
             $post_params['socket_id'] = $socket_id;
         }
+
+        $post_value = json_encode($post_params);
+
+        $query_params['body_md5'] = md5($post_value);
+
+        $ch = $this->create_curl($s_url, 'POST', $query_params);
+
+        $this->log('trigger POST: '.$post_value);
+
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_value);
+
+        $response = $this->exec_curl($ch);
+
+        if ($response['status'] === 200 && $debug === false) {
+            return true;
+        } elseif ($debug === true || $this->settings['debug'] === true) {
+            return $response;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Trigger multiple events at the same time.
+     *
+     * @param array $batch An array of events to send
+     * @param bool $debug [optional]
+     * @param bool $already_encoded [optional]
+     *
+     * @return bool|string
+     */
+    public function triggerBatch($batch = array(), $debug = false, $already_encoded = false)
+    {
+        $query_params = array();
+
+        $s_url = $this->settings['base_path'].'/batch_events';
+
+        if (!$already_encoded) {
+            foreach ($batch as $key => $event) {
+                if (!is_string($event['data'])) {
+                    $batch[$key]['data'] = json_encode($event['data']);
+                }
+            }
+        }
+
+        $post_params = array();
+        $post_params['batch'] = $batch;
 
         $post_value = json_encode($post_params);
 
