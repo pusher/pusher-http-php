@@ -1,4 +1,9 @@
-# Changelog
+
+## 2.4.0 (2016-05-25)
+
+[ADDED] Support for batch events
+[ADDED] Curl options
+[FIXED] Applied fixes from StyleCI
 
 ## 2.3.0 (2015-02-16)
 

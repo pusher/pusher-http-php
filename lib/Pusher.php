@@ -58,7 +58,7 @@ class PusherInstance
 
 class Pusher
 {
-    public static $VERSION = '2.3.0';
+    public static $VERSION = '2.4.0';
 
     private $settings = array(
         'scheme' => 'http',
