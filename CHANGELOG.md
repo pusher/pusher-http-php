@@ -1,4 +1,8 @@
 
+## 2.4.1 (2016-05-27)
+
+[FIXED] Presence data could not be submitted after the style changes
+
 ## 2.4.0 (2016-05-25)
 
 [ADDED] Support for batch events
