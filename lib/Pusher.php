@@ -577,12 +577,12 @@ class Pusher
      *
      * @return string
      */
-    public function socket_auth($channel, $socket_id, $custom_data = false)
+    public function socket_auth($channel, $socket_id, $custom_data = null)
     {
         $this->validate_channel($channel);
         $this->validate_socket_id($socket_id);
 
-        if ($custom_data === true) {
+        if ($custom_data) {
             $signature = hash_hmac('sha256', $socket_id.':'.$channel.':'.$custom_data, $this->settings['secret'], false);
         } else {
             $signature = hash_hmac('sha256', $socket_id.':'.$channel, $this->settings['secret'], false);
@@ -606,10 +606,10 @@ class Pusher
      *
      * @return string
      */
-    public function presence_auth($channel, $socket_id, $user_id, $user_info = false)
+    public function presence_auth($channel, $socket_id, $user_id, $user_info = null)
     {
         $user_data = array('user_id' => $user_id);
-        if ($user_info === true) {
+        if ($user_info) {
             $user_data['user_info'] = $user_info;
         }
 
