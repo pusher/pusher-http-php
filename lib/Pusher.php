@@ -574,10 +574,11 @@ class Pusher
      *
      * @param string $socket_id
      * @param string $custom_data
+     * @param bool $return_json
      *
      * @return string
      */
-    public function socket_auth($channel, $socket_id, $custom_data = null)
+    public function socket_auth($channel, $socket_id, $custom_data = null, $return_json = true)
     {
         $this->validate_channel($channel);
         $this->validate_socket_id($socket_id);
@@ -594,7 +595,7 @@ class Pusher
             $signature['channel_data'] = $custom_data;
         }
 
-        return json_encode($signature);
+        return ($return_json) ? json_encode($signature) : $signature;
     }
 
     /**
@@ -603,16 +604,17 @@ class Pusher
      * @param string $socket_id
      * @param string $user_id
      * @param mixed $user_info
+     * @param bool $return_json
      *
      * @return string
      */
-    public function presence_auth($channel, $socket_id, $user_id, $user_info = null)
+    public function presence_auth($channel, $socket_id, $user_id, $user_info = null, $return_json = true)
     {
         $user_data = array('user_id' => $user_id);
         if ($user_info) {
             $user_data['user_info'] = $user_info;
         }
 
-        return $this->socket_auth($channel, $socket_id, json_encode($user_data));
+        return $this->socket_auth($channel, $socket_id, json_encode($user_data), $return_json);
     }
 }
