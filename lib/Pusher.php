@@ -558,7 +558,7 @@ class Pusher
 
         $ch = $this->create_curl($s_url, 'GET', $params);
 		
-		curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch, CURLOPT_POST, 0);
 
         $response = $this->exec_curl($ch);
 
