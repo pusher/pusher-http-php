@@ -40,7 +40,7 @@ $app_secret = 'YOUR_APP_SECRET';
 
 $pusher = new Pusher( $app_key, $app_secret, $app_id );
 ```
-    
+
 A fourth parameter `$options` parameter can also be passed. The available options are:
 
 * `scheme` - e.g. http or https
@@ -48,6 +48,8 @@ A fourth parameter `$options` parameter can also be passed. The available option
 * `port` - the http port
 * `timeout` - the HTTP timeout
 * `encrypted` - quick option to use scheme of https and port 443.
+* `cluster` - specify the cluster where the application is running from.
+* `curl_options` - array with custom curl commands
 
 For example, by default calls will be made over a non-encrypted connection. To change this to make calls over HTTPS use:
 
@@ -55,9 +57,17 @@ For example, by default calls will be made over a non-encrypted connection. To c
 $pusher = new Pusher( $app_key, $app_secret, $app_id, array( 'encrypted' => true ) );
 ```
 
+For example, if you want to set custom curl options, use this:
+```php
+$pusher = new Pusher( $app_key, $app_secret, $app_id, array( 'encrypted' => true, 'curl_options' => array( CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4 ) ) );
+```
+
+
 *Note: The `$options` parameter was introduced in version 2.2.0 of the library.
 Previously additional parameters could be passed for each option, but this was
 becoming unwieldy. However, backwards compatibility has been maintained.*
+
+*Note: The `host` option overrides the `cluster` option!*
 
 ## Publishing/Triggering events
 
@@ -65,7 +75,7 @@ To trigger an event on one or more channels use the `trigger` function.
 
 ### A single channel
 
-```php    
+```php
 $pusher->trigger( 'my-channel', 'my_event', 'hello world' );
 ```
 
@@ -73,6 +83,18 @@ $pusher->trigger( 'my-channel', 'my_event', 'hello world' );
 
 ```php
 $pusher->trigger( [ 'channel-1', 'channel-2' ], 'my_event', 'hello world' );
+```
+
+### Batches
+
+It's also possible to send multiple events with a single API call (max 10
+events per call on multi-tenant clusters):
+
+```php
+$batch = array();
+$batch[] = array('channel' => 'my-channel', 'event' => 'my_event', 'data' => array('hello' => 'world'));
+$batch[] = array('channel' => 'my-channel', 'event' => 'my_event', 'data' => array('myname' => 'bob'));
+$pusher->triggerBatch($batch);
 ```
 
 ### Arrays
@@ -99,12 +121,12 @@ In order to avoid duplicates you can optionally specify the sender's socket id w
 ```php
 $pusher->trigger('my-channel','event','data','socket_id');
 ```
-    
+
 ### JSON format
-    
+
 If your data is already encoded in JSON format, you can avoid a second encoding step by setting the sixth argument true, like so:
 
-```php    
+```php
 $pusher->trigger('my-channel', 'event', 'data', null, false, true)
 ```
 
@@ -183,7 +205,7 @@ If you have enabled the ability to query the `subscription_count` (the number of
 $info = $pusher->get_channel_info('presence-channel-name', array('info' => 'subscription_count'));
 $subscription_count = $info->subscription_count;
 ```
-    
+
 ### Get a list of application channels
 
 ```php
@@ -196,7 +218,7 @@ It's also possible to get a list of channels for an application from the Pusher 
 $result = $pusher->get_channels();
 $channel_count = count($result->channels); // $channels is an Array
 ```
-  
+
 ### Get a filtered list of application channels
 
 ```php
@@ -237,7 +259,7 @@ Array
                         (
                             [id] => a_user_id
                         )
-                    /* Additional users */    
+                    /* Additional users */
                 )
         )
 )
@@ -281,7 +303,7 @@ $pusher->set_logger( new MyLogger() );
 If you use the above example in code executed from the console/terminal the debug
 information will be output there. If you use this within a web app then the output
 will appear within the generated app output e.g. HTML.
-    
+
 ## Running the tests
 
 Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
@@ -295,11 +317,11 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
 ## Framework Integrations
 - **Laravel 4** - https://github.com/artdarek/pusherer
 - **Laravel 5** - https://github.com/vinkla/pusher
-    
+
 ## License
 
 Copyright 2014, Pusher. Licensed under the MIT license:
-http://www.opensource.org/licenses/mit-license.php 
+http://www.opensource.org/licenses/mit-license.php
 
 Copyright 2010, Squeeks. Licensed under the MIT license:
-http://www.opensource.org/licenses/mit-license.php 
+http://www.opensource.org/licenses/mit-license.php

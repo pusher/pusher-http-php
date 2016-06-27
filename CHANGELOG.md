@@ -1,4 +1,17 @@
-# Changelog
+
+## 2.4.1 (2016-05-27)
+
+[FIXED] Presence data could not be submitted after the style changes
+
+## 2.4.0 (2016-05-25)
+
+[ADDED] Support for batch events
+[ADDED] Curl options
+[FIXED] Applied fixes from StyleCI
+
+## 2.3.0 (2015-02-16)
+
+[ADDED] A new `cluster` option for the Pusher constructor.
 
 ## 2.2.2 (2015-05-15)
 
@@ -12,7 +25,7 @@
 ## 2.2.0 (2015-01-20)
 
 [CHANGED] `new Pusher($app_key, $app_secret, $app_id, $options)` - The `$options` parameter
-has been added as the forth parameter to the constructor and other additional 
+has been added as the forth parameter to the constructor and other additional
 parameters are now deprecated.
 
 ## 2.1.3 (2012-12-22)
