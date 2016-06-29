@@ -67,6 +67,7 @@ class Pusher
         'debug' => false,
     );
     private $logger = null;
+    private $ch = null; // Curl handler
 
     /**
      * PHP5 Constructor.
@@ -271,17 +272,18 @@ class Pusher
                                 $this->settings['host'].':'.
                                 $this->settings['port'].$s_url.'?'.$signed_query;
 
-        $this->log('curl_init( '.$full_url.' )');
+        $this->log('create_curl( '.$full_url.' )');
 
         // Create or reuse existing curl handle
-        static $ch;
-        if (null === $ch) {
-            $ch = curl_init();
+        if (null === $this->ch) {
+            $this->ch = curl_init();
         }
 
-        if ($ch === false) {
+        if ($this->ch === false) {
             throw new PusherException('Could not initialise cURL!');
         }
+
+        $ch = $this->ch;
 
         // curl handle is not reusable unless reset
         if (function_exists('curl_reset')) {
@@ -293,6 +295,11 @@ class Pusher
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Expect:'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->settings['timeout']);
+        if ($request_method === 'POST') {
+            curl_setopt($ch, CURLOPS_POST, 1);
+        } elseif ($request_method === 'GET') {
+            curl_setopt($ch, CURLOPS_POST, 0);
+        } // Otherwise let the user configure it
 
         // Set custom curl options
         if (!empty($this->settings['curl_options'])) {
@@ -437,7 +444,6 @@ class Pusher
 
         $this->log('trigger POST: '.$post_value);
 
-        curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_value);
 
         $response = $this->exec_curl($ch);
@@ -485,7 +491,6 @@ class Pusher
 
         $this->log('trigger POST: '.$post_value);
 
-        curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_value);
 
         $response = $this->exec_curl($ch);
