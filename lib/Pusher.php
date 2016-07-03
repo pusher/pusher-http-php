@@ -296,9 +296,9 @@ class Pusher
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->settings['timeout']);
         if ($request_method === 'POST') {
-            curl_setopt($ch, CURLOPS_POST, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
         } elseif ($request_method === 'GET') {
-            curl_setopt($ch, CURLOPS_POST, 0);
+            curl_setopt($ch, CURLOPT_POST, 0);
         } // Otherwise let the user configure it
 
         // Set custom curl options
