@@ -1,4 +1,8 @@
 
+## 2.4.2 (2016-07-04)
+
+[CHANGED] One curl instance per Pusher instance
+
 ## 2.4.1 (2016-05-27)
 
 [FIXED] Presence data could not be submitted after the style changes
