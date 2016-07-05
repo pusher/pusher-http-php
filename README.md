@@ -308,10 +308,10 @@ will appear within the generated app output e.g. HTML.
 
 Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
 
-* Got to the `tests` directory
+* Go to the `test` directory
 * Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
 * Some tests require a client to be connected to the app you defined in the config;
-  you can do this by opening https://app.pusher.com/apps/<YOUR_TEST_APP_ID>/api_access in the browser
+  you can do this by opening https://dashboard.pusher.com/apps/<YOUR_TEST_APP_ID>/console in the browser
 * Execute `phpunit .` to run all the tests.
 
 ## Framework Integrations
