@@ -281,6 +281,46 @@ $http_status_code = $response[ 'status' ];
 $result = $response[ 'result' ];
 ```
 
+## Push Notifications (BETA)
+
+Pusher not allows sending native noficiations to iOS and Android devices. Check out the [documentation](https://pusher.com/docs/push_notifications) for information on how to set up push notifications on Android and iOS. There is no additional setup required to use it with this library. It works out of the box wit the same Pusher instance. All you need are the same pusher credentials.
+
+You can set the `notification_host` by passing it to the `options` array in the constructor.
+
+To specify a scheme for the `notification_host`, you can set the `notification_host` in the `options` array.
+
+```php
+$pusher = new Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'your host'))
+```
+This has a default value, if not set and currently, it is the only supported host.
+
+### Sending native pushes
+
+You can send pushers by using the `notify` method. The method takes two parameters:
+
+- `interests`: An array of strings which represents the interests your devices are subscribed to. Interests are akin to channels in the DDN. Currently, you can only publish notifications to _one_ interest.
+- `data`: This represents the payload you'd like to send as part of the notification. You can supply an associative array of keys depending on which platform you'd like to send a notification to. You must include either the `gcm` or `apns` keys. For a detailed list of the acceptable keys, take a look at the [docs](https://pusher.com/docs/push_notifications#payload).
+
+Example:
+
+```php
+$data = array(
+  'apns' => array(
+    'alert' => array(
+      body: 'tada'
+    ),
+  ),
+  'gcm' => array(
+    'notification' => array(
+      'title' => 'title',
+      'icon' => 'icon'
+    ),
+  ),
+);
+
+$pusher.notify(array("test"), $data);
+```
+
 ## Debugging & Logging
 
 The best way to debug your applications interaction with server is to set a logger
