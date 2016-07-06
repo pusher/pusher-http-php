@@ -59,6 +59,9 @@ class PusherInstance
 class Pusher
 {
     public static $VERSION = '2.4.2';
+    private static $RESTRICTED_GCM_PAYLOAD_KEYS = array('to', 'registration_ids');
+    private static $GCM_TTL = 241920;
+    private static $WEBHOOK_LEVELS = array('INFO', 'DEBUG');
 
     private $settings = array(
         'scheme' => 'http',
@@ -68,6 +71,7 @@ class Pusher
     );
     private $logger = null;
     private $ch = null; // Curl handler
+    private $notification_client = null; // notification client
 
     /**
      * PHP5 Constructor.
@@ -87,6 +91,8 @@ class Pusher
      *	timeout - the http timeout
      *	encrypted - quick option to use scheme of https and port 443.
      *	cluster - cluster name to connect to.
+     *  notification_host - host to connect to for native notifications.
+     *  notification_scheme - scheme for the notification_host.
      * @param string $host [optional] - deprecated
      * @param int $port [optional] - deprecated
      * @param int $timeout [optional] - deprecated
@@ -145,6 +151,20 @@ class Pusher
             if (isset($this->settings[$key])) {
                 $this->settings[$key] = $value;
             }
+        }
+
+        // Set the native notification host
+        if (isset($options['notification_host'])) {
+            $this->settings['notification_host'] = $options['notification_host'];
+        } else {
+            $this->settings['notification_host'] = 'hedwig-staging.herokuapp.com';
+        }
+
+        // Set scheme for native notifications
+        if (isset($options['notification_scheme'])) {
+            $this->settings['notification_scheme'] = $options['notification_scheme'];
+        } else {
+            $this->settings['notification_scheme'] = 'https';
         }
 
         // handle the case when 'host' and 'cluster' are specified in the options.
@@ -260,6 +280,8 @@ class Pusher
      */
     private function create_curl($s_url, $request_method = 'GET', $query_params = array())
     {
+        $full_url = '';
+
         // Create the signed signature...
         $signed_query = self::build_auth_query_string(
             $this->settings['auth_key'],
@@ -268,9 +290,7 @@ class Pusher
             $s_url,
             $query_params);
 
-        $full_url = $this->settings['scheme'].'://'.
-                                $this->settings['host'].':'.
-                                $this->settings['port'].$s_url.'?'.$signed_query;
+        $full_url = $s_url.'?'.$signed_query;
 
         $this->log('create_curl( '.$full_url.' )');
 
@@ -328,6 +348,88 @@ class Pusher
         }
 
         return $response;
+    }
+
+    /**
+     * Validates the push notification payload.
+     *
+     * @param array $payload
+     *
+     * @throws PusherException if validation fails
+     */
+    private function validate_notification_payload($payload)
+    {
+        if (!(isset($payload['gcm']) || isset($payload['apns']))) {
+            throw new PusherException('GCM or APNS data must be provided');
+        }
+
+        if (isset($payload['gcm'])) {
+            $gcm_payload = $payload['gcm'];
+
+            // Delete restricted keys
+            foreach (self::$RESTRICTED_GCM_PAYLOAD_KEYS as $key) {
+                unset($gcm_payload[$key]);
+            }
+
+            if (isset($gcm_payload['time_to_live'])) {
+                $ttl = (int) ($payload['gcm']['time_to_live']);
+
+                if ($ttl < 0 || $ttl > self::$GCM_TTL) {
+                    throw new PusherException('Time to live must be between 0 and 241920 (4 weeks)');
+                }
+            }
+
+            if (isset($gcm_payload['notification'])) {
+                if (!isset($gcm_payload['notification']['title'])) {
+                    throw new PusherException('Notification title is a required field');
+                }
+
+                if (!isset($gcm_payload['notification']['icon'])) {
+                    throw new PusherException('Notification icon is a required field');
+                }
+            }
+        }
+
+        if (isset($payload['webhook_url'])) {
+            if (!filter_var($payload['webhook_url'], FILTER_VALIDATE_URL)) {
+                throw new PusherException('Webhook url is invalid');
+            }
+        }
+
+        if (isset($payload['webhook_level'])) {
+            if (!isset($payload['webhook_url'])) {
+                throw new PusherException('Webhook level cannot be used without a webhook url');
+            }
+
+            if (!in_array(strtoupper($payload['webhook_level']), self::$WEBHOOK_LEVELS)) {
+                throw new PusherException('Webhook level must either be INFO or DEBUG');
+            }
+        }
+    }
+
+    /**
+     * Build the notification url.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    private function notification_url($path)
+    {
+        return $this->settings['notification_scheme'].'://'.$this->settings['notification_host'].'/customer_api/v1'.
+               $this->settings['base_path'].$path;
+    }
+
+    /**
+     * Build the DDN url.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    private function ddn_url($path)
+    {
+        return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'].$path;
     }
 
     /**
@@ -440,7 +542,7 @@ class Pusher
 
         $query_params['body_md5'] = md5($post_value);
 
-        $ch = $this->create_curl($s_url, 'POST', $query_params);
+        $ch = $this->create_curl($this->ddn_url($s_url), 'POST', $query_params);
 
         $this->log('trigger POST: '.$post_value);
 
@@ -487,7 +589,7 @@ class Pusher
 
         $query_params['body_md5'] = md5($post_value);
 
-        $ch = $this->create_curl($s_url, 'POST', $query_params);
+        $ch = $this->create_curl($this->ddn_url($s_url), 'POST', $query_params);
 
         $this->log('trigger POST: '.$post_value);
 
@@ -561,7 +663,7 @@ class Pusher
     {
         $s_url = $this->settings['base_path'].$path;
 
-        $ch = $this->create_curl($s_url, 'GET', $params);
+        $ch = $this->create_curl($this->ddn_url($s_url), 'GET', $params);
 
         $response = $this->exec_curl($ch);
 
@@ -619,5 +721,55 @@ class Pusher
         }
 
         return $this->socket_auth($channel, $socket_id, json_encode($user_data));
+    }
+
+    /**
+     * Send a native notification via the Push Notifications Api.
+     *
+     * @param array $interests
+     * @param array $payload
+     * @param bool $debug
+     *
+     * @throws PusherException if validation fails.
+     *
+     * @return bool|string
+     **/
+    public function notify($interests, $data = array(), $debug = false)
+    {
+        $query_params = array();
+
+        if (is_string($interests)) {
+            $this->log('->notify received string interests "'.$interests.'". Converting to array.');
+            $interests = array($interests);
+        }
+
+        if (count($interests) !== 1) {
+            throw new PusherException('Multiple interests provided. Please provide a single interest');
+        }
+
+        // Validate notification payload
+        $this->validate_notification_payload($data);
+
+        $data['interests'] = $interests;
+
+        $post_value = json_encode($data);
+
+        $query_params['body_md5'] = md5($post_value);
+
+        $ch = $this->create_curl($this->notification_url('/notifications'), 'POST', $query_params);
+
+        $this->log('trigger POST (Native notifications): '.$post_value);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_value);
+
+        $response = $this->exec_curl($ch);
+
+        if ($response['status'] === 200 && $debug === false) {
+            return true;
+        } elseif ($debug === true || $this->settings['debug'] === true) {
+            return $response;
+        } else {
+            return false;
+        }
     }
 }
