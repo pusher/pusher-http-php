@@ -157,7 +157,7 @@ class Pusher
         if (isset($options['notification_host'])) {
             $this->settings['notification_host'] = $options['notification_host'];
         } else {
-            $this->settings['notification_host'] = 'hedwig-staging.herokuapp.com';
+            $this->settings['notification_host'] = 'nativepush-cluster1.pusher.com';
         }
 
         // Set scheme for native notifications
