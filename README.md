@@ -92,8 +92,8 @@ events per call on multi-tenant clusters):
 
 ```php
 $batch = array();
-$batch[] = array('channel' => 'my-channel', 'event' => 'my_event', 'data' => array('hello' => 'world'));
-$batch[] = array('channel' => 'my-channel', 'event' => 'my_event', 'data' => array('myname' => 'bob'));
+$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'));
+$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'));
 $pusher->triggerBatch($batch);
 ```
 
