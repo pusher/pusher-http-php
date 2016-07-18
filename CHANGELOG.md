@@ -1,3 +1,6 @@
+## 2.5.0-rc1 (2016-07-18)
+
+[NEW] Native push notifications
 
 ## 2.4.2 (2016-07-04)
 
