@@ -71,7 +71,6 @@ class Pusher
     );
     private $logger = null;
     private $ch = null; // Curl handler
-    private $notification_client = null; // notification client
 
     /**
      * PHP5 Constructor.
