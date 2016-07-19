@@ -361,7 +361,7 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
 * Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
 * Some tests require a client to be connected to the app you defined in the config;
   you can do this by opening https://dashboard.pusher.com/apps/<YOUR_TEST_APP_ID>/console in the browser
-* Execute `phpunit .` to run all the tests.
+* From the root directory of the project, execute `phpunit .` to run all the tests.
 
 ## Framework Integrations
 - **Laravel 4** - https://github.com/artdarek/pusherer
