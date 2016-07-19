@@ -1,3 +1,7 @@
+## 2.5.0-rc2 (2016-07-19)
+
+[FIXED] DDN and Native Push endpoints were not assembled correctly.
+
 ## 2.5.0-rc1 (2016-07-18)
 
 [NEW] Native push notifications

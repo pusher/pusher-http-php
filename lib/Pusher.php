@@ -58,7 +58,7 @@ class PusherInstance
 
 class Pusher
 {
-    public static $VERSION = '2.5.0-rc1';
+    public static $VERSION = '2.5.0-rc2';
     private static $RESTRICTED_GCM_PAYLOAD_KEYS = array('to', 'registration_ids');
     private static $GCM_TTL = 241920;
     private static $WEBHOOK_LEVELS = array('INFO', 'DEBUG');
