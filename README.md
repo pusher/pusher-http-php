@@ -286,11 +286,12 @@ $result = $response[ 'result' ];
 Pusher now allows sending native notifications to iOS and Android devices. Check out the [documentation](https://pusher.com/docs/push_notifications) for information on how to set up push notifications on Android and iOS. There is no additional setup required to use it with this library. It works out of the box with the same Pusher instance. All you need are the same pusher credentials. To grab the release candidate specify the version as "2.5.0-rc1" in your `composer.json` file.
 
 The native notifications API is hosted at `nativepush-cluster1.pusher.com` and only listens on HTTPS.
+If you wish to provide a different host you can do:
 
 ```php
-$pusher = new Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'your host'))
+$pusher = new Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'custom notifications host'))
 ```
-This has a default value, if not set and currently, it is the only supported host.
+However, note that `notification_host` defaults to `nativepush-cluster1.pusher.com` and it is the only supported endpoint.
 
 ### Sending native pushes
 
