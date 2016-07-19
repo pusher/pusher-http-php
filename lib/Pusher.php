@@ -728,6 +728,7 @@ class Pusher
      * @param array $interests
      * @param array $payload
      * @param bool $debug
+     *
      * @see https://pusher.com/docs/push_notifications/reference/server_api for the detailed payload description.
      *
      * @throws PusherException if validation fails.
