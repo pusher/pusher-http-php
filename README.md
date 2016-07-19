@@ -320,7 +320,7 @@ $data = array(
   ),
 );
 
-$pusher.notify(array("test"), $data);
+$pusher->notify(array("test"), $data);
 ```
 
 ### Errors
