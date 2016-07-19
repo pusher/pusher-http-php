@@ -58,7 +58,7 @@ class PusherInstance
 
 class Pusher
 {
-    public static $VERSION = '2.5.0-rc1';
+    public static $VERSION = '2.5.0-rc2';
     private static $RESTRICTED_GCM_PAYLOAD_KEYS = array('to', 'registration_ids');
     private static $GCM_TTL = 241920;
     private static $WEBHOOK_LEVELS = array('INFO', 'DEBUG');
@@ -71,7 +71,6 @@ class Pusher
     );
     private $logger = null;
     private $ch = null; // Curl handler
-    private $notification_client = null; // notification client
 
     /**
      * PHP5 Constructor.
@@ -278,7 +277,7 @@ class Pusher
     /**
      * Utility function used to create the curl object with common settings.
      */
-    private function create_curl($s_url, $request_method = 'GET', $query_params = array())
+    private function create_curl($domain, $s_url, $request_method = 'GET', $query_params = array())
     {
         $full_url = '';
 
@@ -290,7 +289,7 @@ class Pusher
             $s_url,
             $query_params);
 
-        $full_url = $s_url.'?'.$signed_query;
+        $full_url = $domain.$s_url.'?'.$signed_query;
 
         $this->log('create_curl( '.$full_url.' )');
 
@@ -408,28 +407,23 @@ class Pusher
     }
 
     /**
-     * Build the notification url.
-     *
-     * @param string $path
+     * Build the notification domain.
      *
      * @return string
      */
-    private function notification_url($path)
+    private function notification_domain()
     {
-        return $this->settings['notification_scheme'].'://'.$this->settings['notification_host'].'/customer_api/v1'.
-               $this->settings['base_path'].$path;
+        return $this->settings['notification_scheme'].'://'.$this->settings['notification_host'];
     }
 
     /**
-     * Build the DDN url.
-     *
-     * @param string $path
+     * Build the ddn domain.
      *
      * @return string
      */
-    private function ddn_url($path)
+    private function ddn_domain()
     {
-        return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'].$path;
+        return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'];
     }
 
     /**
@@ -542,7 +536,7 @@ class Pusher
 
         $query_params['body_md5'] = md5($post_value);
 
-        $ch = $this->create_curl($this->ddn_url($s_url), 'POST', $query_params);
+        $ch = $this->create_curl($this->ddn_domain(), $s_url, 'POST', $query_params);
 
         $this->log('trigger POST: '.$post_value);
 
@@ -589,7 +583,7 @@ class Pusher
 
         $query_params['body_md5'] = md5($post_value);
 
-        $ch = $this->create_curl($this->ddn_url($s_url), 'POST', $query_params);
+        $ch = $this->create_curl($this->ddn_domain(), $s_url, 'POST', $query_params);
 
         $this->log('trigger POST: '.$post_value);
 
@@ -663,7 +657,7 @@ class Pusher
     {
         $s_url = $this->settings['base_path'].$path;
 
-        $ch = $this->create_curl($this->ddn_url($s_url), 'GET', $params);
+        $ch = $this->create_curl($this->ddn_domain(), $s_url, 'GET', $params);
 
         $response = $this->exec_curl($ch);
 
@@ -756,7 +750,8 @@ class Pusher
 
         $query_params['body_md5'] = md5($post_value);
 
-        $ch = $this->create_curl($this->notification_url('/notifications'), 'POST', $query_params);
+        $notification_path = '/customer_api/v1'.$this->settings['base_path'].'/notifications';
+        $ch = $this->create_curl($this->notification_domain(), $notification_path, 'POST', $query_params);
 
         $this->log('trigger POST (Native notifications): '.$post_value);
 
