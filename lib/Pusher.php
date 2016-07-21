@@ -416,7 +416,7 @@ class Pusher
      */
     private function notification_url($path)
     {
-        return $this->settings['notification_scheme'].'://'.$this->settings['notification_host'].'/customer_api/v1'.
+        return $this->settings['notification_scheme'].'://'.$this->settings['notification_host'].'/server_api/v1'.
                $this->settings['base_path'].$path;
     }
 
