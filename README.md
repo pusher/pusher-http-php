@@ -283,14 +283,15 @@ $result = $response[ 'result' ];
 
 ## Push Notifications (BETA)
 
-Pusher now allows sending native noficiations to iOS and Android devices. Check out the [documentation](https://pusher.com/docs/push_notifications) for information on how to set up push notifications on Android and iOS. There is no additional setup required to use it with this library. It works out of the box with the same Pusher instance. All you need are the same pusher credentials. To grab the release candidate specify the version as "2.5.0-rc1" in your `composer.json` file.
+Pusher now allows sending native notifications to iOS and Android devices. Check out the [documentation](https://pusher.com/docs/push_notifications) for information on how to set up push notifications on Android and iOS. There is no additional setup required to use it with this library. It works out of the box with the same Pusher instance. All you need are the same pusher credentials. To grab the release candidate specify the version as "2.5.0-rc2" in your `composer.json` file.
 
 The native notifications API is hosted at `nativepush-cluster1.pusher.com` and only listens on HTTPS.
+If you wish to provide a different host you can do:
 
 ```php
-$pusher = new Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'your host'))
+$pusher = new Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'custom notifications host'))
 ```
-This has a default value, if not set and currently, it is the only supported host.
+However, note that `notification_host` defaults to `nativepush-cluster1.pusher.com` and it is the only supported endpoint.
 
 ### Sending native pushes
 
@@ -325,9 +326,22 @@ $pusher->notify(array("test"), $data);
 
 ### Errors
 
-Push notification requests, once submitted to the service are executed asynchronously. To make reporting errors easier, you can supply a `webhook_url` field in the body of the request. This will be used by the service to send a webhook to the supplied URL if there are errors.
+Push notification requests, once submitted to the service, are executed asynchronously. To make reporting errors easier, you can supply a `webhook_url` field in the body of the request. The service will call this url with a body that contains the results of the publish request.
 
-You may also supply a `webhook_level` field in the body, which can either be INFO or DEBUG. It defaults to INFO - where INFO only reports customer facing errors, while DEBUG reports all errors.
+You may also supply a `webhook_level` field in the body, which can either be `"INFO"` or `"DEBUG"`. It defaults to `"INFO"` - where `"INFO"` only reports customer facing errors, while `"DEBUG"` reports all available information about the responses.
+
+Here's an example:
+
+```php
+$data = array(
+  'apns' => array("..."),
+  'gcm' => array("..."),
+  'webhook_url' => "http://my.company.com/pusher/nativepush/results"
+  'webhook_url' => "INFO"
+);
+
+$pusher->notify(array("test"), $data);
+```
 
 ## Debugging & Logging
 
@@ -360,7 +374,7 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
 * Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
 * Some tests require a client to be connected to the app you defined in the config;
   you can do this by opening https://dashboard.pusher.com/apps/<YOUR_TEST_APP_ID>/console in the browser
-* Execute `phpunit .` to run all the tests.
+* From the root directory of the project, execute `phpunit .` to run all the tests.
 
 ## Framework Integrations
 - **Laravel 4** - https://github.com/artdarek/pusherer
