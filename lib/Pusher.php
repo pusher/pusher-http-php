@@ -750,7 +750,7 @@ class Pusher
 
         $query_params['body_md5'] = md5($post_value);
 
-        $notification_path = '/customer_api/v1'.$this->settings['base_path'].'/notifications';
+        $notification_path = '/server_api/v1'.$this->settings['base_path'].'/notifications';
         $ch = $this->create_curl($this->notification_domain(), $notification_path, 'POST', $query_params);
 
         $this->log('trigger POST (Native notifications): '.$post_value);
