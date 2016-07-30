@@ -92,8 +92,8 @@ events per call on multi-tenant clusters):
 
 ```php
 $batch = array();
-$batch[] = array('channel' => 'my-channel', 'event' => 'my_event', 'data' => array('hello' => 'world'));
-$batch[] = array('channel' => 'my-channel', 'event' => 'my_event', 'data' => array('myname' => 'bob'));
+$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'));
+$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'));
 $pusher->triggerBatch($batch);
 ```
 
@@ -281,6 +281,68 @@ $http_status_code = $response[ 'status' ];
 $result = $response[ 'result' ];
 ```
 
+## Push Notifications (BETA)
+
+Pusher now allows sending native notifications to iOS and Android devices. Check out the [documentation](https://pusher.com/docs/push_notifications) for information on how to set up push notifications on Android and iOS. There is no additional setup required to use it with this library. It works out of the box with the same Pusher instance. All you need are the same pusher credentials. To grab the release candidate specify the version as "2.5.0-rc3" in your `composer.json` file.
+
+The native notifications API is hosted at `nativepush-cluster1.pusher.com` and only listens on HTTPS.
+If you wish to provide a different host you can do:
+
+```php
+$pusher = new Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'custom notifications host'))
+```
+However, note that `notification_host` defaults to `nativepush-cluster1.pusher.com` and it is the only supported endpoint.
+
+### Sending native pushes
+
+You can send native notifications by using the `notify` method. The method takes two parameters:
+
+- `interests`: An array of strings which represents the interests your devices are subscribed to. Interests are akin to channels in the DDN. Currently, you can only publish notifications to _one_ interest.
+- `data`: This represents the payload you'd like to send as part of the notification. You can supply an associative array of keys depending on which platform you'd like to send a notification to. You must include either the `gcm` or `apns` keys. For a detailed list of the acceptable keys, take a look at the docs for [iOS](https://pusher.com/docs/push_notifications/ios/server) and [Android](https://pusher.com/docs/push_notifications/android/server).
+
+It also takes a `debug` param like the `trigger` method to allow for debugging.
+
+Example:
+
+```php
+$data = array(
+  'apns' => array(
+    'aps' => array(
+      'alert' => array(
+        'body' => 'tada'
+      ),
+    ),
+  ),
+  'gcm' => array(
+    'notification' => array(
+      'title' => 'title',
+      'icon' => 'icon'
+    ),
+  ),
+);
+
+$pusher->notify(array("test"), $data);
+```
+
+### Errors
+
+Push notification requests, once submitted to the service, are executed asynchronously. To make reporting errors easier, you can supply a `webhook_url` field in the body of the request. The service will call this url with a body that contains the results of the publish request.
+
+You may also supply a `webhook_level` field in the body, which can either be `"INFO"` or `"DEBUG"`. It defaults to `"INFO"` - where `"INFO"` only reports customer facing errors, while `"DEBUG"` reports all available information about the responses.
+
+Here's an example:
+
+```php
+$data = array(
+  'apns' => array("..."),
+  'gcm' => array("..."),
+  'webhook_url' => "http://my.company.com/pusher/nativepush/results"
+  'webhook_url' => "INFO"
+);
+
+$pusher->notify(array("test"), $data);
+```
+
 ## Debugging & Logging
 
 The best way to debug your applications interaction with server is to set a logger
@@ -308,11 +370,11 @@ will appear within the generated app output e.g. HTML.
 
 Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
 
-* Got to the `tests` directory
+* Go to the `test` directory
 * Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
 * Some tests require a client to be connected to the app you defined in the config;
-  you can do this by opening https://app.pusher.com/apps/<YOUR_TEST_APP_ID>/api_access in the browser
-* Execute `phpunit .` to run all the tests.
+  you can do this by opening https://dashboard.pusher.com/apps/<YOUR_TEST_APP_ID>/console in the browser
+* From the root directory of the project, execute `phpunit .` to run all the tests.
 
 ## Framework Integrations
 - **Laravel 4** - https://github.com/artdarek/pusherer

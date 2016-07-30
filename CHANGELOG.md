@@ -1,3 +1,14 @@
+## 2.5.0-rc2 (2016-07-19)
+
+[FIXED] DDN and Native Push endpoints were not assembled correctly.
+
+## 2.5.0-rc1 (2016-07-18)
+
+[NEW] Native push notifications
+
+## 2.4.2 (2016-07-04)
+
+[CHANGED] One curl instance per Pusher instance
 
 ## 2.4.1 (2016-05-27)
 
