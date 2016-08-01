@@ -314,7 +314,7 @@ class Pusher
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
           'Content-Type: application/json',
           'Expect:',
-          'X-Pusher-Library: pusher-http-php '.self::$VERSION
+          'X-Pusher-Library: pusher-http-php '.self::$VERSION,
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->settings['timeout']);
