@@ -59,9 +59,6 @@ class PusherInstance
 class Pusher
 {
     public static $VERSION = '2.5.0-rc3';
-    private static $RESTRICTED_GCM_PAYLOAD_KEYS = array('to', 'registration_ids');
-    private static $GCM_TTL = 241920;
-    private static $WEBHOOK_LEVELS = array('INFO', 'DEBUG');
 
     private $settings = array(
         'scheme' => 'http',
@@ -351,63 +348,6 @@ class Pusher
         }
 
         return $response;
-    }
-
-    /**
-     * Validates the push notification payload.
-     *
-     * @param array $payload
-     *
-     * @throws PusherException if validation fails
-     */
-    private function validate_notification_payload($payload)
-    {
-        if (!(isset($payload['gcm']) || isset($payload['apns']))) {
-            throw new PusherException('GCM or APNS data must be provided');
-        }
-
-        if (isset($payload['gcm'])) {
-            $gcm_payload = $payload['gcm'];
-
-            // Delete restricted keys
-            foreach (self::$RESTRICTED_GCM_PAYLOAD_KEYS as $key) {
-                unset($gcm_payload[$key]);
-            }
-
-            if (isset($gcm_payload['time_to_live'])) {
-                $ttl = (int) ($payload['gcm']['time_to_live']);
-
-                if ($ttl < 0 || $ttl > self::$GCM_TTL) {
-                    throw new PusherException('Time to live must be between 0 and 241920 (4 weeks)');
-                }
-            }
-
-            if (isset($gcm_payload['notification'])) {
-                if (!isset($gcm_payload['notification']['title'])) {
-                    throw new PusherException('Notification title is a required field');
-                }
-
-                if (!isset($gcm_payload['notification']['icon'])) {
-                    throw new PusherException('Notification icon is a required field');
-                }
-            }
-        }
-
-        if (isset($payload['webhook_url'])) {
-            if (!filter_var($payload['webhook_url'], FILTER_VALIDATE_URL)) {
-                throw new PusherException('Webhook url is invalid');
-            }
-        }
-
-        if (isset($payload['webhook_level'])) {
-            if (!isset($payload['webhook_url'])) {
-                throw new PusherException('Webhook level cannot be used without a webhook url');
-            }
-
-            if (!in_array(strtoupper($payload['webhook_level']), self::$WEBHOOK_LEVELS)) {
-                throw new PusherException('Webhook level must either be INFO or DEBUG');
-            }
-        }
     }
 
     /**
@@ -744,9 +684,6 @@ class Pusher
         if (count($interests) !== 1) {
             throw new PusherException('Multiple interests provided. Please provide a single interest');
         }
-
-        // Validate notification payload
-        $this->validate_notification_payload($data);
 
         $data['interests'] = $interests;
 
