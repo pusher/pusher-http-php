@@ -1,3 +1,11 @@
+## 2.6.0 (2016-08-23)
+
+[ADDED] support for publishing push notifications on up to 10 interests.
+
+## 2.5.0 (2016-08-15)
+
+[REMOVED] Native push notifications payload validation in the client.
+
 ## 2.5.0-rc2 (2016-07-19)
 
 [FIXED] DDN and Native Push endpoints were not assembled correctly.
