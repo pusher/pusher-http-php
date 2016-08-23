@@ -10,8 +10,8 @@
         /**
          * @expectedException PusherException
          */
-        public function testInvalidInterestLength()
+        public function testInvalidEmptyInterests()
         {
-            $this->pusher->notify(array('a', 'b'), array('foo' => 'bar'));
+            $this->pusher->notify(array(), array('foo' => 'bar'));
         }
     }

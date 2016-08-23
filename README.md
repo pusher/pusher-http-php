@@ -297,7 +297,7 @@ However, note that `notification_host` defaults to `nativepush-cluster1.pusher.c
 
 You can send native notifications by using the `notify` method. The method takes two parameters:
 
-- `interests`: An array of strings which represents the interests your devices are subscribed to. Interests are akin to channels in the DDN. Currently, you can only publish notifications to _one_ interest.
+- `interests`: An array of strings which represents the interests your devices are subscribed to. Interests are akin to channels in the DDN. Currently, you can only publish notifications to, at most, _ten_ interests.
 - `data`: This represents the payload you'd like to send as part of the notification. You can supply an associative array of keys depending on which platform you'd like to send a notification to. You must include either the `gcm` or `apns` keys. For a detailed list of the acceptable keys, take a look at the docs for [iOS](https://pusher.com/docs/push_notifications/ios/server) and [Android](https://pusher.com/docs/push_notifications/android/server).
 
 It also takes a `debug` param like the `trigger` method to allow for debugging.

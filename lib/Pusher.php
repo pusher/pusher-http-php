@@ -681,8 +681,8 @@ class Pusher
             $interests = array($interests);
         }
 
-        if (count($interests) !== 1) {
-            throw new PusherException('Multiple interests provided. Please provide a single interest');
+        if (count($interests) === 0) {
+            throw new PusherException('$interests array must not be empty');
         }
 
         $data['interests'] = $interests;
