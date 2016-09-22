@@ -65,6 +65,7 @@ class Pusher
         'port' => 80,
         'timeout' => 30,
         'debug' => false,
+        'curl_options' => array(),
     );
     private $logger = null;
     private $ch = null; // Curl handler
