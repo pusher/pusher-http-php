@@ -700,7 +700,7 @@ class Pusher
 
         $response = $this->exec_curl($ch);
 
-        if ($response['status'] === 200 && $debug === false) {
+        if ($response['status'] === 202 && $debug === false) {
             return true;
         } elseif ($debug === true || $this->settings['debug'] === true) {
             return $response;
