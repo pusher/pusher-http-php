@@ -1,3 +1,7 @@
+## 2.6.1 (2016-11-11)
+
+[FIXED] Check for correct status code when POSTing to native push notifications API.
+
 ## 2.6.0 (2016-08-23)
 
 [ADDED] support for publishing push notifications on up to 10 interests.
