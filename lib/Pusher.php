@@ -115,8 +115,8 @@ class Pusher
 
             $this->settings['host'] = $host;
 
-            $this->log('Legacy $host parameter provided: '.
-                                    $this->settings['scheme'] + ' host: ' + $this->settings['host']);
+            $this->log('Legacy $host parameter provided: ' .
+                                    $this->settings['scheme'] . ' host: ' . $this->settings['host']);
         }
 
         if (!is_null($port)) {
