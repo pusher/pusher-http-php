@@ -81,8 +81,8 @@
         {
             $options = array(
                 'encrytped' => true,
-                'host' => 'test.com',
-                'port' => '3000',
+                'host'      => 'test.com',
+                'port'      => '3000',
             );
             $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
 
@@ -119,7 +119,7 @@
         {
             $options = array(
                 'cluster' => 'eu',
-                'host' => 'api.staging.pusher.com',
+                'host'    => 'api.staging.pusher.com',
             );
             $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
 

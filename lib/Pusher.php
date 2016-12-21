@@ -61,10 +61,10 @@ class Pusher
     public static $VERSION = '2.5.0-rc3';
 
     private $settings = array(
-        'scheme' => 'http',
-        'port' => 80,
+        'scheme'  => 'http',
+        'port'    => 80,
         'timeout' => 30,
-        'debug' => false,
+        'debug'   => false,
     );
     private $logger = null;
     private $ch = null; // Curl handler
@@ -77,21 +77,21 @@ class Pusher
      *
      * @param string $auth_key
      * @param string $secret
-     * @param int $app_id
-     * @param bool $options [optional]
-     *		Options to configure the Pusher instance.
-     *	Was previously a debug flag. Legacy support for this exists if a boolean is passed.
-     *	scheme - e.g. http or https
-     *	host - the host e.g. api.pusherapp.com. No trailing forward slash.
-     *	port - the http port
-     *	timeout - the http timeout
-     *	encrypted - quick option to use scheme of https and port 443.
-     *	cluster - cluster name to connect to.
-     *  notification_host - host to connect to for native notifications.
-     *  notification_scheme - scheme for the notification_host.
-     * @param string $host [optional] - deprecated
-     * @param int $port [optional] - deprecated
-     * @param int $timeout [optional] - deprecated
+     * @param int    $app_id
+     * @param bool   $options  [optional]
+     *                         Options to configure the Pusher instance.
+     *                         Was previously a debug flag. Legacy support for this exists if a boolean is passed.
+     *                         scheme - e.g. http or https
+     *                         host - the host e.g. api.pusherapp.com. No trailing forward slash.
+     *                         port - the http port
+     *                         timeout - the http timeout
+     *                         encrypted - quick option to use scheme of https and port 443.
+     *                         cluster - cluster name to connect to.
+     *                         notification_host - host to connect to for native notifications.
+     *                         notification_scheme - scheme for the notification_host.
+     * @param string $host     [optional] - deprecated
+     * @param int    $port     [optional] - deprecated
+     * @param int    $timeout  [optional] - deprecated
      */
     public function __construct($auth_key, $secret, $app_id, $options = array(), $host = null, $port = null, $timeout = null)
     {
@@ -115,8 +115,8 @@ class Pusher
 
             $this->settings['host'] = $host;
 
-            $this->log('Legacy $host parameter provided: ' .
-                                    $this->settings['scheme'] . ' host: ' . $this->settings['host']);
+            $this->log('Legacy $host parameter provided: '.
+                                    $this->settings['scheme'].' host: '.$this->settings['host']);
         }
 
         if (!is_null($port)) {
@@ -377,8 +377,8 @@ class Pusher
      * @param string $auth_secret
      * @param string $request_method
      * @param string $request_path
-     * @param array $query_params
-     * @param string $auth_version [optional]
+     * @param array  $query_params
+     * @param string $auth_version   [optional]
      * @param string $auth_timestamp [optional]
      *
      * @return string
@@ -411,9 +411,9 @@ class Pusher
      * a glue, a separator between pairs and the array
      * to implode.
      *
-     * @param string $glue The glue between key and value
+     * @param string $glue      The glue between key and value
      * @param string $separator Separator between pairs
-     * @param array $array The array to implode
+     * @param array  $array     The array to implode
      *
      * @return string The imploded array
      */
@@ -437,12 +437,12 @@ class Pusher
      * Trigger an event by providing event name and payload.
      * Optionally provide a socket ID to exclude a client (most likely the sender).
      *
-     * @param array $channels An array of channel names to publish the event on.
+     * @param array  $channels        An array of channel names to publish the event on.
      * @param string $event
-     * @param mixed $data Event data
-     * @param string $socket_id [optional]
-     * @param bool $debug [optional]
-     * @param bool $already_encoded [optional]
+     * @param mixed  $data            Event data
+     * @param string $socket_id       [optional]
+     * @param bool   $debug           [optional]
+     * @param bool   $already_encoded [optional]
      *
      * @return bool|string
      */
@@ -500,9 +500,9 @@ class Pusher
     /**
      * Trigger multiple events at the same time.
      *
-     * @param array $batch An array of events to send
-     * @param bool $debug [optional]
-     * @param bool $already_encoded [optional]
+     * @param array $batch           An array of events to send
+     * @param bool  $debug           [optional]
+     * @param bool  $already_encoded [optional]
      *
      * @return bool|string
      */
@@ -548,7 +548,7 @@ class Pusher
      *	Fetch channel information for a specific channel.
      *
      * @param string $channel The name of the channel
-     * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
+     * @param array  $params  Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
      *	@return object
      */
@@ -647,7 +647,7 @@ class Pusher
      *
      * @param string $socket_id
      * @param string $user_id
-     * @param mixed $user_info
+     * @param mixed  $user_info
      *
      * @return string
      */
@@ -666,7 +666,7 @@ class Pusher
      *
      * @param array $interests
      * @param array $payload
-     * @param bool $debug
+     * @param bool  $debug
      *
      * @throws PusherException if validation fails.
      *
