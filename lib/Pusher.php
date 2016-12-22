@@ -61,10 +61,11 @@ class Pusher
     public static $VERSION = '2.5.0-rc3';
 
     private $settings = array(
-        'scheme'  => 'http',
-        'port'    => 80,
-        'timeout' => 30,
-        'debug'   => false,
+        'scheme'       => 'http',
+        'port'         => 80,
+        'timeout'      => 30,
+        'debug'        => false,
+        'curl_options' => array(),
     );
     private $logger = null;
     private $ch = null; // Curl handler
