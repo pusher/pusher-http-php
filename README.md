@@ -54,12 +54,12 @@ A fourth parameter `$options` parameter can also be passed. The available option
 For example, by default calls will be made over a non-encrypted connection. To change this to make calls over HTTPS use:
 
 ```php
-$pusher = new Pusher( $app_key, $app_secret, $app_id, array( 'encrypted' => true ) );
+$pusher = new Pusher( $app_key, $app_secret, $app_id, ['encrypted' => true]);
 ```
 
 For example, if you want to set custom curl options, use this:
 ```php
-$pusher = new Pusher( $app_key, $app_secret, $app_id, array( 'encrypted' => true, 'curl_options' => array( CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4 ) ) );
+$pusher = new Pusher( $app_key, $app_secret, $app_id, ['encrypted' => true, 'curl_options' => [CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4]]);
 ```
 
 
@@ -71,18 +71,18 @@ becoming unwieldy. However, backwards compatibility has been maintained.*
 
 ## Publishing/Triggering events
 
-To trigger an event on one or more channels use the `trigger` function.
+To trigger an event on one or more channels use the `trigger` method.
 
 ### A single channel
 
 ```php
-$pusher->trigger( 'my-channel', 'my_event', 'hello world' );
+$pusher->trigger(['my-channel'], 'my_event', 'hello world');
 ```
 
 ### Multiple channels
 
 ```php
-$pusher->trigger( [ 'channel-1', 'channel-2' ], 'my_event', 'hello world' );
+$pusher->trigger(['channel-1', 'channel-2'], 'my_event', 'hello world');
 ```
 
 ### Batches
@@ -91,9 +91,9 @@ It's also possible to send multiple events with a single API call (max 10
 events per call on multi-tenant clusters):
 
 ```php
-$batch = array();
-$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'));
-$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'));
+$batch = [];
+$batch[] = ['channel' => 'my-channel', 'name' => 'my_event', 'data' => ['hello' => 'world']);
+$batch[] = ['channel' => 'my-channel', 'name' => 'my_event', 'data' => ['myname' => 'bob']);
 $pusher->triggerBatch($batch);
 ```
 
@@ -105,7 +105,7 @@ Objects are automatically converted to JSON format:
 $array['name'] = 'joe';
 $array['message_count'] = 23;
 
-$pusher->trigger('my_channel', 'my_event', $array);
+$pusher->trigger(['my_channel'], 'my_event', $array);
 ```
 
 The output of this will be:
@@ -119,7 +119,7 @@ The output of this will be:
 In order to avoid duplicates you can optionally specify the sender's socket id while triggering an event ([https://pusher.com/docs/duplicates](http://pusherapp.com/docs/duplicates)):
 
 ```php
-$pusher->trigger('my-channel','event','data','socket_id');
+$pusher->trigger(['my-channel'], 'event', 'data', 'socket_id');
 ```
 
 ### JSON format
@@ -127,7 +127,7 @@ $pusher->trigger('my-channel','event','data','socket_id');
 If your data is already encoded in JSON format, you can avoid a second encoding step by setting the sixth argument true, like so:
 
 ```php
-$pusher->trigger('my-channel', 'event', 'data', null, false, true)
+$pusher->trigger(['my-channel'], 'event', 'data', null, false, true)
 ```
 
 ## Authenticating Private channels
@@ -170,7 +170,7 @@ if (isset($_SESSION['user_id'])) {
 header('Content-Type: application/json');
 
 $pusher = new Pusher($key, $secret, $app_id);
-$presence_data = array('name' => $user['name']);
+$presence_data = ['name' => $user['name']];
 
 echo $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
 ```
@@ -195,14 +195,14 @@ $channel_occupied = $info->occupied;
 For [presence channels](https://pusher.com/docs/presence_channels) you can also query the number of distinct users currently subscribed to this channel (a single user may be subscribed many times, but will only count as one):
 
 ```php
-$info = $pusher->get_channel_info('presence-channel-name', array('info' => 'user_count'));
+$info = $pusher->get_channel_info('presence-channel-name', ['info' => 'user_count'[);
 $user_count = $info->user_count;
 ```
 
 If you have enabled the ability to query the `subscription_count` (the number of connections currently subscribed to this channel) then you can query this value as follows:
 
 ```php
-$info = $pusher->get_channel_info('presence-channel-name', array('info' => 'subscription_count'));
+$info = $pusher->get_channel_info('presence-channel-name', ['info' => 'subscription_count']);
 $subscription_count = $info->subscription_count;
 ```
 
@@ -222,20 +222,20 @@ $channel_count = count($result->channels); // $channels is an Array
 ### Get a filtered list of application channels
 
 ```php
-$pusher->get_channels( array( 'filter_by_prefix' => 'some_filter' ) )
+$pusher->get_channels(['filter_by_prefix' => 'some_filter'])
 ```
 
 It's also possible to get a list of channels based on their name prefix. To do this you need to supply an $options parameter to the call. In the following example the call will return a list of all channels with a 'presence-' prefix. This is idea for fetching a list of all presence channels.
 
 ```php
-$results = $pusher->get_channels( array( 'filter_by_prefix' => 'presence-') );
+$results = $pusher->get_channels(['filter_by_prefix' => 'presence-']);
 $channel_count = count($result->channels); // $channels is an Array
 ```
 
 This can also be achieved using the generic `pusher->get` function:
 
 ```php
-$pusher->get( '/channels', array( 'filter_by_prefix' => 'presence-' ) );
+$pusher->get('/channels', ['filter_by_prefix' => 'presence-']);
 ```
 
 ### Get user information from a presence channel
@@ -289,7 +289,7 @@ The native notifications API is hosted at `nativepush-cluster1.pusher.com` and o
 If you wish to provide a different host you can do:
 
 ```php
-$pusher = new Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'custom notifications host'))
+$pusher = new Pusher($app_key, $app_secret, $app_id, ['notification_host' => 'custom notifications host'])
 ```
 However, note that `notification_host` defaults to `nativepush-cluster1.pusher.com` and it is the only supported endpoint.
 
@@ -305,23 +305,23 @@ It also takes a `debug` param like the `trigger` method to allow for debugging.
 Example:
 
 ```php
-$data = array(
-  'apns' => array(
-    'aps' => array(
-      'alert' => array(
+$data = [
+  'apns' => [
+    'aps' => [
+      'alert' => [
         'body' => 'tada'
-      ),
-    ),
-  ),
-  'gcm' => array(
-    'notification' => array(
+      ],
+    ],
+  ],
+  'gcm' => [
+    'notification' => [
       'title' => 'title',
       'icon' => 'icon'
-    ),
-  ),
-);
+    ],
+  ],
+];
 
-$pusher->notify(array("test"), $data);
+$pusher->notify(["test"], $data);
 ```
 
 ### Errors
@@ -333,14 +333,13 @@ You may also supply a `webhook_level` field in the body, which can either be `"I
 Here's an example:
 
 ```php
-$data = array(
-  'apns' => array("..."),
-  'gcm' => array("..."),
-  'webhook_url' => "http://my.company.com/pusher/nativepush/results"
-  'webhook_url' => "INFO"
-);
+$data = [
+  'apns' => ["..."],
+  'gcm' => ["..."],
+  'webhook_url' => "http://my.company.com/pusher/nativepush/results",
+];
 
-$pusher->notify(array("test"), $data);
+$pusher->notify(["test"], $data);
 ```
 
 ## Debugging & Logging
