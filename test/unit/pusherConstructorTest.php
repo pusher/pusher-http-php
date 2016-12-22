@@ -138,10 +138,10 @@
             $settings = $pusher->getSettings();
             $this->assertEquals('api.staging.pusher.com', $settings['host']);
         }
-        
+
         public function testCurlOptionsCanBeSet()
         {
-            $curl_opts = array( CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4 );
+            $curl_opts = array(CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4);
             $options = array(
                 'curl_options' => $curl_opts,
             );
