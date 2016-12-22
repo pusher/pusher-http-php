@@ -71,7 +71,7 @@
         {
             $options = array(
                 'filter_by_prefix' => 'test_',
-                'info' => 'user_count',
+                'info'             => 'user_count',
             );
             $result = $this->pusher->get_channels($options);
 
