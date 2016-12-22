@@ -31,7 +31,7 @@
         {
             $options = array(
                 'encrypted' => true,
-                'host' => PUSHERAPP_HOST,
+                'host'      => PUSHERAPP_HOST,
             );
             $pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
             $pusher->set_logger(new TestLogger());
