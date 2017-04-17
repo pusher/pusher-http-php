@@ -21,7 +21,9 @@
         + Simaranjit Singh (simaranjit.singh@virdi.me)
 */
 
-class PusherException extends Exception
+namespace Pusher;
+
+class PusherException extends \Exception
 {
 }
 
