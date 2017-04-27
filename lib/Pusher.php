@@ -342,11 +342,11 @@ class Pusher
         $response['body'] = curl_exec($ch);
         $response['status'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        $this->log('exec_curl response: '.print_r($response, true));
-
-        if ($response['body'] === false) {
+        if ($response['body'] === false || $response['status'] < 200 || 400 <= $response['status']) {
             $this->log('exec_curl error: '.curl_error($ch));
         }
+
+        $this->log('exec_curl response: '.print_r($response, true));
 
         return $response;
     }
