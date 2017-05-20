@@ -135,7 +135,7 @@ $pusher->trigger('my-channel', 'event', 'data', null, false, true)
 To authorise your users to access private channels on Pusher, you can use the socket_auth function:
 
 ```php
-$pusher->socket_auth('my-channel','socket_id');
+$pusher->socket_auth('private-my-channel','socket_id');
 ```
 
 ## Authenticating Presence channels
@@ -143,7 +143,7 @@ $pusher->socket_auth('my-channel','socket_id');
 Using presence channels is similar to private channels, but you can specify extra data to identify that particular user:
 
 ```php
-$pusher->presence_auth('my-channel','socket_id', 'user_id', 'user_info');
+$pusher->presence_auth('presence-my-channel','socket_id', 'user_id', 'user_info');
 ```
 
 ### Presence example
