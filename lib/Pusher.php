@@ -445,7 +445,7 @@ class Pusher
      * @param bool         $debug           [optional]
      * @param bool         $already_encoded [optional]
      *
-     * @return bool|string
+     * @return bool|array
      */
     public function trigger($channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false)
     {
