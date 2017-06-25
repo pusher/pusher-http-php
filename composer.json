@@ -6,7 +6,7 @@
     "homepage": "https://github.com/pusher/pusher-php-server",
     "license": "MIT",
     "require": {
-        "php": ">=5.2",
+        "php": "^5.4 || ^7.0",
         "ext-curl": "*"
     },
     "require-dev": {
