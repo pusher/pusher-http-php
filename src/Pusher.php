@@ -171,8 +171,12 @@ class Pusher
      */
     private function check_compatibility()
     {
-        if (!extension_loaded('curl') || !extension_loaded('json')) {
-            throw new PusherException('There is missing dependant extensions - please ensure both cURL and JSON modules are installed');
+        if (!extension_loaded('curl')) {
+            throw new PusherException('The Pusher library requires the PHP cURL module. Please ensure it is installed');
+        }
+
+        if (!extension_loaded('json')) {
+            throw new PusherException('The Pusher library requires the PHP JSON module. Please ensure it is installed');
         }
 
         if (!in_array('sha256', hash_algos())) {

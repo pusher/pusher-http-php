@@ -28,6 +28,8 @@ Or you can clone or download the library files.
 
 **We recommend you [use composer](http://getcomposer.org/).**
 
+This library depends on PHP modules for cURL and JSON. See [cURL module installation instructions](http://php.net/manual/en/curl.installation.php) and [JSON module installation instructions](http://php.net/manual/en/json.installation.php).
+
 
 ## Pusher constructor
 
