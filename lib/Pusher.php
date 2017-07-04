@@ -674,7 +674,7 @@ class Pusher
      * @throws PusherException if validation fails.
      *
      * @return bool|string
-     **/
+     */
     public function notify($interests, $data = array(), $debug = false)
     {
         $query_params = array();
@@ -710,5 +710,44 @@ class Pusher
         } else {
             return false;
         }
+    }
+
+    /**
+     * Retrive usage stats from the Push Notifications Api.
+     *
+     * @param string $start_date
+     * @param string $end_date
+     *
+     * @throws PusherException if [$start_date, $end_date] is not a valid time interval.
+     *
+     * @return array
+     */
+    public function stats($start_day, $end_day)
+    {
+      $format = "y-m-d";
+      if (DateTime::createFromFormat($format, $start_day) == false) {
+        throw new PusherException("start_day should be a string with format $format");
+      }
+      if (DateTime::createFromFormat($format, $end_day) == false) {
+        throw new PusherException("end_day should be a string with format $format");
+      }
+      if ($start_day > $end_day) {
+        throw new PusherException("Invalid time interval, start_date > end_date");
+      }
+      $now = date($format);
+      if ($start_day > $now) {
+        throw new PusherException("Cannot request a time interval in the future, start_date > now");
+      }
+
+      $query_params = array(
+        "start" => $start_day,
+        "end" => $end_day
+      );
+
+      $stats_path = '/server_api/v1'.$this->settings['base_path'].'/stats';
+      $ch = $this->create_curl($this->notification_domain(), $stats_path, 'GET', $query_params);
+
+      $response = $this->exec_curl($ch);
+      return $response["body"];
     }
 }
