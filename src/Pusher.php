@@ -76,10 +76,12 @@ class Pusher
 
         /* End backward compatibility with old constructor **/
 
-        if (isset($options['encrypted']) &&
-        $options['encrypted'] === true &&
-        !isset($options['scheme']) &&
-        !isset($options['port'])) {
+        if (
+            isset($options['encrypted']) &&
+            $options['encrypted'] === true &&
+            !isset($options['scheme']) &&
+            !isset($options['port'])
+        ) {
             $options['scheme'] = 'https';
             $options['port'] = 443;
         }
