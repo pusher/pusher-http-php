@@ -25,7 +25,7 @@ class Pusher
      * @param string $auth_key
      * @param string $secret
      * @param int    $app_id
-     * @param bool   $options  [optional]
+     * @param array  $options  [optional]
      *                         Options to configure the Pusher instance.
      *                         Was previously a debug flag. Legacy support for this exists if a boolean is passed.
      *                         scheme - e.g. http or https
@@ -63,7 +63,7 @@ class Pusher
             $this->settings['host'] = $host;
 
             $this->log('Legacy $host parameter provided: '.
-            $this->settings['scheme'].' host: '.$this->settings['host']);
+                $this->settings['scheme'].' host: '.$this->settings['host']);
         }
 
         if (!is_null($port)) {
@@ -239,8 +239,6 @@ class Pusher
      */
     private function create_curl($domain, $s_url, $request_method = 'GET', $query_params = array())
     {
-        $full_url = '';
-
         // Create the signed signature...
         $signed_query = self::build_auth_query_string(
             $this->settings['auth_key'],
