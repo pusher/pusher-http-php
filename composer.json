@@ -1,7 +1,7 @@
 {
     "name": "pusher/pusher-php-server",
     "description" : "Library for interacting with the Pusher REST API",
-    "keywords": ["php-pusher-server", "pusher", "rest", "realtime", "trigger", "publish", "events"],
+    "keywords": ["php-pusher-server", "pusher", "rest", "realtime", "real-time", "real time", "messaging", "push", "trigger", "publish", "events"],
     "license": "MIT",
     "require": {
         "php": "^5.4 || ^7.0",

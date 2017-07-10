@@ -4,7 +4,7 @@ namespace Pusher;
 
 class Pusher
 {
-    public static $VERSION = '2.6.4';
+    public static $VERSION = '3.0.0';
 
     private $settings = array(
         'scheme'       => 'http',

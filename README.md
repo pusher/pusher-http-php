@@ -18,7 +18,7 @@ Or add to `composer.json`:
 
 ```json
 "require": {
-    "pusher/pusher-php-server": "^2.6"
+    "pusher/pusher-php-server": "^3.0"
 }
 ```
 
@@ -41,7 +41,7 @@ $app_key = 'YOUR_APP_KEY';
 $app_secret = 'YOUR_APP_SECRET';
 $app_cluster = 'YOUR_APP_CLUSTER';
 
-$pusher = new Pusher( $app_key, $app_secret, $app_id, array('cluster' => $app_cluster) );
+$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, array('cluster' => $app_cluster) );
 ```
 
 The fourth parameter is an `$options` array. The additional options are:
@@ -167,12 +167,12 @@ if (isset($_SESSION['user_id'])) {
   $stmt->execute();
   $user = $stmt->fetch();
 } else {
-  die('aaargh, no-one is logged in')
+  die('aaargh, no-one is logged in');
 }
 
 header('Content-Type: application/json');
 
-$pusher = new Pusher($key, $secret, $app_id);
+$pusher = new Pusher\Pusher($key, $secret, $app_id);
 $presence_data = array('name' => $user['name']);
 
 echo $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
@@ -292,7 +292,7 @@ The native notifications API is hosted at `nativepush-cluster1.pusher.com` and o
 If you wish to provide a different host you can do:
 
 ```php
-$pusher = new Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'custom notifications host'))
+$pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'custom notifications host'))
 ```
 However, note that `notification_host` defaults to `nativepush-cluster1.pusher.com` and it is the only supported endpoint.
 
