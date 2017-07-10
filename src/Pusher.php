@@ -1,60 +1,6 @@
 <?php
 
-/*
-        Pusher PHP Library
-    /////////////////////////////////
-    PHP library for the Pusher API.
-
-    See the README for usage information: https://github.com/pusher/pusher-php-server
-
-    Copyright 2011, Squeeks. Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
-
-    Contributors:
-        + Paul44 (http://github.com/Paul44)
-        + Ben Pickles (http://github.com/benpickles)
-        + Mastercoding (http://www.mastercoding.nl)
-        + Alias14 (mali0037@gmail.com)
-        + Max Williams (max@pusher.com)
-        + Zack Kitzmiller (delicious@zackisamazing.com)
-        + Andrew Bender (igothelp@gmail.com)
-        + Phil Leggetter (phil@leggetter.co.uk)
-        + Simaranjit Singh (simaranjit.singh@virdi.me)
-*/
-
-class PusherException extends Exception
-{
-}
-
-class PusherInstance
-{
-    private static $instance = null;
-    private static $app_id = '';
-    private static $secret = '';
-    private static $api_key = '';
-
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
-    public static function get_pusher()
-    {
-        if (self::$instance !== null) {
-            return self::$instance;
-        }
-
-        self::$instance = new Pusher(
-            self::$api_key,
-            self::$secret,
-            self::$app_id
-        );
-
-        return self::$instance;
-    }
-}
+namespace Pusher;
 
 class Pusher
 {
@@ -117,7 +63,7 @@ class Pusher
             $this->settings['host'] = $host;
 
             $this->log('Legacy $host parameter provided: '.
-                                    $this->settings['scheme'].' host: '.$this->settings['host']);
+            $this->settings['scheme'].' host: '.$this->settings['host']);
         }
 
         if (!is_null($port)) {
@@ -130,10 +76,12 @@ class Pusher
 
         /* End backward compatibility with old constructor **/
 
-        if (isset($options['encrypted']) &&
-                $options['encrypted'] === true &&
-                !isset($options['scheme']) &&
-                !isset($options['port'])) {
+        if (
+            isset($options['encrypted']) &&
+            $options['encrypted'] === true &&
+            !isset($options['scheme']) &&
+            !isset($options['port'])
+        ) {
             $options['scheme'] = 'https';
             $options['port'] = 443;
         }
@@ -177,7 +125,7 @@ class Pusher
 
         // ensure host doesn't have a scheme prefix
         $this->settings['host'] =
-            preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
+        preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
     }
 
     /**
@@ -192,6 +140,8 @@ class Pusher
 
     /**
      * Set a logger to be informed of internal log messages.
+     *
+     * @return void
      */
     public function set_logger($logger)
     {
@@ -202,6 +152,8 @@ class Pusher
      * Log a string.
      *
      * @param string $msg The message to log
+     *
+     * @return void
      */
     private function log($msg)
     {
@@ -214,15 +166,19 @@ class Pusher
      * Check if the current PHP setup is sufficient to run this class.
      *
      * @throws PusherException if any required dependencies are missing
+     *
+     * @return void
      */
     private function check_compatibility()
     {
         if (!extension_loaded('curl')) {
             throw new PusherException('The Pusher library requires the PHP cURL module. Please ensure it is installed');
         }
+
         if (!extension_loaded('json')) {
             throw new PusherException('The Pusher library requires the PHP JSON module. Please ensure it is installed');
         }
+
         if (!in_array('sha256', hash_algos())) {
             throw new PusherException('SHA256 appears to be unsupported - make sure you have support for it, or upgrade your version of PHP.');
         }
@@ -234,6 +190,8 @@ class Pusher
      * @param string[] $channels An array of channel names to validate
      *
      * @throws PusherException if $channels is too big or any channel is invalid
+     *
+     * @return void
      */
     private function validate_channels($channels)
     {
@@ -252,6 +210,8 @@ class Pusher
      * @param $channel The channel name to validate
      *
      * @throws PusherException if $channel is invalid
+     *
+     * @return void
      */
     private function validate_channel($channel)
     {
@@ -287,7 +247,8 @@ class Pusher
             $this->settings['secret'],
             $request_method,
             $s_url,
-            $query_params);
+            $query_params
+        );
 
         $full_url = $domain.$s_url.'?'.$signed_query;
 
@@ -312,9 +273,9 @@ class Pusher
         // Set cURL opts and execute request
         curl_setopt($ch, CURLOPT_URL, $full_url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-          'Content-Type: application/json',
-          'Expect:',
-          'X-Pusher-Library: pusher-http-php '.self::$VERSION,
+            'Content-Type: application/json',
+            'Expect:',
+            'X-Pusher-Library: pusher-http-php '.self::$VERSION,
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->settings['timeout']);
@@ -387,7 +348,7 @@ class Pusher
      * @return string
      */
     public static function build_auth_query_string($auth_key, $auth_secret, $request_method, $request_path,
-        $query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
+    $query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
     {
         $params = array();
         $params['auth_key'] = $auth_key;
@@ -674,7 +635,7 @@ class Pusher
      * @throws PusherException if validation fails.
      *
      * @return bool|string
-     **/
+     */
     public function notify($interests, $data = array(), $debug = false)
     {
         $query_params = array();

@@ -33,7 +33,7 @@ This library depends on PHP modules for cURL and JSON. See [cURL module installa
 
 ## Pusher constructor
 
-Use the credentials from your Pusher application to create a new `Pusher` instance.
+Use the credentials from your Pusher application to create a new `Pusher\Pusher` instance.
 
 ```php
 $app_id = 'YOUR_APP_ID';
@@ -57,12 +57,12 @@ The fourth parameter is an `$options` array. The additional options are:
 For example, by default calls will be made over a non-encrypted connection. To change this to make calls over HTTPS use:
 
 ```php
-$pusher = new Pusher( $app_key, $app_secret, $app_id, array( 'cluster' => $app_cluster, 'encrypted' => true ) );
+$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, array( 'cluster' => $app_cluster, 'encrypted' => true ) );
 ```
 
 For example, if you want to set custom curl options, use this:
 ```php
-$pusher = new Pusher( $app_key, $app_secret, $app_id, array( 'cluster' => $app_cluster, 'encrypted' => true, 'curl_options' => array( CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4 ) ) );
+$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, array( 'cluster' => $app_cluster, 'encrypted' => true, 'curl_options' => array( CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4 ) ) );
 ```
 
 
@@ -371,7 +371,7 @@ will appear within the generated app output e.g. HTML.
 
 ## Running the tests
 
-Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
+Requires [phpunit](https://github.com/sebastianbergmann/phpunit).
 
 * Go to the `test` directory
 * Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
@@ -380,8 +380,9 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit/).
 * From the root directory of the project, execute `phpunit .` to run all the tests.
 
 ## Framework Integrations
+
 - **Laravel 4** - https://github.com/artdarek/pusherer
-- **Laravel 5** - https://github.com/vinkla/pusher
+- **Laravel 5** - https://github.com/vinkla/Laravel-Pusher
 
 ## License
 

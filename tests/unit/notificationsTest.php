@@ -4,11 +4,11 @@
     {
         protected function setUp()
         {
-            $this->pusher = new Pusher('thisisaauthkey', 'thisisasecret', 1);
+            $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1);
         }
 
         /**
-         * @expectedException PusherException
+         * @expectedException \Pusher\PusherException
          */
         public function testInvalidEmptyInterests()
         {

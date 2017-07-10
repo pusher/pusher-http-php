@@ -1,4 +1,4 @@
-*.DS_Store
+composer.lock
+phpunit.xml
 test/config.php
 vendor
-composer.lock
