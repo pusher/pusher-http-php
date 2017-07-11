@@ -331,8 +331,6 @@ $pusher->notify(array("test"), $data);
 
 Push notification requests, once submitted to the service, are executed asynchronously. To make reporting errors easier, you can supply a `webhook_url` field in the body of the request. The service will call this url with a body that contains the results of the publish request.
 
-You may also supply a `webhook_level` field in the body, which can either be `"INFO"` or `"DEBUG"`. It defaults to `"INFO"` - where `"INFO"` only reports customer facing errors, while `"DEBUG"` reports all available information about the responses.
-
 Here's an example:
 
 ```php
@@ -340,7 +338,6 @@ $data = array(
   'apns' => array("..."),
   'gcm' => array("..."),
   'webhook_url' => "http://my.company.com/pusher/nativepush/results"
-  'webhook_url' => "INFO"
 );
 
 $pusher->notify(array("test"), $data);
