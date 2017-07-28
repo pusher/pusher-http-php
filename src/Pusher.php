@@ -411,7 +411,6 @@ class Pusher
     public function trigger($channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false)
     {
         if (is_string($channels) === true) {
-            $this->log('->trigger received string channel "'.$channels.'". Converting to array.');
             $channels = array($channels);
         }
 
