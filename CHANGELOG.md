@@ -1,7 +1,9 @@
 ## 3.0.0 (2017-07-10)
+
 [NEW] Added namespaces (thanks [@vinkla](https://github.com/vinkla)).
 
-## 2.6.4 (2017-06-11)
+## 2.6.4 (2017-06-11)
+
 [FIXED] Log the curl error in more circumstances
 
 ## 2.6.1 (2016-11-11)
