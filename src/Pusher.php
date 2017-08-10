@@ -402,7 +402,7 @@ class Pusher
      * @param array|string $channels        A channel name or an array of channel names to publish the event on.
      * @param string       $event
      * @param mixed        $data            Event data
-     * @param string       $socket_id       [optional]
+     * @param string|null  $socket_id       [optional]
      * @param bool         $debug           [optional]
      * @param bool         $already_encoded [optional]
      *
