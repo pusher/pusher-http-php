@@ -8,7 +8,7 @@
         "ext-curl": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.8 || ^5.7"
+        "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5"
     },
     "autoload": {
         "psr-4": {
