@@ -39,6 +39,7 @@ class Pusher
      * @param string $host     [optional] - deprecated
      * @param int    $port     [optional] - deprecated
      * @param int    $timeout  [optional] - deprecated
+     *
      * @throws PusherException Throws exception if any required dependencies are missing
      */
     public function __construct($auth_key, $secret, $app_id, $options = array(), $host = null, $port = null, $timeout = null)
@@ -141,17 +142,18 @@ class Pusher
 
     /**
      * Set a logger to be informed of internal log messages.
-     * The logger must have a log method
+     * The logger must have a log method.
      *
      * @param object $logger A object with a public function log($message) method
-     * @return void
      * @throws PusherException Throws exception if logger object does not have a log method, this exception can be
-     *      safely ignores if the the passed object always have a log method
+     *                         safely ignores if the the passed object always have a log method
+     *
+     * @return void
      */
     public function set_logger($logger)
     {
-        if (!method_exists($logger, "log")) {
-            throw new PusherException("set_logger argument must have a log method");
+        if (!method_exists($logger, 'log')) {
+            throw new PusherException('set_logger argument must have a log method');
         }
         $this->logger = $logger;
     }
@@ -166,7 +168,7 @@ class Pusher
     private function log($msg)
     {
         if (is_null($this->logger) === false) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /* @noinspection PhpUndefinedMethodInspection */
             $this->logger->log('Pusher: '.$msg);
         }
     }
@@ -245,12 +247,15 @@ class Pusher
 
     /**
      * Utility function used to create the curl object with common settings.
+     *
      * @param string $domain
      * @param string $s_url
      * @param string $request_method
      * @param array $query_params
-     * @return null|resource
+     *
      * @throws PusherException Throws exception if curl wasn't initialized correctly
+     *
+     * @return null|resource
      */
     private function create_curl($domain, $s_url, $request_method = 'GET', $query_params = array())
     {
@@ -310,7 +315,9 @@ class Pusher
 
     /**
      * Utility function to execute curl and create capture response information.
+     *
      * @param $ch
+     *
      * @return array
      */
     private function exec_curl($ch)
@@ -390,9 +397,9 @@ class Pusher
      * a glue, a separator between pairs and the array
      * to implode.
      *
-     * @param string $glue      The glue between key and value
-     * @param string $separator Separator between pairs
-     * @param array|string $array The array to implode
+     * @param string       $glue      The glue between key and value
+     * @param string       $separator Separator between pairs
+     * @param array|string $array     The array to implode
      *
      * @return string The imploded array
      */
@@ -423,8 +430,9 @@ class Pusher
      * @param bool         $debug           [optional]
      * @param bool         $already_encoded [optional]
      *
-     * @return bool|array
      * @throws PusherException throws exception if $channels is an array of size 101 or above or $socket_id is invalid
+     *
+     * @return bool|array
      */
     public function trigger($channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false)
     {
@@ -479,12 +487,13 @@ class Pusher
     /**
      * Trigger multiple events at the same time.
      *
-     * @param array $batch An array of events to send
-     * @param bool $debug [optional]
-     * @param bool $already_encoded [optional]
+     * @param array $batch           An array of events to send
+     * @param bool  $debug           [optional]
+     * @param bool  $already_encoded [optional]
+     *
+     * @throws PusherException Throws exception if curl wasn't initialized correctly
      *
      * @return array|bool|string
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
      */
     public function triggerBatch($batch = array(), $debug = false, $already_encoded = false)
     {
@@ -554,8 +563,9 @@ class Pusher
      *
      * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
-     * @return array
      * @throws PusherException Throws exception if curl wasn't initialized correctly
+     *
+     * @return array
      */
     public function get_channels($params = array())
     {
@@ -575,11 +585,12 @@ class Pusher
      * GET arbitrary REST API resource using a synchronous http client.
      * All request signing is handled automatically.
      *
-     * @param string $path Path excluding /apps/APP_ID
-     * @param array $params API params (see http://pusher.com/docs/rest_api)
+     * @param string $path   Path excluding /apps/APP_ID
+     * @param array  $params API params (see http://pusher.com/docs/rest_api)
+     *
+     * @throws PusherException Throws exception if curl wasn't initialized correctly
      *
      * @return array|bool See Pusher API docs
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
      */
     public function get($path, $params = array())
     {
@@ -634,10 +645,11 @@ class Pusher
      * @param string $channel
      * @param string $socket_id
      * @param string $user_id
-     * @param mixed $user_info
+     * @param mixed  $user_info
+     *
+     * @throws PusherException throws exception if $channel is invalid or above or $socket_id is invalid
      *
      * @return string
-     * @throws PusherException throws exception if $channel is invalid or above or $socket_id is invalid
      */
     public function presence_auth($channel, $socket_id, $user_id, $user_info = null)
     {

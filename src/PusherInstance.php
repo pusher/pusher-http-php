@@ -10,7 +10,8 @@ class PusherInstance
     private static $api_key = '';
 
     /**
-     * Get the pusher singleton instance
+     * Get the pusher singleton instance.
+     *
      * @return Pusher
      */
     public static function get_pusher()
