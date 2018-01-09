@@ -145,6 +145,7 @@ class Pusher
      * The logger must have a log method.
      *
      * @param object $logger A object with a public function log($message) method
+     *
      * @throws PusherException Throws exception if logger object does not have a log method, this exception can be
      *                         safely ignores if the the passed object always have a log method
      *
@@ -251,7 +252,7 @@ class Pusher
      * @param string $domain
      * @param string $s_url
      * @param string $request_method
-     * @param array $query_params
+     * @param array  $query_params
      *
      * @throws PusherException Throws exception if curl wasn't initialized correctly
      *
@@ -619,8 +620,9 @@ class Pusher
      * @param string $socket_id
      * @param string $custom_data
      *
-     * @return string
      * @throws PusherException throws exception if $channel is invalid or above or $socket_id is invalid
+     *
+     * @return string
      */
     public function socket_auth($channel, $socket_id, $custom_data = null)
     {
