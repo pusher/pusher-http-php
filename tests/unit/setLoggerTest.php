@@ -1,7 +1,7 @@
 <?php
 
-require __DIR__."/../FakeLogger.php";
-require __DIR__."/../TestLogger.php";
+require __DIR__.'/../FakeLogger.php';
+require __DIR__.'/../TestLogger.php';
 
 class PusherSetLoggerTest extends PHPUnit_Framework_TestCase
 {
