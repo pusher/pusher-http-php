@@ -7,7 +7,6 @@ class PusherLoggerTest extends PHPUnit_Framework_TestCase
         $this->pusher = new Pusher\Pusher('', '', '');
     }
 
-
     public function tesSetRealLogger()
     {
         $this->pusher->set_logger(new TestLogger());
@@ -19,7 +18,5 @@ class PusherLoggerTest extends PHPUnit_Framework_TestCase
     public function testSetFakeLogger()
     {
         $this->pusher->set_logger(new FakeLogger());
-
     }
-
 }

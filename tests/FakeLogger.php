@@ -2,4 +2,5 @@
 
 class FakeLogger
 {
+
 }
