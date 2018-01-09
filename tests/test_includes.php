@@ -15,3 +15,4 @@ if (file_exists($config_path) === true) {
 require_once $dir.'/../lib/Pusher.php';
 
 require_once $dir.'/TestLogger.php';
+require_once $dir . '/FakeLogger.php';
