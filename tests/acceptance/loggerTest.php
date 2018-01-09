@@ -4,7 +4,7 @@ class PusherLoggerTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $this->pusher = new Pusher\Pusher("", "", "");
+        $this->pusher = new Pusher\Pusher('', '', '');
     }
 
 
