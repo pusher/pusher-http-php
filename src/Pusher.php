@@ -520,12 +520,10 @@ class Pusher
         $response = $this->get('/channels/'.$channel, $params);
 
         if ($response['status'] === 200) {
-            $response = json_decode($response['body']);
-        } else {
-            $response = false;
+            return json_decode($response['body']);
         }
 
-        return $response;
+        return false;
     }
 
     /**
@@ -542,11 +540,11 @@ class Pusher
         if ($response['status'] === 200) {
             $response = json_decode($response['body']);
             $response->channels = get_object_vars($response->channels);
-        } else {
-            $response = false;
+
+            return $response;
         }
 
-        return $response;
+        return false;
     }
 
     /**
@@ -568,11 +566,11 @@ class Pusher
 
         if ($response['status'] === 200) {
             $response['result'] = json_decode($response['body'], true);
-        } else {
-            $response = false;
+
+            return $response;
         }
 
-        return $response;
+        return false;
     }
 
     /**
