@@ -384,6 +384,7 @@ class Pusher
         if (!is_array($array)) {
             return $array;
         }
+
         $string = array();
         foreach ($array as $key => $val) {
             if (is_array($val)) {
@@ -451,11 +452,13 @@ class Pusher
 
         if ($response['status'] === 200 && $debug === false) {
             return true;
-        } elseif ($debug === true || $this->settings['debug'] === true) {
-            return $response;
-        } else {
-            return false;
         }
+
+        if ($debug === true || $this->settings['debug'] === true) {
+            return $response;
+        }
+
+        return false;
     }
 
     /**
@@ -498,11 +501,13 @@ class Pusher
 
         if ($response['status'] === 200 && $debug === false) {
             return true;
-        } elseif ($debug === true || $this->settings['debug'] === true) {
-            return $response;
-        } else {
-            return false;
         }
+
+        if ($debug === true || $this->settings['debug'] === true) {
+            return $response;
+        }
+
+        return false;
     }
 
     /**
@@ -661,10 +666,12 @@ class Pusher
 
         if ($response['status'] === 202 && $debug === false) {
             return true;
-        } elseif ($debug === true || $this->settings['debug'] === true) {
-            return $response;
-        } else {
-            return false;
         }
+
+        if ($debug === true || $this->settings['debug'] === true) {
+            return $response;
+        }
+
+        return false;
     }
 }
