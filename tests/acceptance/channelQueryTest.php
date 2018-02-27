@@ -1,6 +1,6 @@
 <?php
 
-class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
+class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {
@@ -31,7 +31,7 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
             echo  "\n\n";
         }
 
-        $this->assertTrue(is_array($channels), 'channels is an array');
+        $this->assertInternalType('array', $channels, 'channels is an array');
     }
 
     public function testFilterByPrefixNoChannels()
@@ -47,8 +47,8 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
         // print_r( $channels );
 
-        $this->assertTrue(is_array($channels), 'channels is an array');
-        $this->assertEquals(0, count($channels), 'should be an empty array');
+        $this->assertInternalType('array', $channels, 'channels is an array');
+        $this->assertCount(0, $channels, 'should be an empty array');
     }
 
     public function testFilterByPrefixOneChannel()
@@ -64,7 +64,7 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
         // print_r( $channels );
 
-        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against');
+        $this->assertCount(1, $channels, 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against');
     }
 
     public function test_providing_info_parameter_with_prefix_query_fails_for_public_channel()
@@ -88,11 +88,11 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
         $channels = $result['channels'];
 
-        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against');
+        $this->assertCount(1, $channels, 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against');
 
         $test_channel = $channels['test_channel'];
 
-        $this->assertEquals(0, count($test_channel));
+        $this->assertCount(0, $test_channel);
     }
 
     public function test_channel_list_using_generic_get_and_prefix_param()
@@ -105,11 +105,11 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
         $channels = $result['channels'];
 
-        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against');
+        $this->assertCount(1, $channels, 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against');
 
         $test_channel = $channels['test_channel'];
 
-        $this->assertEquals(0, count($test_channel));
+        $this->assertCount(0, $test_channel);
     }
 
     public function test_single_channel_info_using_generic_get()

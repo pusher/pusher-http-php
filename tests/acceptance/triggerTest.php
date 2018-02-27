@@ -1,6 +1,6 @@
 <?php
 
-class PusherPushTest extends PHPUnit_Framework_TestCase
+class PusherPushTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

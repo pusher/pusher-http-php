@@ -1,6 +1,6 @@
 <?php
 
-class PusherAuthQueryString extends PHPUnit_Framework_TestCase
+class PusherAuthQueryString extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {
@@ -14,9 +14,7 @@ class PusherAuthQueryString extends PHPUnit_Framework_TestCase
         $expected = 'testKey=testValue';
         $actual = Pusher\Pusher::array_implode('=', '&', $val);
 
-        $this->assertEquals($actual,
-        $expected,
-        'auth signature valid');
+        $this->assertEquals($actual, $expected, 'auth signature valid');
     }
 
     public function testArrayImplodeWithTwoValues()
@@ -26,9 +24,7 @@ class PusherAuthQueryString extends PHPUnit_Framework_TestCase
         $expected = 'testKey=testValue&testKey2=testValue2';
         $actual = Pusher\Pusher::array_implode('=', '&', $val);
 
-        $this->assertEquals($actual,
-        $expected,
-        'auth signature valid');
+        $this->assertEquals($actual, $expected, 'auth signature valid');
     }
 
     public function testGenerateSignature()
