@@ -12,8 +12,6 @@ php:
   - 7.2
   - hhvm
 
-sudo: false
-
 install: travis_retry composer install --no-interaction --prefer-source
 
 script: vendor/bin/phpunit --testsuite unit
