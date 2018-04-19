@@ -379,7 +379,7 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit).
 ## Framework Integrations
 
 - **Laravel 4** - https://github.com/artdarek/pusherer
-- **Laravel 5** - https://github.com/vinkla/Laravel-Pusher
+- **Laravel 5** - https://github.com/pusher/pusher-http-laravel/
 
 ## License
 
