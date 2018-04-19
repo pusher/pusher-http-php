@@ -12,6 +12,11 @@ php:
   - 7.2
   - hhvm
 
+# Due to a compatibility issue between HHVM and PHP7
+# https://docs.travis-ci.com/user/languages/php/#HHVM-versions
+before_script:
+  - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+
 install: travis_retry composer install --no-interaction --prefer-source
 
 script: vendor/bin/phpunit --testsuite unit
