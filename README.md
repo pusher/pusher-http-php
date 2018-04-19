@@ -373,7 +373,7 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit).
 * Go to the `test` directory
 * Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
 * Some tests require a client to be connected to the app you defined in the config;
-  you can do this by opening https://dashboard.pusher.com/apps/<YOUR_TEST_APP_ID>/console in the browser
+  you can do this by opening https://dashboard.pusher.com/apps/<YOUR_TEST_APP_ID>/getting_started in the browser
 * From the root directory of the project, execute `phpunit .` to run all the tests.
 
 ## Framework Integrations
