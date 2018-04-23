@@ -11,3 +11,8 @@ if (file_exists($config_path) === true) {
 
     define('PUSHERAPP_HOST', 'http://api.pusherapp.com');
 }
+
+require_once $dir.'/../lib/Pusher.php';
+
+require_once $dir.'/TestLogger.php';
+require_once $dir.'/FakeLogger.php';
