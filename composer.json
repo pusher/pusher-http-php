@@ -15,6 +15,9 @@
             "Pusher\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": { "": "tests/" }
+    },
     "config": {
         "preferred-install": "dist"
     },

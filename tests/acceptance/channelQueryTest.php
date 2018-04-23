@@ -54,7 +54,7 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
     public function testFilterByPrefixOneChannel()
     {
         $options = array(
-            'filter_by_prefix' => 'test_',
+            'filter_by_prefix' => 'my-',
         );
         $result = $this->pusher->get_channels($options);
 
@@ -64,7 +64,7 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
         // print_r( $channels );
 
-        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against');
+        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
     }
 
     public function test_providing_info_parameter_with_prefix_query_fails_for_public_channel()
@@ -88,7 +88,7 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
         $channels = $result['channels'];
 
-        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against');
+        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
 
         $test_channel = $channels['test_channel'];
 
@@ -97,7 +97,7 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
     public function test_channel_list_using_generic_get_and_prefix_param()
     {
-        $response = $this->pusher->get('/channels', array('filter_by_prefix' => 'test_'));
+        $response = $this->pusher->get('/channels', array('filter_by_prefix' => 'my-'));
 
         $this->assertEquals($response['status'], 200);
 
@@ -105,7 +105,7 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
         $channels = $result['channels'];
 
-        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have your API Access setting open for the application you are testing against');
+        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
 
         $test_channel = $channels['test_channel'];
 
