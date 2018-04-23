@@ -253,7 +253,7 @@ class Pusher
         $this->log('INFO: create_curl( '.$full_url.' )');
 
         // Create or reuse existing curl handle
-        if (null === $this->ch) {
+        if (!is_resource($this->ch)) {
             $this->ch = curl_init();
         }
 
