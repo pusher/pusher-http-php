@@ -9,6 +9,11 @@ class PusherInstance
     private static $secret = '';
     private static $api_key = '';
 
+    /**
+     * Get the pusher singleton instance.
+     *
+     * @return Pusher
+     */
     public static function get_pusher()
     {
         if (self::$instance !== null) {
