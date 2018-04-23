@@ -13,6 +13,9 @@ class Pusher
         'debug'        => false,
         'curl_options' => array(),
     );
+    /**
+     * @var null | object
+     */
     private $logger = null;
     private $ch = null; // Curl handler
 
@@ -147,7 +150,7 @@ class Pusher
      * @param object $logger A object with a public function log($message) method
      *
      * @throws PusherException Throws exception if logger object does not have a log method, this exception can be
-     *                         safely ignores if the the passed object always have a log method
+     *                         safely ignored if the the passed object always have a log method
      *
      * @return void
      */
@@ -169,7 +172,6 @@ class Pusher
     private function log($msg)
     {
         if (is_null($this->logger) === false) {
-            /* @noinspection PhpUndefinedMethodInspection */
             $this->logger->log('Pusher: '.$msg);
         }
     }
@@ -177,7 +179,7 @@ class Pusher
     /**
      * Check if the current PHP setup is sufficient to run this class.
      *
-     * @throws PusherException if any required dependencies are missing
+     * @throws PusherException If any required dependencies are missing
      *
      * @return void
      */
@@ -201,7 +203,7 @@ class Pusher
      *
      * @param string[] $channels An array of channel names to validate
      *
-     * @throws PusherException if $channels is too big or any channel is invalid
+     * @throws PusherException If $channels is too big or any channel is invalid
      *
      * @return void
      */
@@ -221,7 +223,7 @@ class Pusher
      *
      * @param string $channel The channel name to validate
      *
-     * @throws PusherException if $channel is invalid
+     * @throws PusherException If $channel is invalid
      *
      * @return void
      */
@@ -237,7 +239,7 @@ class Pusher
      *
      * @param string $socket_id The socket ID to validate
      *
-     * @throws PusherException if $socket_id is invalid
+     * @throws PusherException If $socket_id is invalid
      */
     private function validate_socket_id($socket_id)
     {
@@ -364,7 +366,7 @@ class Pusher
      * @param string $auth_secret
      * @param string $request_method
      * @param string $request_path
-     * @param array  $query_params
+     * @param array  $query_params   [optional]
      * @param string $auth_version   [optional]
      * @param string $auth_timestamp [optional]
      *
@@ -432,7 +434,7 @@ class Pusher
      * @param bool         $debug           [optional]
      * @param bool         $already_encoded [optional]
      *
-     * @throws PusherException throws exception if $channels is an array of size 101 or above or $socket_id is invalid
+     * @throws PusherException Throws exception if $channels is an array of size 101 or above or $socket_id is invalid
      *
      * @return bool|array
      */
@@ -545,7 +547,7 @@ class Pusher
      * @param string $channel The name of the channel
      * @param array  $params  Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
-     * @throws PusherException if $channel is invalid or if curl wasn't initialized correctly
+     * @throws PusherException If $channel is invalid or if curl wasn't initialized correctly
      *
      * @return object
      */
@@ -620,9 +622,9 @@ class Pusher
      * @param string $socket_id
      * @param string $custom_data
      *
-     * @throws PusherException throws exception if $channel is invalid or above or $socket_id is invalid
+     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      *
-     * @return string
+     * @return string Json encoded authentication string.
      */
     public function socket_auth($channel, $socket_id, $custom_data = null)
     {
@@ -652,7 +654,7 @@ class Pusher
      * @param string $user_id
      * @param mixed  $user_info
      *
-     * @throws PusherException throws exception if $channel is invalid or above or $socket_id is invalid
+     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      *
      * @return string
      */
@@ -673,7 +675,7 @@ class Pusher
      * @param array $data
      * @param bool  $debug
      *
-     * @throws PusherException if validation fails.
+     * @throws PusherException If validation fails
      *
      * @return array|bool|string
      */
