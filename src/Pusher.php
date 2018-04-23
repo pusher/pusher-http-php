@@ -549,7 +549,7 @@ class Pusher
      *
      * @throws PusherException If $channel is invalid or if curl wasn't initialized correctly
      *
-     * @return object
+     * @return bool|object
      */
     public function get_channel_info($channel, $params = array())
     {
@@ -571,7 +571,7 @@ class Pusher
      *
      * @throws PusherException Throws exception if curl wasn't initialized correctly
      *
-     * @return array
+     * @return array|bool
      */
     public function get_channels($params = array())
     {
