@@ -2,11 +2,15 @@
 
 namespace Pusher;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class Pusher
+class Pusher implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     public static $VERSION = '3.0.0';
 
     private $settings = array(
@@ -16,7 +20,6 @@ class Pusher
         'debug'        => false,
         'curl_options' => array(),
     );
-    private $logger = null;
     private $ch = null; // Curl handler
 
     /**
@@ -146,6 +149,8 @@ class Pusher
     /**
      * Set a logger to be informed of internal log messages.
      *
+     * @deprecated Use the PSR-3 compliant Pusher::setLogger() instead. This method will be removed in the next breaking release.
+     *
      * @return void
      */
     public function set_logger($logger)
@@ -172,7 +177,7 @@ class Pusher
             return;
         }
 
-        // Support old style logger
+        // Support old style logger (deprecated)
         $msg = sprintf('Pusher: %s: %s', strtoupper($level), $msg);
         $replacement = array();
 
