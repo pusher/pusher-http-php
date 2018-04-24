@@ -1,9 +1,21 @@
 <?php
 
-class TestLogger
+use Psr\Log\AbstractLogger;
+
+class TestLogger extends AbstractLogger
 {
-    public function log($msg)
+    /**
+     * {@inheritdoc}
+     */
+    public function log($level, $message, array $context = array())
     {
-        print_r("\n".$msg);
+        $msg = sprintf('Pusher: %s: %s', strtoupper($level), $msg);
+        $replacement = array();
+
+        foreach ($context as $k => $v) {
+            $replacement['{'.$k.'}'] = $v;
+        }
+
+        print_r("\n".strtr($msg, $replacement));
     }
 }
