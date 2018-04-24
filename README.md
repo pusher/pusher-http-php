@@ -345,12 +345,23 @@ $pusher->notify(array("test"), $data);
 
 ## Debugging & Logging
 
-The best way to debug your applications interaction with server is to set a logger
-for the library so you can see the internal workings within the library and interactions
-with the Pusher service.
+The best way to debug your applications interaction with server is to set a logger for the library so you can see the internal workings within the library and interactions with the Pusher service.
 
-You set up logging by passing an object with a `log` function to the `pusher->set_logger`
-function:
+### PSR-3 Support
+
+The recommended approach of logging is to use a [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) compliant logger implementing `Psr\Log\LoggerInterface`. The `Pusher` object implements `Psr\Log\LoggerAwareInterface`, meaning you call `setLogger(LoggerInterface $logger)` to set the logger instance.
+
+```php
+// where $logger implements `LoggerInterface`
+
+$pusher->setLogger($logger);
+```
+
+### Custom Logger (deprecated)
+
+> **Warning**: Using `Pusher::set_logger()` and a custom object implementing `log()` is now deprecated and will be removed in the future. Please use a PSR-3 compliant logger.
+
+You set up logging by passing an object with a `log` function to the `pusher->set_logger` function:
 
 ```php
 class MyLogger {
@@ -362,9 +373,7 @@ class MyLogger {
 $pusher->set_logger( new MyLogger() );
 ```
 
-If you use the above example in code executed from the console/terminal the debug
-information will be output there. If you use this within a web app then the output
-will appear within the generated app output e.g. HTML.
+If you use the above example in code executed from the console/terminal the debug information will be output there. If you use this within a web app then the output will appear within the generated app output e.g. HTML.
 
 ## Running the tests
 
