@@ -11,8 +11,14 @@ class Pusher implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
+    /**
+     * @var string Version
+     */
     public static $VERSION = '3.0.0';
 
+    /**
+     * @var array Settings
+     */
     private $settings = array(
         'scheme'       => 'http',
         'port'         => 80,
@@ -20,12 +26,14 @@ class Pusher implements LoggerAwareInterface
         'debug'        => false,
         'curl_options' => array(),
     );
+
+    /**
+     * @var null|resource
+     */
     private $ch = null; // Curl handler
 
     /**
-     * PHP5 Constructor.
-     *
-     * Initializes a new Pusher instance with key, secret , app ID and channel.
+     * Initializes a new Pusher instance with key, secret, app ID and channel.
      * You can optionally turn on debugging for all requests by setting debug to true.
      *
      * @param string $auth_key
@@ -45,6 +53,8 @@ class Pusher implements LoggerAwareInterface
      * @param string $host     [optional] - deprecated
      * @param int    $port     [optional] - deprecated
      * @param int    $timeout  [optional] - deprecated
+     *
+     * @throws PusherException Throws exception if any required dependencies are missing
      */
     public function __construct($auth_key, $secret, $app_id, $options = array(), $host = null, $port = null, $timeout = null)
     {
@@ -151,6 +161,7 @@ class Pusher implements LoggerAwareInterface
      *
      * @deprecated Use the PSR-3 compliant Pusher::setLogger() instead. This method will be removed in the next breaking release.
      *
+     * @param object $logger A object with a public function log($message) method
      * @return void
      */
     public function set_logger($logger)
@@ -162,7 +173,8 @@ class Pusher implements LoggerAwareInterface
      * Log a string.
      *
      * @param string $msg The message to log
-     *
+     * @param array|\Exception $context [optional] Any extraneous information that does not fit well in a string.
+     * @param string $level [optional] Importance of log message, highly recommended to use Psr\Log\LogLevel::{level}
      * @return void
      */
     private function log($msg, array $context = array(), $level = LogLevel::INFO)
@@ -191,7 +203,7 @@ class Pusher implements LoggerAwareInterface
     /**
      * Check if the current PHP setup is sufficient to run this class.
      *
-     * @throws PusherException if any required dependencies are missing
+     * @throws PusherException If any required dependencies are missing
      *
      * @return void
      */
@@ -215,7 +227,7 @@ class Pusher implements LoggerAwareInterface
      *
      * @param string[] $channels An array of channel names to validate
      *
-     * @throws PusherException if $channels is too big or any channel is invalid
+     * @throws PusherException If $channels is too big or any channel is invalid
      *
      * @return void
      */
@@ -233,9 +245,9 @@ class Pusher implements LoggerAwareInterface
     /**
      * Ensure a channel name is valid based on our spec.
      *
-     * @param $channel The channel name to validate
+     * @param string $channel The channel name to validate
      *
-     * @throws PusherException if $channel is invalid
+     * @throws PusherException If $channel is invalid
      *
      * @return void
      */
@@ -251,7 +263,7 @@ class Pusher implements LoggerAwareInterface
      *
      * @param string $socket_id The socket ID to validate
      *
-     * @throws PusherException if $socket_id is invalid
+     * @throws PusherException If $socket_id is invalid
      */
     private function validate_socket_id($socket_id)
     {
@@ -262,6 +274,15 @@ class Pusher implements LoggerAwareInterface
 
     /**
      * Utility function used to create the curl object with common settings.
+     *
+     * @param string $domain
+     * @param string $s_url
+     * @param string [optional] $request_method
+     * @param array [optional] $query_params
+     *
+     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     *
+     * @return resource
      */
     private function create_curl($domain, $s_url, $request_method = 'GET', $query_params = array())
     {
@@ -321,6 +342,10 @@ class Pusher implements LoggerAwareInterface
 
     /**
      * Utility function to execute curl and create capture response information.
+     *
+     * @param $ch resource
+     *
+     * @return array
      */
     private function exec_curl($ch)
     {
@@ -365,7 +390,7 @@ class Pusher implements LoggerAwareInterface
      * @param string $auth_secret
      * @param string $request_method
      * @param string $request_path
-     * @param array  $query_params
+     * @param array  $query_params   [optional]
      * @param string $auth_version   [optional]
      * @param string $auth_timestamp [optional]
      *
@@ -399,9 +424,9 @@ class Pusher implements LoggerAwareInterface
      * a glue, a separator between pairs and the array
      * to implode.
      *
-     * @param string $glue      The glue between key and value
-     * @param string $separator Separator between pairs
-     * @param array  $array     The array to implode
+     * @param string       $glue      The glue between key and value
+     * @param string       $separator Separator between pairs
+     * @param array|string $array     The array to implode
      *
      * @return string The imploded array
      */
@@ -432,6 +457,8 @@ class Pusher implements LoggerAwareInterface
      * @param string|null  $socket_id       [optional]
      * @param bool         $debug           [optional]
      * @param bool         $already_encoded [optional]
+     *
+     * @throws PusherException Throws exception if $channels is an array of size 101 or above or $socket_id is invalid
      *
      * @return bool|array
      */
@@ -492,11 +519,13 @@ class Pusher implements LoggerAwareInterface
     /**
      * Trigger multiple events at the same time.
      *
-     * @param array $batch           An array of events to send
+     * @param array $batch           [optional] An array of events to send
      * @param bool  $debug           [optional]
      * @param bool  $already_encoded [optional]
      *
-     * @return bool|string
+     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     *
+     * @return array|bool|string
      */
     public function triggerBatch($batch = array(), $debug = false, $already_encoded = false)
     {
@@ -539,12 +568,14 @@ class Pusher implements LoggerAwareInterface
     }
 
     /**
-     *	Fetch channel information for a specific channel.
+     * Fetch channel information for a specific channel.
      *
      * @param string $channel The name of the channel
      * @param array  $params  Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
-     *	@return object
+     * @throws PusherException If $channel is invalid or if curl wasn't initialized correctly
+     *
+     * @return bool|object
      */
     public function get_channel_info($channel, $params = array())
     {
@@ -564,7 +595,9 @@ class Pusher implements LoggerAwareInterface
      *
      * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
-     * @return array
+     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     *
+     * @return array|bool
      */
     public function get_channels($params = array())
     {
@@ -584,10 +617,12 @@ class Pusher implements LoggerAwareInterface
      * GET arbitrary REST API resource using a synchronous http client.
      * All request signing is handled automatically.
      *
-     * @param string path Path excluding /apps/APP_ID
-     * @param params array API params (see http://pusher.com/docs/rest_api)
+     * @param string $path   Path excluding /apps/APP_ID
+     * @param array  $params API params (see http://pusher.com/docs/rest_api)
      *
-     * @return See Pusher API docs
+     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     *
+     * @return array|bool See Pusher API docs
      */
     public function get($path, $params = array())
     {
@@ -609,10 +644,13 @@ class Pusher implements LoggerAwareInterface
     /**
      * Creates a socket signature.
      *
+     * @param string $channel
      * @param string $socket_id
      * @param string $custom_data
      *
-     * @return string
+     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
+     *
+     * @return string Json encoded authentication string.
      */
     public function socket_auth($channel, $socket_id, $custom_data = null)
     {
@@ -637,9 +675,12 @@ class Pusher implements LoggerAwareInterface
     /**
      * Creates a presence signature (an extension of socket signing).
      *
+     * @param string $channel
      * @param string $socket_id
      * @param string $user_id
      * @param mixed  $user_info
+     *
+     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      *
      * @return string
      */
@@ -657,12 +698,12 @@ class Pusher implements LoggerAwareInterface
      * Send a native notification via the Push Notifications Api.
      *
      * @param array $interests
-     * @param array $payload
+     * @param array $data
      * @param bool  $debug
      *
-     * @throws PusherException if validation fails.
+     * @throws PusherException If validation fails
      *
-     * @return bool|string
+     * @return array|bool|string
      */
     public function notify($interests, $data = array(), $debug = false)
     {
