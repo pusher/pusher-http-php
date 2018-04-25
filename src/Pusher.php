@@ -162,6 +162,7 @@ class Pusher implements LoggerAwareInterface
      * @deprecated Use the PSR-3 compliant Pusher::setLogger() instead. This method will be removed in the next breaking release.
      *
      * @param object $logger A object with a public function log($message) method
+     *
      * @return void
      */
     public function set_logger($logger)
@@ -172,9 +173,10 @@ class Pusher implements LoggerAwareInterface
     /**
      * Log a string.
      *
-     * @param string $msg The message to log
+     * @param string           $msg     The message to log
      * @param array|\Exception $context [optional] Any extraneous information that does not fit well in a string.
-     * @param string $level [optional] Importance of log message, highly recommended to use Psr\Log\LogLevel::{level}
+     * @param string           $level   [optional] Importance of log message, highly recommended to use Psr\Log\LogLevel::{level}
+     *
      * @return void
      */
     private function log($msg, array $context = array(), $level = LogLevel::INFO)
@@ -275,10 +277,10 @@ class Pusher implements LoggerAwareInterface
     /**
      * Utility function used to create the curl object with common settings.
      *
-     * @param string $domain
-     * @param string $s_url
+     * @param string            $domain
+     * @param string            $s_url
      * @param string [optional] $request_method
-     * @param array [optional] $query_params
+     * @param array [optional]  $query_params
      *
      * @throws PusherException Throws exception if curl wasn't initialized correctly
      *
