@@ -1,3 +1,17 @@
+## 3.0.3 (2018-04-26)
+
+[ADDED] PSR-3 logger compatibility.
+[CHANGED] Improved PHP docs.
+
+## 3.0.2 (2018-04-23)
+
+[FIXED] Insufficient check for un-initialized curl resource.
+[FIXED] Acceptance tests.
+
+## 3.0.1 (2017-10-20)
+
+[CHANGED] Info messages are now prefixed with INFO and errors are now prefixed with ERROR.
+
 ## 3.0.0 (2017-07-10)
 
 [NEW] Added namespaces (thanks [@vinkla](https://github.com/vinkla)).
