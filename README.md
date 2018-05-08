@@ -241,6 +241,21 @@ This can also be achieved using the generic `pusher->get` function:
 $pusher->get( '/channels', array( 'filter_by_prefix' => 'presence-' ) );
 ```
 
+### Get a list of application channels with subscription counts
+
+The REST API returning the channel list does not support returning the subscription count along with each channel. Instead, you can fetch this data by iterating over each channel and making another request:
+
+```php
+<?php
+$subscription_counts = array();
+foreach ($pusher->get_channels()->channels as $channel => $v) {
+  $subscription_counts[$channel] =
+    $pusher->get_channel_info(
+      $channel, array('info' => 'subscription_count'))->subscription_count;
+}
+var_dump($subscription_counts);
+```
+
 ### Get user information from a presence channel
 
 ```php
