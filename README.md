@@ -188,7 +188,7 @@ Note: this assumes that you store your users in a table called `users` and that 
 $pusher->get_channel_info( $name );
 ```
 
-It's also possible to get information about a channel from the Pusher REST API.
+It's also possible to get information about a channel from the Pusher HTTP API.
 
 ```php
 $info = $pusher->get_channel_info('channel-name');
@@ -215,7 +215,7 @@ $subscription_count = $info->subscription_count;
 $pusher->get_channels()
 ```
 
-It's also possible to get a list of channels for an application from the Pusher REST API.
+It's also possible to get a list of channels for an application from the Pusher HTTP API.
 
 ```php
 $result = $pusher->get_channels();
@@ -243,7 +243,7 @@ $pusher->get( '/channels', array( 'filter_by_prefix' => 'presence-' ) );
 
 ### Get a list of application channels with subscription counts
 
-The REST API returning the channel list does not support returning the subscription count along with each channel. Instead, you can fetch this data by iterating over each channel and making another request:
+The HTTP API returning the channel list does not support returning the subscription count along with each channel. Instead, you can fetch this data by iterating over each channel and making another request:
 
 ```php
 <?php
@@ -289,9 +289,9 @@ Array
 $pusher->get( $path, $params );
 ```
 
-Used to make `GET` queries against the Pusher REST API. Handles authentication.
+Used to make `GET` queries against the Pusher HTTP API. Handles authentication.
 
-Response is an associative array with a `result` index. The contents of this index is dependent on the REST method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
+Response is an associative array with a `result` index. The contents of this index is dependent on the HTTP method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
 
 ```php
 $response = $pusher->get( '/channels' );
