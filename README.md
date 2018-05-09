@@ -243,7 +243,7 @@ $pusher->get( '/channels', array( 'filter_by_prefix' => 'presence-' ) );
 
 ### Get a list of application channels with subscription counts
 
-The HTTP API returning the channel list does not support returning the subscription count along with each channel. Instead, you can fetch this data by iterating over each channel and making another request:
+The HTTP API returning the channel list does not support returning the subscription count along with each channel. Instead, you can fetch this data by iterating over each channel and making another request. But be warned: this approach consumes (number of channels + 1) messages!
 
 ```php
 <?php
