@@ -489,7 +489,7 @@ class Pusher implements LoggerAwareInterface
         $post_params = array();
         $post_params['name'] = $event;
         $post_params['data'] = $data_encoded;
-        $post_params['channels'] = $channels;
+        $post_params['channels'] = array_values($channels);
 
         if ($socket_id !== null) {
             $post_params['socket_id'] = $socket_id;
