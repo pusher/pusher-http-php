@@ -1,3 +1,7 @@
+## 3.0.4 (2018-05-21)
+
+[FIXED] Non zero indexed arrays of channels no longer get serialized as an object.
+
 ## 3.0.3 (2018-04-26)
 
 [ADDED] PSR-3 logger compatibility.
