@@ -88,11 +88,11 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
         $channels = $result['channels'];
 
-        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
+        $this->assertEquals(1, count($channels), 'channels have a single my-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
 
-        $test_channel = $channels['test_channel'];
+        $my_channel = $channels['my-channel'];
 
-        $this->assertEquals(0, count($test_channel));
+        $this->assertEquals(0, count($my_channel));
     }
 
     public function test_channel_list_using_generic_get_and_prefix_param()
@@ -105,11 +105,11 @@ class PusherChannelQueryTest extends PHPUnit_Framework_TestCase
 
         $channels = $result['channels'];
 
-        $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
+        $this->assertEquals(1, count($channels), 'channels have a single my-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
 
-        $test_channel = $channels['test_channel'];
+        $my_channel = $channels['my-channel'];
 
-        $this->assertEquals(0, count($test_channel));
+        $this->assertEquals(0, count($my_channel));
     }
 
     public function test_single_channel_info_using_generic_get()
