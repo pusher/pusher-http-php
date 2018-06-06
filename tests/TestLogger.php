@@ -9,7 +9,7 @@ class TestLogger extends AbstractLogger
      */
     public function log($level, $message, array $context = array())
     {
-        $msg = sprintf('Pusher: %s: %s', strtoupper($level), $msg);
+        $msg = sprintf('Pusher: %s: %s', strtoupper($level), $message);
         $replacement = array();
 
         foreach ($context as $k => $v) {
