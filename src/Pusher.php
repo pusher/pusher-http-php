@@ -25,6 +25,7 @@ class Pusher implements LoggerAwareInterface
         'timeout'      => 30,
         'debug'        => false,
         'curl_options' => array(),
+        'encryption_key' => ""
     );
 
     /**
@@ -143,7 +144,7 @@ class Pusher implements LoggerAwareInterface
 
         // ensure host doesn't have a scheme prefix
         $this->settings['host'] =
-            preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
+        preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
     }
 
     /**
@@ -398,15 +399,9 @@ class Pusher implements LoggerAwareInterface
      *
      * @return string
      */
-    public static function build_auth_query_string(
-        $auth_key,
-        $auth_secret,
-        $request_method,
-        $request_path,
-        $query_params = array(),
-        $auth_version = '1.0',
-        $auth_timestamp = null
-    ) {
+    public static function build_auth_query_string($auth_key, $auth_secret, $request_method, $request_path,
+    $query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
+    {
         $params = array();
         $params['auth_key'] = $auth_key;
         $params['auth_timestamp'] = (is_null($auth_timestamp) ? time() : $auth_timestamp);
@@ -455,6 +450,7 @@ class Pusher implements LoggerAwareInterface
         return implode($separator, $string);
     }
 
+
     /**
      * Trigger an event by providing event name and payload.
      * Optionally provide a socket ID to exclude a client (most likely the sender).
@@ -491,7 +487,10 @@ class Pusher implements LoggerAwareInterface
                 'error' => print_r($data, true),
             ), LogLevel::ERROR);
         }
-
+        if(PusherCrypto::is_encrypted_channel($channels[0])) {
+            $crypto = new PusherCrypto($this->settings['encryption_key']);
+            $data_encoded = $crypto->encrypt_payload($channels[0], $data_encoded);
+        }
         $post_params = array();
         $post_params['name'] = $event;
         $post_params['data'] = $data_encoded;
@@ -676,10 +675,12 @@ class Pusher implements LoggerAwareInterface
         if ($custom_data) {
             $signature['channel_data'] = $custom_data;
         }
-
-        return json_encode($signature);
+        if (PusherCrypto::is_encrypted_channel($channel)) {
+            $crypto = new PusherCrypto($this->settings['encryption_key']);
+            $signature['shared_secret'] = base64_encode($crypto->generate_shared_secret($channel));
+        }
+        return json_encode($signature, JSON_UNESCAPED_SLASHES);
     }
-
     /**
      * Creates a presence signature (an extension of socket signing).
      *
@@ -753,38 +754,64 @@ class Pusher implements LoggerAwareInterface
     }
 
     /**
-     * Verify that a webhook actually came from Pusher, and marshals them into a Webhook object.
-     *
-     * @param array  $headers an array of headers from the request (for example, from getallheaders())
-     * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
-     *
-     * @return Webhook object with the properties time_ms (an int) and events (an array of event objects)
+     * Verify that a webhook actually came from Pusher, decrypts any encrypted events, and marshals them into a PHP object.
+     * 
+     * @param array $headers a array of headers from the request (for example, from getallheaders())
+     * @param string $body the body of the request (for example, from file_get_contents('php://input'))
+     * 
+     * @return array marshalled object with the properties time_ms (an int) and events (an array of event objects)
+     * 
      */
-    public function webhook($headers, $body)
+    public function webhook($headers, $body) 
     {
-        $this->ensure_valid_signature($headers, $body);
-        $decoded_events = array();
+        if(!$this->valid_signature($headers, $body)) {
+            return false;
+        }
+        $decoded_events = [];
         $decoded_json = json_decode($body);
-        $webhookobj = new Webhook();
-        $webhookobj->time_ms = $decoded_json->time_ms;
-        $webhookobj->events = $decoded_json->events;
+        $crypto = null;
+        if($this->settings['encryption_key'] != "") {
+            $crypto = new PusherCrypto($this->settings['encryption_key']);
+        }
+        foreach($decoded_json->events as $key => $event) {
+            if(PusherCrypto::is_encrypted_channel($event->channel)) {
+                if(!is_null($crypto)) {
+                    
+                    $decryptedEvent = $crypto->decrypt_event($event);
 
+                    if($decryptedEvent == false) {
+                        $this->log("Unable to decrypt webhook event payload. Wrong key? Ignoring.", null, LogLevel::WARNING);
+                        continue;
+                    } 
+                    array_push($decoded_events, $decryptedEvent);
+                } else {
+                    $this->log("Got an encrypted webhook event payload, but no encryption_key specified. Ignoring.", null, LogLevel::WARNING);
+                    continue;
+                }
+            } else {
+                array_push($decoded_events, $event);
+            }
+        }
+        $webhookobj = new PusherWebhook();
+        $webhookobj->time_ms = $decoded_json->time_ms;
+        $webhookobj->events = $decoded_events;
         return $webhookobj;
     }
 
     /**
-     * Verify that a given Pusher Signature is valid.
-     *
-     * @param array  $headers an array of headers from the request (for example, from getallheaders())
-     * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
-     *
+     * Verify that a given Pusher Signature is valid
+     * 
+     * @param array $headers a array of headers from the request (for example, from getallheaders())
+     * @param string $body the body of the request (for example, from file_get_contents('php://input'))
+     * 
      * @return bool true if signature is correct.
+     * 
      */
     public function ensure_valid_signature($headers, $body)
     {
         $x_pusher_key = $headers['X-Pusher-Key'];
         $x_pusher_signature = $headers['X-Pusher-Signature'];
-        if ($x_pusher_key == $this->settings['auth_key']) {
+        if($x_pusher_key == $this->settings['auth_key']) {
             $expected = hash_hmac('sha256', $body, $this->settings['secret']);
             if ($expected === $x_pusher_signature) {
                 return;
