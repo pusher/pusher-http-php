@@ -20,10 +20,10 @@ class Pusher implements LoggerAwareInterface
      * @var array Settings
      */
     private $settings = array(
-        'scheme'       => 'http',
-        'port'         => 80,
-        'timeout'      => 30,
-        'debug'        => false,
+        'scheme' => 'http',
+        'port' => 80,
+        'timeout' => 30,
+        'debug' => false,
         'curl_options' => array(),
     );
 
@@ -80,7 +80,7 @@ class Pusher implements LoggerAwareInterface
 
             $this->log('Legacy $host parameter provided: {scheme} host: {host}', array(
                 'scheme' => $this->settings['scheme'],
-                'host'   => $this->settings['host'],
+                'host' => $this->settings['host'],
             ));
         }
 
@@ -107,7 +107,7 @@ class Pusher implements LoggerAwareInterface
         $this->settings['auth_key'] = $auth_key;
         $this->settings['secret'] = $secret;
         $this->settings['app_id'] = $app_id;
-        $this->settings['base_path'] = '/apps/'.$this->settings['app_id'];
+        $this->settings['base_path'] = '/apps/' . $this->settings['app_id'];
 
         foreach ($options as $key => $value) {
             // only set if valid setting/option
@@ -135,7 +135,7 @@ class Pusher implements LoggerAwareInterface
             if (array_key_exists('host', $options)) {
                 $this->settings['host'] = $options['host'];
             } elseif (array_key_exists('cluster', $options)) {
-                $this->settings['host'] = 'api-'.$options['cluster'].'.pusher.com';
+                $this->settings['host'] = 'api-' . $options['cluster'] . '.pusher.com';
             } else {
                 $this->settings['host'] = 'api.pusherapp.com';
             }
@@ -143,7 +143,7 @@ class Pusher implements LoggerAwareInterface
 
         // ensure host doesn't have a scheme prefix
         $this->settings['host'] =
-        preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
+            preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
     }
 
     /**
@@ -196,7 +196,7 @@ class Pusher implements LoggerAwareInterface
         $replacement = array();
 
         foreach ($context as $k => $v) {
-            $replacement['{'.$k.'}'] = $v;
+            $replacement['{' . $k . '}'] = $v;
         }
 
         $this->logger->log(strtr($msg, $replacement));
@@ -256,7 +256,7 @@ class Pusher implements LoggerAwareInterface
     private function validate_channel($channel)
     {
         if (!preg_match('/\A[-a-zA-Z0-9_=@,.;]+\z/', $channel)) {
-            throw new PusherException('Invalid channel name '.$channel);
+            throw new PusherException('Invalid channel name ' . $channel);
         }
     }
 
@@ -270,7 +270,7 @@ class Pusher implements LoggerAwareInterface
     private function validate_socket_id($socket_id)
     {
         if ($socket_id !== null && !preg_match('/\A\d+\.\d+\z/', $socket_id)) {
-            throw new PusherException('Invalid socket ID '.$socket_id);
+            throw new PusherException('Invalid socket ID ' . $socket_id);
         }
     }
 
@@ -297,7 +297,7 @@ class Pusher implements LoggerAwareInterface
             $query_params
         );
 
-        $full_url = $domain.$s_url.'?'.$signed_query;
+        $full_url = $domain . $s_url . '?' . $signed_query;
 
         $this->log('create_curl( {full_url} )', array('full_url' => $full_url));
 
@@ -322,7 +322,7 @@ class Pusher implements LoggerAwareInterface
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
             'Expect:',
-            'X-Pusher-Library: pusher-http-php '.self::$VERSION,
+            'X-Pusher-Library: pusher-http-php ' . self::$VERSION,
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->settings['timeout']);
@@ -372,7 +372,7 @@ class Pusher implements LoggerAwareInterface
      */
     private function notification_domain()
     {
-        return $this->settings['notification_scheme'].'://'.$this->settings['notification_host'];
+        return $this->settings['notification_scheme'] . '://' . $this->settings['notification_host'];
     }
 
     /**
@@ -382,7 +382,7 @@ class Pusher implements LoggerAwareInterface
      */
     private function ddn_domain()
     {
-        return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'];
+        return $this->settings['scheme'] . '://' . $this->settings['host'] . ':' . $this->settings['port'];
     }
 
     /**
@@ -398,9 +398,15 @@ class Pusher implements LoggerAwareInterface
      *
      * @return string
      */
-    public static function build_auth_query_string($auth_key, $auth_secret, $request_method, $request_path,
-    $query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
-    {
+    public static function build_auth_query_string(
+        $auth_key,
+        $auth_secret,
+        $request_method,
+        $request_path,
+        $query_params = array(),
+        $auth_version = '1.0',
+        $auth_timestamp = null
+    ) {
         $params = array();
         $params['auth_key'] = $auth_key;
         $params['auth_timestamp'] = (is_null($auth_timestamp) ? time() : $auth_timestamp);
@@ -409,7 +415,7 @@ class Pusher implements LoggerAwareInterface
         $params = array_merge($params, $query_params);
         ksort($params);
 
-        $string_to_sign = "$request_method\n".$request_path."\n".self::array_implode('=', '&', $params);
+        $string_to_sign = "$request_method\n" . $request_path . "\n" . self::array_implode('=', '&', $params);
 
         $auth_signature = hash_hmac('sha256', $string_to_sign, $auth_secret, false);
 
@@ -475,7 +481,7 @@ class Pusher implements LoggerAwareInterface
 
         $query_params = array();
 
-        $s_url = $this->settings['base_path'].'/events';
+        $s_url = $this->settings['base_path'] . '/events';
 
         $data_encoded = $already_encoded ? $data : json_encode($data);
 
@@ -533,7 +539,7 @@ class Pusher implements LoggerAwareInterface
     {
         $query_params = array();
 
-        $s_url = $this->settings['base_path'].'/batch_events';
+        $s_url = $this->settings['base_path'] . '/batch_events';
 
         if (!$already_encoded) {
             foreach ($batch as $key => $event) {
@@ -583,7 +589,7 @@ class Pusher implements LoggerAwareInterface
     {
         $this->validate_channel($channel);
 
-        $response = $this->get('/channels/'.$channel, $params);
+        $response = $this->get('/channels/' . $channel, $params);
 
         if ($response['status'] === 200) {
             return json_decode($response['body']);
@@ -628,7 +634,7 @@ class Pusher implements LoggerAwareInterface
      */
     public function get($path, $params = array())
     {
-        $s_url = $this->settings['base_path'].$path;
+        $s_url = $this->settings['base_path'] . $path;
 
         $ch = $this->create_curl($this->ddn_domain(), $s_url, 'GET', $params);
 
@@ -660,12 +666,12 @@ class Pusher implements LoggerAwareInterface
         $this->validate_socket_id($socket_id);
 
         if ($custom_data) {
-            $signature = hash_hmac('sha256', $socket_id.':'.$channel.':'.$custom_data, $this->settings['secret'], false);
+            $signature = hash_hmac('sha256', $socket_id . ':' . $channel . ':' . $custom_data, $this->settings['secret'], false);
         } else {
-            $signature = hash_hmac('sha256', $socket_id.':'.$channel, $this->settings['secret'], false);
+            $signature = hash_hmac('sha256', $socket_id . ':' . $channel, $this->settings['secret'], false);
         }
 
-        $signature = array('auth' => $this->settings['auth_key'].':'.$signature);
+        $signature = array('auth' => $this->settings['auth_key'] . ':' . $signature);
         // add the custom data if it has been supplied
         if ($custom_data) {
             $signature['channel_data'] = $custom_data;
@@ -726,7 +732,7 @@ class Pusher implements LoggerAwareInterface
 
         $query_params['body_md5'] = md5($post_value);
 
-        $notification_path = '/server_api/v1'.$this->settings['base_path'].'/notifications';
+        $notification_path = '/server_api/v1' . $this->settings['base_path'] . '/notifications';
         $ch = $this->create_curl($this->notification_domain(), $notification_path, 'POST', $query_params);
 
         $this->log('trigger POST (Native notifications): {post_value}', compact('post_value'));
@@ -743,6 +749,49 @@ class Pusher implements LoggerAwareInterface
             return $response;
         }
 
+        return false;
+    }
+
+    /**
+     * Verify that a webhook actually came from Pusher, and marshals them into a PusherWebhook object.
+     *
+     * @param array $headers a array of headers from the request (for example, from getallheaders())
+     * @param string $body the body of the request (for example, from file_get_contents('php://input'))
+     *
+     * @return PusherWebhook  object with the properties time_ms (an int) and events (an array of event objects)
+     *
+     */
+    public function parse_webhook($headers, $body)
+    {
+        if (!$this->valid_signature($headers, $body)) {
+            return false;
+        }
+        $decoded_events = [];
+        $decoded_json = json_decode($body);
+        $webhookobj = new PusherWebhook();
+        $webhookobj->time_ms = $decoded_json->time_ms;
+        $webhookobj->events = $decoded_json->events;
+        return $webhookobj;
+    }
+
+    /**
+     * Verify that a given Pusher Signature is valid
+     *
+     * @param array $headers a array of headers from the request (for example, from getallheaders())
+     * @param string $body the body of the request (for example, from file_get_contents('php://input'))
+     *
+     * @return bool true if signature is correct.
+     *
+     */
+    public function valid_signature($headers, $body)
+    {
+        $x_pusher_key = $headers['X-Pusher-Key'];
+        $x_pusher_signature = $headers['X-Pusher-Signature'];
+        if ($x_pusher_key == $this->settings['auth_key']) {
+            $expected = hash_hmac('sha256', $body, $this->settings['secret']);
+            return $expected === $x_pusher_signature;
+        }
+        $this->log('Invalid Webhook signature.', array(), LogLevel::WARNING);
         return false;
     }
 }
