@@ -16,10 +16,13 @@ php:
 # https://docs.travis-ci.com/user/languages/php/#HHVM-versions
 before_script:
   - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+  - pecl install libsodium-1.0.7
 
 install: travis_retry composer install --no-interaction --prefer-source
 
-script: vendor/bin/phpunit --testsuite unit
+script: 
+  - phpenv config-add sodium.ini
+  - vendor/bin/phpunit --testsuite unit
 
 notifications:
   webhooks: $ZAPIER_WEBHOOK_URL
