@@ -760,7 +760,7 @@ class Pusher implements LoggerAwareInterface
      *
      * @return Webhook object with the properties time_ms (an int) and events (an array of event objects)
      */
-    public function parse_webhook($headers, $body)
+    public function webhook($headers, $body)
     {
         $this->ensure_valid_signature($headers, $body);
         $decoded_events = array();
