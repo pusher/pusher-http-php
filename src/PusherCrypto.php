@@ -87,8 +87,7 @@ class PusherCrypto {
         $nonce_b64 = base64_encode($nonce);
         $shared_secret = $this->generate_shared_secret($channel);
         $cipher_text_b64 = base64_encode(sodium_crypto_secretbox($plaintext, $nonce, $shared_secret));
-        sodium_memzero($plaintext);
-        sodium_memzero($shared_secret);
+
         return $this->format_encrypted_message($nonce_b64, $cipher_text_b64);
     }
 
