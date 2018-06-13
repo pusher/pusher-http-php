@@ -2,7 +2,7 @@
 
 namespace Pusher;
 
-class PusherWebhook
+class Webhook
 {
     public $time_ms;
     public $events = array();
