@@ -1,11 +1,11 @@
 <?php
+
 class PusherCryptoTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $this->crypto = new Pusher\PusherCrypto("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        $this->crypto = new Pusher\PusherCrypto('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     }
-
 
     public function testObjectConstruct()
     {
@@ -14,34 +14,33 @@ class PusherCryptoTest extends PHPUnit_Framework_TestCase
 
     public function testGenerateSharedSecret()
     {
-        $expected = "HI9xTmdOCjlZGzRTmaAMFDZJoW++89jA+H4m0m0nMiA=";
+        $expected = 'HI9xTmdOCjlZGzRTmaAMFDZJoW++89jA+H4m0m0nMiA=';
         // Check that the secret generation is generating consistent secrets
-        $this->assertEquals(base64_encode($this->crypto->generate_shared_secret("a-channel")), $expected);
+        $this->assertEquals(base64_encode($this->crypto->generate_shared_secret('a-channel')), $expected);
 
         // Check that the secret generation is using the channel as a part of the generation
-        $this->assertNotEquals(base64_encode($this->crypto->generate_shared_secret("b-channel")), $expected);
+        $this->assertNotEquals(base64_encode($this->crypto->generate_shared_secret('b-channel')), $expected);
 
         // Check that specifying a different key results in a different result
-        $crypto2 = new Pusher\PusherCrypto("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-        $this->assertNotEquals(base64_encode($crypto2->generate_shared_secret("a-channel")), $expected);
-
+        $crypto2 = new Pusher\PusherCrypto('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
+        $this->assertNotEquals(base64_encode($crypto2->generate_shared_secret('a-channel')), $expected);
     }
 
     public function testGenerateSharedSecretNoChannel()
     {
-        $this->assertEquals($this->crypto->generate_shared_secret(""), false);
+        $this->assertEquals($this->crypto->generate_shared_secret(''), false);
     }
 
     public function testIsEncryptedChannel()
     {
-        $this->assertEquals(Pusher\PusherCrypto::is_encrypted_channel("private-encrypted-test"), true);
-        $this->assertEquals(Pusher\PusherCrypto::is_encrypted_channel("private-encrypted"), false);
-        $this->assertEquals(Pusher\PusherCrypto::is_encrypted_channel("test-private-encrypted"), false);
+        $this->assertEquals(Pusher\PusherCrypto::is_encrypted_channel('private-encrypted-test'), true);
+        $this->assertEquals(Pusher\PusherCrypto::is_encrypted_channel('private-encrypted'), false);
+        $this->assertEquals(Pusher\PusherCrypto::is_encrypted_channel('test-private-encrypted'), false);
     }
 
     public function testEncryptDecryptEventValid()
     {
-        $channel = "private-encrypted-bla";
+        $channel = 'private-encrypted-bla';
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);
         $this->assertNotNull($encrypted_payload);
@@ -57,7 +56,7 @@ class PusherCryptoTest extends PHPUnit_Framework_TestCase
 
     public function testEncryptPayloadNoChannel()
     {
-        $channel = "";
+        $channel = '';
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);
         $this->assertEquals($encrypted_payload, false);
@@ -65,7 +64,7 @@ class PusherCryptoTest extends PHPUnit_Framework_TestCase
 
     public function testEncryptPayloadPublicChannel()
     {
-        $channel = "publicstaticvoidmain";
+        $channel = 'publicstaticvoidmain';
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);
         $this->assertEquals($encrypted_payload, false);
@@ -73,8 +72,7 @@ class PusherCryptoTest extends PHPUnit_Framework_TestCase
 
     public function testDecryptPayloadWrongKey()
     {
-
-        $channel = "private-encrypted-bla";
+        $channel = 'private-encrypted-bla';
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);
         $this->assertNotNull($encrypted_payload);
@@ -83,7 +81,7 @@ class PusherCryptoTest extends PHPUnit_Framework_TestCase
         $event->data = $encrypted_payload;
         $event->channel = $channel;
 
-        $crypto2 = new Pusher\PusherCrypto("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+        $crypto2 = new Pusher\PusherCrypto('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
         $decrypted_event = $crypto2->decrypt_event($event);
         $this->assertEquals($decrypted_event, false);
     }
