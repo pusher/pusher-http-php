@@ -753,21 +753,19 @@ class Pusher implements LoggerAwareInterface
     }
 
     /**
-     * Verify that a webhook actually came from Pusher, and marshals them into a PusherWebhook object.
+     * Verify that a webhook actually came from Pusher, and marshals them into a Webhook object.
      *
-     * @param array  $headers a array of headers from the request (for example, from getallheaders())
+     * @param array  $headers an array of headers from the request (for example, from getallheaders())
      * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
      *
-     * @return PusherWebhook object with the properties time_ms (an int) and events (an array of event objects)
+     * @return Webhook object with the properties time_ms (an int) and events (an array of event objects)
      */
     public function parse_webhook($headers, $body)
     {
-        if (!$this->valid_signature($headers, $body)) {
-            return false;
-        }
+        $this->ensure_valid_signature($headers, $body);
         $decoded_events = array();
         $decoded_json = json_decode($body);
-        $webhookobj = new PusherWebhook();
+        $webhookobj = new Webhook();
         $webhookobj->time_ms = $decoded_json->time_ms;
         $webhookobj->events = $decoded_json->events;
 
@@ -777,22 +775,19 @@ class Pusher implements LoggerAwareInterface
     /**
      * Verify that a given Pusher Signature is valid.
      *
-     * @param array  $headers a array of headers from the request (for example, from getallheaders())
+     * @param array  $headers an array of headers from the request (for example, from getallheaders())
      * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
      *
      * @return bool true if signature is correct.
      */
-    public function valid_signature($headers, $body)
+    public function ensure_valid_signature($headers, $body)
     {
         $x_pusher_key = $headers['X-Pusher-Key'];
         $x_pusher_signature = $headers['X-Pusher-Signature'];
         if ($x_pusher_key == $this->settings['auth_key']) {
             $expected = hash_hmac('sha256', $body, $this->settings['secret']);
-
-            return $expected === $x_pusher_signature;
+            return;
         }
-        $this->log('Invalid Webhook signature.', array(), LogLevel::WARNING);
-
-        return false;
+        throw new PusherException(sprintf('Received WebHook with invalid signature: got %s, expected %s.', $x_pusher_signature, $expected));
     }
 }
