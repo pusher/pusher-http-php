@@ -1,8 +1,18 @@
-sudo: required
-dist: trusty
 language: php
 matrix:
   include:
+    # Arbitrarily testing 5.6 (a version without libsodium support) to see if tests pass without it.
+    - php: 
+      - 5.6 
+      dist: trusty
+      before_script: 
+        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+      script:
+        - vendor/bin/phpunit --testsuite unit
+      install:
+        - travis_retry composer install --no-interaction --prefer-source
+      notifications:
+        webhooks: $ZAPIER_WEBHOOK_URL
     - php:
       - 5.4
       - 5.5
@@ -37,17 +47,6 @@ matrix:
         - pecl install libsodium-2.0.11
       script:
         - phpenv config-add sodium.ini
-        - vendor/bin/phpunit --testsuite unit
-      install:
-        - travis_retry composer install --no-interaction --prefer-source
-      notifications:
-        webhooks: $ZAPIER_WEBHOOK_URL
-    - php: 
-      - 5.6 # Arbitrarily testing 5.6 (a version without libsodium support)
-      dist: trusty
-      before_script: 
-        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
-      script:
         - vendor/bin/phpunit --testsuite unit
       install:
         - travis_retry composer install --no-interaction --prefer-source
