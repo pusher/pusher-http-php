@@ -3,7 +3,12 @@ class PusherCryptoTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $this->crypto = new Pusher\PusherCrypto("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        if (function_exists('sodium_crypto_secretbox')) 
+        {
+            $this->crypto = new Pusher\PusherCrypto("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        } else {
+            $this->markTestSkipped('libSodium is not available, so end to end encryption is not available.');
+        }
     }
 
 
