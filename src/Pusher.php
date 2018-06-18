@@ -786,8 +786,9 @@ class Pusher implements LoggerAwareInterface
         $x_pusher_signature = $headers['X-Pusher-Signature'];
         if ($x_pusher_key == $this->settings['auth_key']) {
             $expected = hash_hmac('sha256', $body, $this->settings['secret']);
-
-            return;
+            if($expected === $x_pusher_signature) {
+                return;
+            }
         }
 
         throw new PusherException(sprintf('Received WebHook with invalid signature: got %s, expected %s.', $x_pusher_signature, $expected));
