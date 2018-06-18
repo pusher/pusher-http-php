@@ -786,7 +786,7 @@ class Pusher implements LoggerAwareInterface
         $x_pusher_signature = $headers['X-Pusher-Signature'];
         if ($x_pusher_key == $this->settings['auth_key']) {
             $expected = hash_hmac('sha256', $body, $this->settings['secret']);
-            if($expected === $x_pusher_signature) {
+            if ($expected === $x_pusher_signature) {
                 return;
             }
         }
