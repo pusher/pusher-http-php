@@ -20,12 +20,12 @@ class Pusher implements LoggerAwareInterface
      * @var array Settings
      */
     private $settings = array(
-        'scheme'       => 'http',
-        'port'         => 80,
-        'timeout'      => 30,
-        'debug'        => false,
-        'curl_options' => array(),
-        'encryption_key' => ""
+        'scheme'         => 'http',
+        'port'           => 80,
+        'timeout'        => 30,
+        'debug'          => false,
+        'curl_options'   => array(),
+        'encryption_key' => '',
     );
 
     /**
@@ -450,7 +450,6 @@ class Pusher implements LoggerAwareInterface
         return implode($separator, $string);
     }
 
-
     /**
      * Trigger an event by providing event name and payload.
      * Optionally provide a socket ID to exclude a client (most likely the sender).
@@ -487,7 +486,7 @@ class Pusher implements LoggerAwareInterface
                 'error' => print_r($data, true),
             ), LogLevel::ERROR);
         }
-        if(PusherCrypto::is_encrypted_channel($channels[0])) {
+        if (PusherCrypto::is_encrypted_channel($channels[0])) {
             $crypto = new PusherCrypto($this->settings['encryption_key']);
             $data_encoded = $crypto->encrypt_payload($channels[0], $data_encoded);
         }
@@ -679,8 +678,10 @@ class Pusher implements LoggerAwareInterface
             $crypto = new PusherCrypto($this->settings['encryption_key']);
             $signature['shared_secret'] = base64_encode($crypto->generate_shared_secret($channel));
         }
+
         return json_encode($signature, JSON_UNESCAPED_SLASHES);
     }
+
     /**
      * Creates a presence signature (an extension of socket signing).
      *
@@ -755,37 +756,35 @@ class Pusher implements LoggerAwareInterface
 
     /**
      * Verify that a webhook actually came from Pusher, decrypts any encrypted events, and marshals them into a PHP object.
-     * 
-     * @param array $headers a array of headers from the request (for example, from getallheaders())
-     * @param string $body the body of the request (for example, from file_get_contents('php://input'))
-     * 
+     *
+     * @param array  $headers a array of headers from the request (for example, from getallheaders())
+     * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
+     *
      * @return array marshalled object with the properties time_ms (an int) and events (an array of event objects)
-     * 
      */
-    public function webhook($headers, $body) 
+    public function webhook($headers, $body)
     {
-        if(!$this->valid_signature($headers, $body)) {
+        if (!$this->valid_signature($headers, $body)) {
             return false;
         }
-        $decoded_events = [];
+        $decoded_events = array();
         $decoded_json = json_decode($body);
         $crypto = null;
-        if($this->settings['encryption_key'] != "") {
+        if ($this->settings['encryption_key'] != '') {
             $crypto = new PusherCrypto($this->settings['encryption_key']);
         }
-        foreach($decoded_json->events as $key => $event) {
-            if(PusherCrypto::is_encrypted_channel($event->channel)) {
-                if(!is_null($crypto)) {
-                    
+        foreach ($decoded_json->events as $key => $event) {
+            if (PusherCrypto::is_encrypted_channel($event->channel)) {
+                if (!is_null($crypto)) {
                     $decryptedEvent = $crypto->decrypt_event($event);
 
-                    if($decryptedEvent == false) {
-                        $this->log("Unable to decrypt webhook event payload. Wrong key? Ignoring.", null, LogLevel::WARNING);
+                    if ($decryptedEvent == false) {
+                        $this->log('Unable to decrypt webhook event payload. Wrong key? Ignoring.', null, LogLevel::WARNING);
                         continue;
-                    } 
+                    }
                     array_push($decoded_events, $decryptedEvent);
                 } else {
-                    $this->log("Got an encrypted webhook event payload, but no encryption_key specified. Ignoring.", null, LogLevel::WARNING);
+                    $this->log('Got an encrypted webhook event payload, but no encryption_key specified. Ignoring.', null, LogLevel::WARNING);
                     continue;
                 }
             } else {
@@ -795,23 +794,23 @@ class Pusher implements LoggerAwareInterface
         $webhookobj = new PusherWebhook();
         $webhookobj->time_ms = $decoded_json->time_ms;
         $webhookobj->events = $decoded_events;
+
         return $webhookobj;
     }
 
     /**
-     * Verify that a given Pusher Signature is valid
-     * 
-     * @param array $headers a array of headers from the request (for example, from getallheaders())
-     * @param string $body the body of the request (for example, from file_get_contents('php://input'))
-     * 
+     * Verify that a given Pusher Signature is valid.
+     *
+     * @param array  $headers a array of headers from the request (for example, from getallheaders())
+     * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
+     *
      * @return bool true if signature is correct.
-     * 
      */
     public function ensure_valid_signature($headers, $body)
     {
         $x_pusher_key = $headers['X-Pusher-Key'];
         $x_pusher_signature = $headers['X-Pusher-Signature'];
-        if($x_pusher_key == $this->settings['auth_key']) {
+        if ($x_pusher_key == $this->settings['auth_key']) {
             $expected = hash_hmac('sha256', $body, $this->settings['secret']);
             if ($expected === $x_pusher_signature) {
                 return;
