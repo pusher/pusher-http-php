@@ -763,11 +763,8 @@ class Pusher implements LoggerAwareInterface
     public function webhook($headers, $body)
     {
         $this->ensure_valid_signature($headers, $body);
-        $decoded_events = array();
         $decoded_json = json_decode($body);
-        $webhookobj = new Webhook();
-        $webhookobj->time_ms = $decoded_json->time_ms;
-        $webhookobj->events = $decoded_json->events;
+        $webhookobj = new Webhook($decoded_json->time_ms, $decoded_json->events);
 
         return $webhookobj;
     }
@@ -778,7 +775,7 @@ class Pusher implements LoggerAwareInterface
      * @param array  $headers an array of headers from the request (for example, from getallheaders())
      * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
      *
-     * @return bool true if signature is correct.
+     * @throws PusherException if signature is inccorrect.
      */
     public function ensure_valid_signature($headers, $body)
     {

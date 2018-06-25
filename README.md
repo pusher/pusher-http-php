@@ -155,7 +155,7 @@ This library provides a way of verifying that webhooks you receive from Pusher a
 
 ```php
 $webhook = $pusher->webhook($request_headers, $request_body);
-$number_of_events = count($webhook->events);
+$number_of_events = count($webhook->get_webhooks());
 ```
 
 
