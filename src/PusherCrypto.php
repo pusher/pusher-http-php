@@ -7,9 +7,8 @@ class PusherCrypto
 
     // The prefix any e2e channel must have
     const ENCRYPTED_PREFIX = "private-encrypted-";
-
-    // The exact length the user specified key must be
-    const SECRET_KEY_LENGTH = 32;
+    // The separator that a payload will be delimited by.
+    const ENCRYPTED_PAYLOAD_SEPARATOR = ":"; 
 
     /**
      * Checks if a given channel is an encrypted channel
@@ -51,13 +50,11 @@ class PusherCrypto
      */
     public function decrypt_event($event)
     {
-        $encrypted_payload = explode(":", $event->data);
-        $nonce = base64_decode($encrypted_payload[1]);
-        $payload = base64_decode($encrypted_payload[2]);
+        $parsed_payload = $this->parse_encrypted_message($event->data);
         $shared_secret = $this->generate_shared_secret($event->channel, $this->encryption_key);
-        $decrypted_payload = $this->decrypt_payload($payload, $nonce, $shared_secret);
+        $decrypted_payload = $this->decrypt_payload($parsed_payload->ciphertext, $parsed_payload->nonce, $shared_secret);
         if (!$decrypted_payload) {
-            return false;
+            throw new PusherException('Decryption of the payload failed. Wrong key?');
         }
         $event->data = $decrypted_payload;
         return $event;
@@ -72,11 +69,13 @@ class PusherCrypto
      */
     public function generate_shared_secret($channel)
     {
-        if ($channel == "") {
-            return false;
+        if (!PusherCrypto::is_encrypted_channel($channel)) 
+        {
+            throw new PusherException('You must specify a channel of the form private-encrypted-* for E2E encryption. Got ' . $channel);
         }
         return hash('sha256', $channel . $this->encryption_key, true);
     }
+    
     /**
      * Encrypts a given plaintext for broadcast on a particular channel
      *
@@ -88,15 +87,15 @@ class PusherCrypto
      */
     public function encrypt_payload($channel, $plaintext)
     {
-        if (!PusherCrypto::is_encrypted_channel($channel)) {
-            return false;
+        if (!PusherCrypto::is_encrypted_channel($channel)) 
+        {
+            throw new PusherException('Cannot encrypt plaintext for a channel that is not of the form private-encrypted-*. Got ' . $channel);
         }
         $nonce = $this->generate_nonce();
-        $nonce_b64 = base64_encode($nonce);
         $shared_secret = $this->generate_shared_secret($channel);
-        $cipher_text_b64 = base64_encode(sodium_crypto_secretbox($plaintext, $nonce, $shared_secret));
+        $cipher_text = sodium_crypto_secretbox($plaintext, $nonce, $shared_secret);
 
-        return $this->format_encrypted_message($nonce_b64, $cipher_text_b64);
+        return $this->format_encrypted_message($nonce, $cipher_text);
     }
 
     /**
@@ -120,12 +119,39 @@ class PusherCrypto
     /**
      * Formats an encrypted message ready for broadcast
      *
-     * @param string $nonce the nonce in the encryption
-     * @param string $data the ciphertext
+     * @param string $nonce the nonce used in the encryption process (bytes)
+     * @param string $ciphertext the ciphertext (bytes)
+     * 
+     * @return string formatted string of the form `encrypted_data<separator>base64_encode(nonce)<separator>base64_encode($payload)`
      */
-    private function format_encrypted_message($nonce, $payload)
+    private function format_encrypted_message($nonce, $ciphertext)
     {
-        return sprintf("encrypted_data:%s:%s", $nonce, $payload);
+        return sprintf("encrypted_data%s%s%s%s", self::ENCRYPTED_PAYLOAD_SEPARATOR, base64_encode($nonce), self::ENCRYPTED_PAYLOAD_SEPARATOR, base64_encode($ciphertext));
+    }
+
+    /**
+     * Parses an encrypted message into its nonce and ciphertext components
+     * 
+     *
+     * @param string $nonce the nonce used in the encryption process (bytes)
+     * @param string $payload the encrypted message payload (bytes)
+     * 
+     * @return string formatted string of the form `encrypted_data<separator>base64_encode(nonce)<separator>base64_encode($payload)`
+     */
+    private function parse_encrypted_message($payload)
+    {
+        if(substr_count($payload, self::ENCRYPTED_PAYLOAD_SEPARATOR) != 2) {
+            throw new PusherException('Received a payload of the wrong format.');
+        }
+        $split_payload = explode(self::ENCRYPTED_PAYLOAD_SEPARATOR, $payload);
+
+        $parsed_payload = new \stdClass();
+        $parsed_payload->nonce = base64_decode($split_payload[1]);
+        $parsed_payload->ciphertext = base64_decode($split_payload[2]);
+        if (strlen($parsed_payload->nonce) != SODIUM_CRYPTO_SECRETBOX_NONCEBYTES || $parsed_payload->ciphertext == "") {
+            throw new PusherException('Received a payload that cannot be parsed.');
+        }
+        return $parsed_payload;
     }
 
     /**
