@@ -13,6 +13,7 @@ matrix:
         - travis_retry composer install --no-interaction --prefer-source
       notifications:
         webhooks: $ZAPIER_WEBHOOK_URL
+    # Test PHP <=5.6 with old version of LibSodium (1.0.7).
     - php:
       - 5.4
       - 5.5
@@ -33,10 +34,10 @@ matrix:
         - travis_retry composer install --no-interaction --prefer-source
       notifications:
         webhooks: $ZAPIER_WEBHOOK_URL
+    # Test PHP =<7.1 with the new version of LibSodium (2.0.11).
     - php: 
       - 7.0
       - 7.1
-      - 7.2
       - hhvm-3.24
       sudo: required
       dist: trusty
@@ -52,5 +53,15 @@ matrix:
         - travis_retry composer install --no-interaction --prefer-source
       notifications:
         webhooks: $ZAPIER_WEBHOOK_URL
-    
-    
+    # Test PHP 7.2 without LibSodium since it adds support natively.
+    - php: 
+      - 7.2
+      dist: trusty
+      before_script: 
+        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+      script:
+        - vendor/bin/phpunit --testsuite unit
+      install:
+        - travis_retry composer install --no-interaction --prefer-source
+      notifications:
+        webhooks: $ZAPIER_WEBHOOK_URL
