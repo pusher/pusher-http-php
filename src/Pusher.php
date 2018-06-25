@@ -765,6 +765,7 @@ class Pusher implements LoggerAwareInterface
         $this->ensure_valid_signature($headers, $body);
         $decoded_json = json_decode($body);
         $webhookobj = new Webhook($decoded_json->time_ms, $decoded_json->events);
+
         return $webhookobj;
     }
 
