@@ -161,9 +161,9 @@ $number_of_events = count($webhook->events);
 
 ## End to end encryption (beta)
 
-This library supports end to end encryption of your private channels. This means that only you and your connected clients will be able to read your messages. You can enable this by following these steps:
-
-1. Firstly, specify your 32 character `encryption_key`. This is secret and you should protect this.
+This library supports end to end encryption of your private channels. This means that only you and your connected clients will be able to read your messages. Pusher cannot decrypt them. You can enable this feature by following these steps:
+1. You should first set up Private channels. This involves [creating an authentication endpoint on your server](https://pusher.com/docs/authenticating_users).
+2. Next, Specify your 32 character `encryption_key`. This is secret and you should never share this with anyone. Not even Pusher.
 
 ```php
 $app_id = 'YOUR_APP_ID';
@@ -178,11 +178,13 @@ $pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array(
 );
 ```
 
-2. Channels where you wish to use end to end encryption should be prefixed with `private-encrypted-`. 
+3. Channels where you wish to use end to end encryption should be prefixed with `private-encrypted-`. 
 
-3. Subscribe to these channels in your client, and you're done! You can verify it is working by checking out the debug console on the [https://dashboard.pusher.com/](dashboard) and seeing the scrambled ciphertext.
+4. Subscribe to these channels in your client, and you're done! You can verify it is working by checking out the debug console on the [https://dashboard.pusher.com/](dashboard) and seeing the scrambled ciphertext.
 
 This also will work if you are using client events and webhooks. If you pass your received webhook requests into the [#webhooks](webhook) function, they'll automatically be decrypted.
+
+** Important note: This will __not__ encrypt messages on channels that are not prefixed by `private-encrypted-`. **
 
 ### Presence example
 
