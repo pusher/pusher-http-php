@@ -17,6 +17,11 @@ class Pusher implements LoggerAwareInterface
     public static $VERSION = '3.0.0';
 
     /**
+     * @var null|PusherCrypto 
+     */
+    private $crypto;
+    
+    /**
      * @var array Settings
      */
     private $settings = array(
@@ -145,6 +150,10 @@ class Pusher implements LoggerAwareInterface
         // ensure host doesn't have a scheme prefix
         $this->settings['host'] =
         preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
+
+        if($this->settings['encryption_key'] != "") {
+            $crypto = new PusherCrypto($this->settings['encryption_key']);
+        }
     }
 
     /**
@@ -488,8 +497,7 @@ class Pusher implements LoggerAwareInterface
             ), LogLevel::ERROR);
         }
         if(PusherCrypto::is_encrypted_channel($channels[0])) {
-            $crypto = new PusherCrypto($this->settings['encryption_key']);
-            $data_encoded = $crypto->encrypt_payload($channels[0], $data_encoded);
+            $data_encoded = $this->crypto->encrypt_payload($channels[0], $data_encoded);
         }
         $post_params = array();
         $post_params['name'] = $event;
@@ -676,8 +684,7 @@ class Pusher implements LoggerAwareInterface
             $signature['channel_data'] = $custom_data;
         }
         if (PusherCrypto::is_encrypted_channel($channel)) {
-            $crypto = new PusherCrypto($this->settings['encryption_key']);
-            $signature['shared_secret'] = base64_encode($crypto->generate_shared_secret($channel));
+            $signature['shared_secret'] = base64_encode($this->crypto->generate_shared_secret($channel));
         }
         return json_encode($signature, JSON_UNESCAPED_SLASHES);
     }
@@ -769,15 +776,10 @@ class Pusher implements LoggerAwareInterface
         }
         $decoded_events = [];
         $decoded_json = json_decode($body);
-        $crypto = null;
-        if($this->settings['encryption_key'] != "") {
-            $crypto = new PusherCrypto($this->settings['encryption_key']);
-        }
         foreach($decoded_json->events as $key => $event) {
             if(PusherCrypto::is_encrypted_channel($event->channel)) {
-                if(!is_null($crypto)) {
-                    
-                    $decryptedEvent = $crypto->decrypt_event($event);
+                if(!is_null($this->crypto)) {
+                    $decryptedEvent = $this->crypto->decrypt_event($event);
 
                     if($decryptedEvent == false) {
                         $this->log("Unable to decrypt webhook event payload. Wrong key? Ignoring.", null, LogLevel::WARNING);
