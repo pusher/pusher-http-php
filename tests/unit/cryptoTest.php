@@ -19,22 +19,25 @@ class PusherCryptoTest extends PHPUnit_Framework_TestCase
 
     public function testGenerateSharedSecret()
     {
-        $expected = "HI9xTmdOCjlZGzRTmaAMFDZJoW++89jA+H4m0m0nMiA=";
+        $expected = "Rp+wpkNpL89qhqco1JkIG31AVXyU8PUVJBr1B2MvdoA=";
         // Check that the secret generation is generating consistent secrets
-        $this->assertEquals(base64_encode($this->crypto->generate_shared_secret("a-channel")), $expected);
+        $this->assertEquals(base64_encode($this->crypto->generate_shared_secret("private-encrypted-channel-a")), $expected);
 
         // Check that the secret generation is using the channel as a part of the generation
-        $this->assertNotEquals(base64_encode($this->crypto->generate_shared_secret("b-channel")), $expected);
+        $this->assertNotEquals(base64_encode($this->crypto->generate_shared_secret("private-encrypted-channel-b")), $expected);
 
         // Check that specifying a different key results in a different result
         $crypto2 = new Pusher\PusherCrypto("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-        $this->assertNotEquals(base64_encode($crypto2->generate_shared_secret("a-channel")), $expected);
+        $this->assertNotEquals(base64_encode($crypto2->generate_shared_secret("private-encrypted-channel-a")), $expected);
 
     }
-
+    
+    /**
+     * @expectedException \Pusher\PusherException
+     */
     public function testGenerateSharedSecretNoChannel()
     {
-        $this->assertEquals($this->crypto->generate_shared_secret(""), false);
+        $this->crypto->generate_shared_secret("");
     }
 
     public function testIsEncryptedChannel()
@@ -60,6 +63,9 @@ class PusherCryptoTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($decrypted_payload, $payload);
     }
 
+    /**
+     * @expectedException \Pusher\PusherException
+     */
     public function testEncryptPayloadNoChannel()
     {
         $channel = "";
@@ -68,14 +74,20 @@ class PusherCryptoTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($encrypted_payload, false);
     }
 
+    /**
+     * @expectedException \Pusher\PusherException
+     */
     public function testEncryptPayloadPublicChannel()
     {
-        $channel = "publicstaticvoidmain";
+        $channel = "public-static-void-main";
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);
         $this->assertEquals($encrypted_payload, false);
     }
 
+    /**
+     * @expectedException \Pusher\PusherException
+     */
     public function testDecryptPayloadWrongKey()
     {
 
