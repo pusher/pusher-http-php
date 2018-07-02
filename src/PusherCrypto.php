@@ -8,8 +8,6 @@ class PusherCrypto
 
     // The prefix any e2e channel must have
     const ENCRYPTED_PREFIX = 'private-encrypted-';
-    // The separator that a payload will be delimited by.
-    const ENCRYPTED_PAYLOAD_SEPARATOR = ':';
 
     /**
      * Checks if a given channel is an encrypted channel.
@@ -124,37 +122,34 @@ class PusherCrypto
      * @param string $nonce      the nonce used in the encryption process (bytes)
      * @param string $ciphertext the ciphertext (bytes)
      *
-     * @return string formatted string of the form `encrypted_data<separator>base64_encode(nonce)<separator>base64_encode($payload)`
+     * @return string JSON with base64 encoded nonce and ciphertext`
      */
     private function format_encrypted_message($nonce, $ciphertext)
     {
-        return sprintf('encrypted_data%s%s%s%s', self::ENCRYPTED_PAYLOAD_SEPARATOR, base64_encode($nonce), self::ENCRYPTED_PAYLOAD_SEPARATOR, base64_encode($ciphertext));
+        $encrypted_message = new \stdClass();
+        $encrypted_message->nonce = base64_encode($nonce);
+        $encrypted_message->ciphertext = base64_encode($ciphertext);
+        return json_encode($encrypted_message);
     }
 
     /**
      * Parses an encrypted message into its nonce and ciphertext components.
      *
      *
-     * @param string $nonce   the nonce used in the encryption process (bytes)
-     * @param string $payload the encrypted message payload (bytes)
+     * @param string $payload the encrypted message payload
      *
-     * @return string formatted string of the form `encrypted_data<separator>base64_encode(nonce)<separator>base64_encode($payload)`
+     * @return string php object with decoded nonce and ciphertext
      */
     private function parse_encrypted_message($payload)
     {
-        if (substr_count($payload, self::ENCRYPTED_PAYLOAD_SEPARATOR) != 2) {
-            throw new PusherException('Received a payload of the wrong format.');
-        }
-        $split_payload = explode(self::ENCRYPTED_PAYLOAD_SEPARATOR, $payload);
-
-        $parsed_payload = new \stdClass();
-        $parsed_payload->nonce = base64_decode($split_payload[1]);
-        $parsed_payload->ciphertext = base64_decode($split_payload[2]);
-        if (strlen($parsed_payload->nonce) != SODIUM_CRYPTO_SECRETBOX_NONCEBYTES || $parsed_payload->ciphertext == '') {
+        $decoded_payload = json_decode($payload);
+        $decoded_payload->nonce = base64_decode($decoded_payload->nonce);
+        $decoded_payload->ciphertext = base64_decode($decoded_payload->ciphertext);
+        if (strlen($decoded_payload->nonce) != SODIUM_CRYPTO_SECRETBOX_NONCEBYTES || $decoded_payload->ciphertext == '') {
             throw new PusherException('Received a payload that cannot be parsed.');
         }
 
-        return $parsed_payload;
+        return $decoded_payload;
     }
 
     /**
