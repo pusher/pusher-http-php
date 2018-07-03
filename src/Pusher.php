@@ -30,7 +30,7 @@ class Pusher implements LoggerAwareInterface
         'timeout'        => 30,
         'debug'          => false,
         'curl_options'   => array(),
-        'encryption_key' => '',
+        'encryption_master_key' => '',
     );
 
     /**
@@ -151,8 +151,8 @@ class Pusher implements LoggerAwareInterface
         $this->settings['host'] =
         preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
 
-        if ($this->settings['encryption_key'] != '') {
-            $crypto = new PusherCrypto($this->settings['encryption_key']);
+        if ($this->settings['encryption_master_key'] != '') {
+            $crypto = new PusherCrypto($this->settings['encryption_master_key']);
         }
     }
 
@@ -787,7 +787,7 @@ class Pusher implements LoggerAwareInterface
                     }
                     array_push($decoded_events, $decryptedEvent);
                 } else {
-                    $this->log('Got an encrypted webhook event payload, but no encryption_key specified. Ignoring.', null, LogLevel::WARNING);
+                    $this->log('Got an encrypted webhook event payload, but no encryption_master_key specified. Ignoring.', null, LogLevel::WARNING);
                     continue;
                 }
             } else {
