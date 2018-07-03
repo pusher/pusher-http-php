@@ -4,7 +4,7 @@ namespace Pusher;
 
 class PusherCrypto
 {
-    private $encryption_key = '';
+    private $encryption_master_key = '';
 
     // The prefix any e2e channel must have
     const ENCRYPTED_PREFIX = 'private-encrypted-';
@@ -24,13 +24,13 @@ class PusherCrypto
     /**
      * Initialises a PusherCrypto instance.
      *
-     * @param string $encryption_key the SECRET_KEY_LENGTH key that will be used for key derivation.
+     * @param string $encryption_master_key the SECRET_KEY_LENGTH key that will be used for key derivation.
      */
-    public function __construct($encryption_key)
+    public function __construct($encryption_master_key)
     {
         if (function_exists('sodium_crypto_secretbox')) {
-            if (strlen($encryption_key) === SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
-                $this->encryption_key = $encryption_key;
+            if (strlen($encryption_master_key) === SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
+                $this->encryption_master_key = $encryption_master_key;
 
                 return;
             } else {
@@ -51,7 +51,7 @@ class PusherCrypto
     public function decrypt_event($event)
     {
         $parsed_payload = $this->parse_encrypted_message($event->data);
-        $shared_secret = $this->generate_shared_secret($event->channel, $this->encryption_key);
+        $shared_secret = $this->generate_shared_secret($event->channel, $this->encryption_master_key);
         $decrypted_payload = $this->decrypt_payload($parsed_payload->ciphertext, $parsed_payload->nonce, $shared_secret);
         if (!$decrypted_payload) {
             throw new PusherException('Decryption of the payload failed. Wrong key?');
@@ -74,7 +74,7 @@ class PusherCrypto
             throw new PusherException('You must specify a channel of the form private-encrypted-* for E2E encryption. Got '.$channel);
         }
 
-        return hash('sha256', $channel.$this->encryption_key, true);
+        return hash('sha256', $channel.$this->encryption_master_key, true);
     }
 
     /**
@@ -129,6 +129,7 @@ class PusherCrypto
         $encrypted_message = new \stdClass();
         $encrypted_message->nonce = base64_encode($nonce);
         $encrypted_message->ciphertext = base64_encode($ciphertext);
+
         return json_encode($encrypted_message);
     }
 
