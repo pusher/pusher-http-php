@@ -25,11 +25,11 @@ class Pusher implements LoggerAwareInterface
      * @var array Settings
      */
     private $settings = array(
-        'scheme'         => 'http',
-        'port'           => 80,
-        'timeout'        => 30,
-        'debug'          => false,
-        'curl_options'   => array(),
+        'scheme'                => 'http',
+        'port'                  => 80,
+        'timeout'               => 30,
+        'debug'                 => false,
+        'curl_options'          => array(),
         'encryption_master_key' => '',
     );
 
