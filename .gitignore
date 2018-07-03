@@ -2,3 +2,6 @@ composer.lock
 phpunit.xml
 test/config.php
 vendor
+
+# Ignore all folders that starts with . (usually it's IDE's files)
+.*/
