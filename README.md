@@ -53,7 +53,7 @@ The fourth parameter is an `$options` array. The additional options are:
 * `encrypted` - quick option to use scheme of https and port 443
 * `cluster` - specify the cluster where the application is running from
 * `curl_options` - array with custom curl commands
-* `encryption_key` - a 32 character long key used to derive secrets for end to end encryption (see below!)
+* `encryption_master_key` - a 32 character long key used to derive secrets for end to end encryption (see below!)
 
 For example, by default calls will be made over a non-encrypted connection. To change this to make calls over HTTPS use:
 
@@ -173,7 +173,7 @@ $app_cluster = 'YOUR_APP_CLUSTER';
 $encryption_key = "abcdefghijklmnopqrstuvwxyzabcdef";
 $pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array(
 	'cluster' => $app_cluster,
-	'encryption_key' => $encryption_key
+	'encryption_master_key' => $encryption_key
   );
 );
 ```
