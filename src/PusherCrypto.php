@@ -129,6 +129,7 @@ class PusherCrypto
         $encrypted_message = new \stdClass();
         $encrypted_message->nonce = base64_encode($nonce);
         $encrypted_message->ciphertext = base64_encode($ciphertext);
+
         return json_encode($encrypted_message);
     }
 
