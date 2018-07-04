@@ -28,7 +28,7 @@ matrix:
         - sudo apt-get update && sudo apt-get install libsodium-dev -y
         - pecl install libsodium-1.0.7
       script:
-        - phpenv config-add sodium.ini
+        - phpenv config-add encryption.ini
         - vendor/bin/phpunit --testsuite unit
       install:
         - travis_retry composer install --no-interaction --prefer-source
@@ -47,7 +47,7 @@ matrix:
         - sudo apt-get update && sudo apt-get install libsodium-dev -y
         - pecl install libsodium-2.0.11
       script:
-        - phpenv config-add sodium.ini
+        - phpenv config-add encryption.ini
         - vendor/bin/phpunit --testsuite unit
       install:
         - travis_retry composer install --no-interaction --prefer-source
