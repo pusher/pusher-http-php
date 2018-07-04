@@ -149,6 +149,17 @@ Using presence channels is similar to private channels, but you can specify extr
 $pusher->presence_auth('presence-my-channel','socket_id', 'user_id', 'user_info');
 ```
 
+## Webhooks
+
+This library provides a way of verifying that webhooks you receive from Pusher are actually genuine webhooks from Pusher. It also provides a structure for storing them. A helper method called `webhook` enables this. Pass in the headers and body of the request, and it'll return a Webhook object with your verified events. If the library was unable to validate the signature, an exception is thrown instead.
+
+```php
+$webhook = $pusher->webhook($request_headers, $request_body);
+$number_of_events = count($webhook->get_events());
+$time_recieved = $webhook->get_time_ms();
+```
+
+
 ### Presence example
 
 First set this variable in your JS app:
