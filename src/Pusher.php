@@ -771,9 +771,8 @@ class Pusher implements LoggerAwareInterface
      */
     public function webhook($headers, $body)
     {
-        if (!$this->valid_signature($headers, $body)) {
-            return false;
-        }
+        $this->ensure_valid_signature($headers, $body);
+        
         $decoded_events = array();
         $decoded_json = json_decode($body);
         foreach ($decoded_json->events as $key => $event) {
@@ -794,9 +793,7 @@ class Pusher implements LoggerAwareInterface
                 array_push($decoded_events, $event);
             }
         }
-        $webhookobj = new PusherWebhook();
-        $webhookobj->time_ms = $decoded_json->time_ms;
-        $webhookobj->events = $decoded_events;
+        $webhookobj = new Webhook($decoded_json->time_ms, $decoded_json->events);
 
         return $webhookobj;
     }
