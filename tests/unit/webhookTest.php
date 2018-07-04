@@ -33,4 +33,16 @@ class webhookTest extends PHPUnit_Framework_TestCase
         );
         $wrong_signature = $this->pusher->ensure_valid_signature($headers, $body);
     }
+
+    public function testDecodeWebhook()
+    {
+        $headers_json = "{\"X-Pusher-Key\":\"".$this->auth_key."\",\"X-Pusher-Signature\":\"a19cab2af3ca1029257570395e78d5d675e9e700ca676d18a375a7083178df1c\"}";
+        $body = "{\"time_ms\":1530710011901,\"events\":[{\"name\":\"client_event\",\"channel\":\"private-my-channel\",\"event\":\"client-event\",\"data\":\"Unencrypted\",\"socket_id\":\"240621.35780774\"}]}";
+        $headers = json_decode($headers_json, true);
+
+        $decodedWebhook = $this->pusher->webhook($headers, $body);
+        $this->assertEquals($decodedWebhook->get_time_ms(), 1530710011901);
+        $this->assertEquals(count($decodedWebhook->get_events()), 1);
+
+    }
 }
