@@ -152,7 +152,7 @@ class Pusher implements LoggerAwareInterface
         preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
 
         if ($this->settings['encryption_master_key'] != '') {
-            $crypto = new PusherCrypto($this->settings['encryption_master_key']);
+            $this->crypto = new PusherCrypto($this->settings['encryption_master_key']);
         }
     }
 
