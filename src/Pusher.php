@@ -772,7 +772,7 @@ class Pusher implements LoggerAwareInterface
     public function webhook($headers, $body)
     {
         $this->ensure_valid_signature($headers, $body);
-        
+
         $decoded_events = array();
         $decoded_json = json_decode($body);
         foreach ($decoded_json->events as $key => $event) {
