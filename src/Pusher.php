@@ -788,6 +788,6 @@ class Pusher implements LoggerAwareInterface
             }
         }
 
-        throw new PusherException(sprintf('Received WebHook with invalid signature: got %s, expected %s.', $x_pusher_signature, $expected));
+        throw new PusherException(sprintf('Received WebHook with invalid signature: got %s.', $x_pusher_signature));
     }
 }
