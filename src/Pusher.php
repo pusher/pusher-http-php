@@ -682,8 +682,13 @@ class Pusher implements LoggerAwareInterface
         if ($custom_data) {
             $signature['channel_data'] = $custom_data;
         }
+
         if (PusherCrypto::is_encrypted_channel($channel)) {
-            $signature['shared_secret'] = base64_encode($this->crypto->generate_shared_secret($channel));
+            if (!is_null($this->crypto)) {
+                $signature['shared_secret'] = base64_encode($this->crypto->generate_shared_secret($channel));
+            } else {
+                throw new PusherException('You must specify an encryption master key to authorize an encrypted channel');
+            }
         }
 
         return json_encode($signature, JSON_UNESCAPED_SLASHES);
