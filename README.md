@@ -183,8 +183,6 @@ $pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array(
 
 4. Subscribe to these channels in your client, and you're done! You can verify it is working by checking out the debug console on the [https://dashboard.pusher.com/](dashboard) and seeing the scrambled ciphertext.
 
-This also will work if you are using client events and webhooks. If you pass your received webhook requests into the [#webhooks](webhook) function, they'll automatically be decrypted.
-
 ** Important note: This will __not__ encrypt messages on channels that are not prefixed by `private-encrypted-`. **
 
 ### Presence example
