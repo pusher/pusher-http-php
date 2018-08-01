@@ -164,17 +164,17 @@ $time_recieved = $webhook->get_time_ms();
 
 This library supports end to end encryption of your private channels. This means that only you and your connected clients will be able to read your messages. Pusher cannot decrypt them. You can enable this feature by following these steps:
 1. You should first set up Private channels. This involves [creating an authentication endpoint on your server](https://pusher.com/docs/authenticating_users).
-2. Next, Specify your 32 character `encryption_key`. This is secret and you should never share this with anyone. Not even Pusher.
+2. Next, Specify your 32 character `encryption_master_key`. This is secret and you should never share this with anyone. Not even Pusher.
 
 ```php
 $app_id = 'YOUR_APP_ID';
 $app_key = 'YOUR_APP_KEY';
 $app_secret = 'YOUR_APP_SECRET';
 $app_cluster = 'YOUR_APP_CLUSTER';
-$encryption_key = "abcdefghijklmnopqrstuvwxyzabcdef";
+$encryption_master_key = "abcdefghijklmnopqrstuvwxyzabcdef";
 $pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array(
 	'cluster' => $app_cluster,
-	'encryption_master_key' => $encryption_key
+	'encryption_master_key' => $encryption_master_key
   );
 );
 ```
@@ -183,7 +183,7 @@ $pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array(
 
 4. Subscribe to these channels in your client, and you're done! You can verify it is working by checking out the debug console on the [https://dashboard.pusher.com/](dashboard) and seeing the scrambled ciphertext.
 
-** Important note: This will __not__ encrypt messages on channels that are not prefixed by `private-encrypted-`. **
+**Important note: This will __not__ encrypt messages on channels that are not prefixed by `private-encrypted-`.**
 
 ### Presence example
 
