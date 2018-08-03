@@ -66,9 +66,9 @@ class pusherConstructorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($timeout, $settings['timeout']);
     }
 
-    public function testEncryptedOptionWillSetHostAndPort()
+    public function testUseTLSOptionWillSetHostAndPort()
     {
-        $options = array('encrypted' => true);
+        $options = array('useTLS' => true);
         $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', $options);
 
         $settings = $pusher->getSettings();
@@ -77,12 +77,12 @@ class pusherConstructorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('443', $settings['port']);
     }
 
-    public function testEncryptedOptionWillBeOverwrittenByHostAndPortOptionsSetHostAndPort()
+    public function testUseTLSOptionWillBeOverwrittenByHostAndPortOptionsSetHostAndPort()
     {
         $options = array(
-            'encrytped' => true,
-            'host'      => 'test.com',
-            'port'      => '3000',
+            'useTLS' => true,
+            'host'   => 'test.com',
+            'port'   => '3000',
         );
         $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', $options);
 

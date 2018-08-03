@@ -46,7 +46,8 @@ class Pusher implements LoggerAwareInterface
      *                         host - the host e.g. api.pusherapp.com. No trailing forward slash.
      *                         port - the http port
      *                         timeout - the http timeout
-     *                         encrypted - quick option to use scheme of https and port 443.
+     *                         useTLS - quick option to use scheme of https and port 443.
+     *                         encrypted - deprecated; renamed to `useTLS`.
      *                         cluster - cluster name to connect to.
      *                         notification_host - host to connect to for native notifications.
      *                         notification_scheme - scheme for the notification_host.
@@ -94,9 +95,15 @@ class Pusher implements LoggerAwareInterface
 
         /* End backward compatibility with old constructor **/
 
+        $useTLS = false;
+        if (isset($options['useTLS'])) {
+            $useTLS = $options['useTLS'] === true;
+        } elseif (isset($options['encrypted'])) {
+            // `encrypted` deprecated in favor of `forceTLS`
+            $useTLS = $options['encrypted'] === true;
+        }
         if (
-            isset($options['encrypted']) &&
-            $options['encrypted'] === true &&
+            $useTLS &&
             !isset($options['scheme']) &&
             !isset($options['port'])
         ) {
