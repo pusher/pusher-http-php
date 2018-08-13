@@ -27,11 +27,11 @@ class PusherBatchPushTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($string_trigger, 'Trigger with string payload');
     }
 
-    public function testEncryptedPush()
+    public function testTLSPush()
     {
         $options = array(
-            'encrypted' => true,
-            'host'      => PUSHERAPP_HOST,
+            'useTLS' => true,
+            'host'   => PUSHERAPP_HOST,
         );
         $pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
         $pusher->setLogger(new TestLogger());

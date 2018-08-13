@@ -50,20 +50,20 @@ The fourth parameter is an `$options` array. The additional options are:
 * `host` - the host e.g. api.pusherapp.com. No trailing forward slash
 * `port` - the http port
 * `timeout` - the HTTP timeout
-* `encrypted` - quick option to use scheme of https and port 443
-* `cluster` - specify the cluster where the application is running from
+* `useTLS` - quick option to use scheme of https and port 443.
+* `cluster` - specify the cluster where the application is running from.
 * `curl_options` - array with custom curl commands
 * `encryption_master_key` - a 32 character long key used to derive secrets for end to end encryption (see below!)
 
-For example, by default calls will be made over a non-encrypted connection. To change this to make calls over HTTPS use:
+For example, by default calls will be made over a non-TLS connection. To change this to make calls over HTTPS use:
 
 ```php
-$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, array( 'cluster' => $app_cluster, 'encrypted' => true ) );
+$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, array( 'cluster' => $app_cluster, 'useTLS' => true ) );
 ```
 
 For example, if you want to set custom curl options, use this:
 ```php
-$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, array( 'cluster' => $app_cluster, 'encrypted' => true, 'curl_options' => array( CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4 ) ) );
+$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, array( 'cluster' => $app_cluster, 'useTLS' => true, 'curl_options' => array( CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4 ) ) );
 ```
 
 

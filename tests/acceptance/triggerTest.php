@@ -31,17 +31,17 @@ class PusherPushTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($structure_trigger, 'Trigger with structured payload');
     }
 
-    public function testEncryptedPush()
+    public function testTLSPush()
     {
         $options = array(
-            'encrypted' => true,
-            'host'      => PUSHERAPP_HOST,
+            'useTLS' => true,
+            'host'   => PUSHERAPP_HOST,
         );
         $pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
         $pusher->setLogger(new TestLogger());
 
         $structure_trigger = $pusher->trigger('test_channel', 'my_event', array('encrypted' => 1));
-        $this->assertTrue($structure_trigger, 'Trigger with over encrypted connection');
+        $this->assertTrue($structure_trigger, 'Trigger with over TLS connection');
     }
 
     public function testSendingOver10kBMessageReturns413()
