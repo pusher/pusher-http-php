@@ -4,8 +4,8 @@ class webhookTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1, true);
         $this->auth_key = 'thisisaauthkey';
+        $this->pusher = new Pusher\Pusher($this->auth_key, 'thisisasecret', 1, true);
     }
 
     public function testValidWebhookSignature()

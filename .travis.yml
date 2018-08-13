@@ -1,25 +1,67 @@
 language: php
-dist: trusty
-
-sudo: false
-
-php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
-  - 7.2
-  - hhvm-3.24
-
-# Due to a compatibility issue between HHVM and PHP7
-# https://docs.travis-ci.com/user/languages/php/#HHVM-versions
-before_script:
-  - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
-
-install: travis_retry composer install --no-interaction --prefer-source
-
-script: vendor/bin/phpunit --testsuite unit
-
-notifications:
-  webhooks: $ZAPIER_WEBHOOK_URL
+matrix:
+  include:
+    # Arbitrarily testing 5.6 (a version without libsodium support) to see if tests pass without it.
+    - php: 
+      - 5.6 
+      dist: trusty
+      before_script: 
+        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+      script:
+        - vendor/bin/phpunit --testsuite unit
+      install:
+        - travis_retry composer install --no-interaction --prefer-source
+      notifications:
+        webhooks: $ZAPIER_WEBHOOK_URL
+    # Test PHP <=5.6 with old version of LibSodium (1.0.7).
+    - php:
+      - 5.4
+      - 5.5
+      - 5.6
+      sudo: required
+      dist: trusty
+      before_script: 
+        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+        - sudo add-apt-repository ppa:chris-lea/libsodium -y
+        - sudo sh -c 'echo "deb http://ppa.launchpad.net/chris-lea/libsodium/ubuntu trusty main" >> /etc/apt/sources.list'
+        - sudo sh -c 'echo "deb-src http://ppa.launchpad.net/chris-lea/libsodium/ubuntu trusty main" >> /etc/apt/sources.list'
+        - sudo apt-get update && sudo apt-get install libsodium-dev -y
+        - pecl install libsodium-1.0.7
+      script:
+        - phpenv config-add encryption.ini
+        - vendor/bin/phpunit --testsuite unit
+      install:
+        - travis_retry composer install --no-interaction --prefer-source
+      notifications:
+        webhooks: $ZAPIER_WEBHOOK_URL
+    # Test PHP =<7.1 with the new version of LibSodium (2.0.11).
+    - php: 
+      - 7.0
+      - 7.1
+      - hhvm-3.24
+      sudo: required
+      dist: trusty
+      before_script: 
+        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+        - sudo add-apt-repository ppa:ondrej/php -y
+        - sudo apt-get update && sudo apt-get install libsodium-dev -y
+        - pecl install libsodium-2.0.11
+      script:
+        - phpenv config-add encryption.ini
+        - vendor/bin/phpunit --testsuite unit
+      install:
+        - travis_retry composer install --no-interaction --prefer-source
+      notifications:
+        webhooks: $ZAPIER_WEBHOOK_URL
+    # Test PHP 7.2 without LibSodium since it adds support natively.
+    - php: 
+      - 7.2
+      dist: trusty
+      before_script: 
+        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+      script:
+        - vendor/bin/phpunit --testsuite unit
+      install:
+        - travis_retry composer install --no-interaction --prefer-source
+      notifications:
+        webhooks: $ZAPIER_WEBHOOK_URL
