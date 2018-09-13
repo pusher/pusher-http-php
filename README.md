@@ -320,65 +320,6 @@ $http_status_code = $response[ 'status' ];
 $result = $response[ 'result' ];
 ```
 
-## Push Notifications (BETA)
-
-Pusher now allows sending native notifications to iOS and Android devices. Check out the [documentation](https://pusher.com/docs/push_notifications) for information on how to set up push notifications on Android and iOS. There is no additional setup required to use it with this library. It works out of the box with the same Pusher instance. All you need are the same pusher credentials.
-
-The native notifications API is hosted at `nativepush-cluster1.pusher.com` and only listens on HTTPS.
-If you wish to provide a different host you can do:
-
-```php
-$pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array('notification_host' => 'custom notifications host'))
-```
-However, note that `notification_host` defaults to `nativepush-cluster1.pusher.com` and it is the only supported endpoint.
-
-### Sending native pushes
-
-You can send native notifications by using the `notify` method. The method takes two parameters:
-
-- `interests`: An array of strings which represents the interests your devices are subscribed to. Interests are akin to channels in the DDN. Currently, you can only publish notifications to, at most, _ten_ interests.
-- `data`: This represents the payload you'd like to send as part of the notification. You can supply an associative array of keys depending on which platform you'd like to send a notification to. You must include either the `gcm` or `apns` keys. For a detailed list of the acceptable keys, take a look at the docs for [iOS](https://pusher.com/docs/push_notifications/ios/server) and [Android](https://pusher.com/docs/push_notifications/android/server).
-
-It also takes a `debug` param like the `trigger` method to allow for debugging.
-
-Example:
-
-```php
-$data = array(
-  'apns' => array(
-    'aps' => array(
-      'alert' => array(
-        'body' => 'tada'
-      ),
-    ),
-  ),
-  'gcm' => array(
-    'notification' => array(
-      'title' => 'title',
-      'icon' => 'icon'
-    ),
-  ),
-);
-
-$pusher->notify(array("test"), $data);
-```
-
-### Errors
-
-Push notification requests, once submitted to the service, are executed asynchronously. To make reporting errors easier, you can supply a `webhook_url` field in the body of the request. The service will call this url with a body that contains the results of the publish request.
-
-Here's an example:
-
-```php
-$data = array(
-  'apns' => array("..."),
-  'gcm' => array("..."),
-  'webhook_url' => "http://my.company.com/pusher/nativepush/results"
-);
-
-$pusher->notify(array("test"), $data);
-```
-
 ## Debugging & Logging
 
 The best way to debug your applications interaction with server is to set a logger for the library so you can see the internal workings within the library and interactions with the Pusher service.
