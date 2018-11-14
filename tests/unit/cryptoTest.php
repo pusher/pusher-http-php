@@ -1,6 +1,6 @@
 <?php
 
-class PusherCryptoTest extends PHPUnit_Framework_TestCase
+class PusherCryptoTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

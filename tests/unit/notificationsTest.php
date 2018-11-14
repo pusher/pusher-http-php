@@ -1,6 +1,6 @@
 <?php
 
-    class PusherNotificationsUnitTest extends PHPUnit_Framework_TestCase
+    class PusherNotificationsUnitTest extends PHPUnit\Framework\TestCase
     {
         protected function setUp()
         {
