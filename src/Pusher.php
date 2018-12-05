@@ -373,8 +373,12 @@ class Pusher implements LoggerAwareInterface
         $response['body'] = curl_exec($ch);
         $response['status'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ($response['body'] === false || $response['status'] < 200 || 400 <= $response['status']) {
+        if ($response['body'] === false) {
             $this->log('exec_curl error: {error}', array('error' => curl_error($ch)), LogLevel::ERROR);
+        } elseif ($response['status'] < 200 || 400 <= $response['status']) {
+            $this->log('exec_curl {status} error from server: {body}', $response, LogLevel::ERROR);
+        } else {
+            $this->log('exec_curl {status} response: {body}', $response);
         }
 
         $this->log('exec_curl response: {response}', array('response' => print_r($response, true)));
