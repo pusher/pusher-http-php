@@ -1,6 +1,6 @@
 <?php
 
-class PusherAuthQueryString extends PHPUnit_Framework_TestCase
+class PusherAuthQueryString extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

@@ -1,6 +1,6 @@
 <?php
 
-class PusherChannelInfoUnitTest extends PHPUnit_Framework_TestCase
+class PusherChannelInfoUnitTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {
