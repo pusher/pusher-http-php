@@ -397,11 +397,11 @@ class Pusher implements LoggerAwareInterface
     }
 
     /**
-     * Build the ddn domain.
+     * Build the Channels domain.
      *
      * @return string
      */
-    private function ddn_domain()
+    private function channels_domain()
     {
         return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'];
     }
@@ -522,7 +522,7 @@ class Pusher implements LoggerAwareInterface
 
         $query_params['body_md5'] = md5($post_value);
 
-        $ch = $this->create_curl($this->ddn_domain(), $s_url, 'POST', $query_params);
+        $ch = $this->create_curl($this->channels_domain(), $s_url, 'POST', $query_params);
 
         $this->log('trigger POST: {post_value}', compact('post_value'));
 
@@ -573,7 +573,7 @@ class Pusher implements LoggerAwareInterface
 
         $query_params['body_md5'] = md5($post_value);
 
-        $ch = $this->create_curl($this->ddn_domain(), $s_url, 'POST', $query_params);
+        $ch = $this->create_curl($this->channels_domain(), $s_url, 'POST', $query_params);
 
         $this->log('trigger POST: {post_value}', compact('post_value'));
 
@@ -653,7 +653,7 @@ class Pusher implements LoggerAwareInterface
     {
         $s_url = $this->settings['base_path'].$path;
 
-        $ch = $this->create_curl($this->ddn_domain(), $s_url, 'GET', $params);
+        $ch = $this->create_curl($this->channels_domain(), $s_url, 'GET', $params);
 
         $response = $this->exec_curl($ch);
 
