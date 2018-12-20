@@ -554,24 +554,31 @@ class Pusher implements LoggerAwareInterface
      */
     public function triggerBatch($batch = array(), $debug = false, $already_encoded = false)
     {
-        $query_params = array();
+        $has_encrypted_channel = false;
 
-        $s_url = $this->settings['base_path'].'/batch_events';
+        foreach ($batch as $key => $event) {
+            $this->validate_channel($event["channel"]);
+            $this->validate_socket_id($event["socket_id"]);
 
-        if (!$already_encoded) {
-            foreach ($batch as $key => $event) {
-                if (!is_string($event['data'])) {
-                    $batch[$key]['data'] = json_encode($event['data']);
-                }
+            $data = $event['data'];
+            if (!is_string($data)) {
+                $data = $already_encoded ? $data : json_encode($data);
+            }
+
+            if (PusherCrypto::is_encrypted_channel($event["channel"])) {
+                $batch[$key]['data'] = $this->crypto->encrypt_payload($event["channel"], $data);
+            } else {
+                $batch[$key]['data'] = $data;
             }
         }
 
         $post_params = array();
         $post_params['batch'] = $batch;
-
         $post_value = json_encode($post_params);
 
+        $query_params = array();
         $query_params['body_md5'] = md5($post_value);
+        $s_url = $this->settings['base_path'].'/batch_events';
 
         $ch = $this->create_curl($this->channels_domain(), $s_url, 'POST', $query_params);
 
