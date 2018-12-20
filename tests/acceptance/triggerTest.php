@@ -87,15 +87,15 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
     }
 
     /**
-    * @expectedException \Pusher\PusherException
-    */
+     * @expectedException \Pusher\PusherException
+     */
     public function test_triggering_event_on_multiple_channels_with_encrypted_channel_present_error()
     {
         $options = array('encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV');
         $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options, PUSHERAPP_HOST);
 
         $data = array('event_name' => 'event_data');
-        $channels = array('my-chan-ceppaio','private-encrypted-ceppaio');
+        $channels = array('my-chan-ceppaio', 'private-encrypted-ceppaio');
         $response = $this->pusher->trigger($channels, 'my_event', $data);
     }
 }

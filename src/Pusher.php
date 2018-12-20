@@ -504,8 +504,8 @@ class Pusher implements LoggerAwareInterface
             }
         }
 
-        if($has_encrypted_channel){
-            if(sizeof($channels) > 1){
+        if ($has_encrypted_channel) {
+            if (count($channels) > 1) {
                 // For rationale, see limitations of end-to-end encryption in the README
                 throw new PusherException('You cannot trigger to multiple channels when using encrypted channels');
             } else {
