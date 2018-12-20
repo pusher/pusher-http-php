@@ -68,7 +68,7 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => "secret-string");
+        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
@@ -83,8 +83,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => "secret-string");
-        $batch[] = array('channel' => 'test_channel2', 'name' => 'my_event2', 'data' => "secret-string2");
+        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
+        $batch[] = array('channel' => 'test_channel2', 'name' => 'my_event2', 'data' => 'secret-string2');
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
@@ -99,7 +99,7 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => "secret-string");
+        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
         $batch[] = array('channel' => 'test_channel2', 'name' => 'my_event2', 'data' => array('my' => 'data2'));
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
@@ -108,15 +108,15 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
     public function testTriggerBatchWithSecretStringWithEncryptedEventSuccess()
     {
         $options = array(
-            'useTLS' => true,
-            'host'   => PUSHERAPP_HOST,
-            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV'
+            'useTLS'                => true,
+            'host'                  => PUSHERAPP_HOST,
+            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV',
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'private-encrypted-test_channel', 'name' => 'my_event', 'data' => "secret-string");
+        $batch[] = array('channel' => 'private-encrypted-test_channel', 'name' => 'my_event', 'data' => 'secret-string');
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
@@ -124,16 +124,16 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
     public function testTriggerBatchWithMultipleSecretStringsWithEncryptedEventSuccess()
     {
         $options = array(
-            'useTLS' => true,
-            'host'   => PUSHERAPP_HOST,
-            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV'
+            'useTLS'                => true,
+            'host'                  => PUSHERAPP_HOST,
+            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV',
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => "secret-string");
-        $batch[] = array('channel' => 'private-encrypted-test_channel2', 'name' => 'my_event2', 'data' => "secret-string2");
+        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
+        $batch[] = array('channel' => 'private-encrypted-test_channel2', 'name' => 'my_event2', 'data' => 'secret-string2');
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
@@ -141,28 +141,28 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
     public function testTriggerBatchWithMultipleCombinationsofSecretStringsAndObjectsWithEncryptedEventSuccess()
     {
         $options = array(
-            'useTLS' => true,
-            'host'   => PUSHERAPP_HOST,
-            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV'
+            'useTLS'                => true,
+            'host'                  => PUSHERAPP_HOST,
+            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV',
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => "secret-string");
+        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
         $batch[] = array('channel' => 'private-encrypted-test_channel2', 'name' => 'my_event2', 'data' => array('my' => 'data2'));
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
 
     /**
-    * @expectedException Error
-    */
+     * @expectedException Error
+     */
     public function testTriggerBatchMultipleEventsWithEncryptedEventWithoutEncryptionMasterKeyError()
     {
         $options = array(
             'useTLS' => true,
-            'host'   => PUSHERAPP_HOST
+            'host'   => PUSHERAPP_HOST,
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
         $pc->setLogger(new TestLogger());
@@ -177,9 +177,9 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
     public function testTriggerBatchMultipleEventsWithEncryptedEventWithEncryptionMasterKeySuccess()
     {
         $options = array(
-            'useTLS' => true,
-            'host'   => PUSHERAPP_HOST,
-            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV'
+            'useTLS'                => true,
+            'host'                  => PUSHERAPP_HOST,
+            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV',
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
         $pc->setLogger(new TestLogger());
