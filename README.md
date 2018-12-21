@@ -54,6 +54,7 @@ The fourth parameter is an `$options` array. The additional options are:
 * `cluster` - specify the cluster where the application is running from.
 * `curl_options` - array with custom curl commands
 * `encryption_master_key` - a 32 char long key. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used encrypt event data on encrypted channels.
+* `debug` - (default `false`) if `true`, every `trigger()` and `triggerBatch()` call will return a `$response` object (e.g.): ```Array ([body] => {} [status] => 200)```
 
 For example, by default calls will be made over a non-TLS connection. To change this to make calls over HTTPS use:
 

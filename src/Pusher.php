@@ -56,7 +56,7 @@ class Pusher implements LoggerAwareInterface
      *                         encrypted - deprecated; renamed to `useTLS`.
      *                         cluster - cluster name to connect to.
      *                         encryption_master_key - a 32 char long key. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used encrypt event data on encrypted channels.
-     *                         debug - debug mode
+     *                         debug - (default `false`) if `true`, every `trigger()` and `triggerBatch()` call will return a `$response` object, useful for logging/inspection purposes.
      *                         curl_options - wrapper for curl_setopt, more here: http://php.net/manual/en/function.curl-setopt.php
      *                         notification_host - host to connect to for native notifications.
      *                         notification_scheme - scheme for the notification_host.
@@ -547,12 +547,12 @@ class Pusher implements LoggerAwareInterface
 
         $response = $this->exec_curl($ch);
 
-        if ($response['status'] === 200 && $debug === false) {
-            return true;
-        }
-
         if ($debug === true || $this->settings['debug'] === true) {
             return $response;
+        }
+
+        if ($response['status'] === 200) {
+            return true;
         }
 
         return false;
@@ -598,12 +598,12 @@ class Pusher implements LoggerAwareInterface
 
         $response = $this->exec_curl($ch);
 
-        if ($response['status'] === 200 && $debug === false) {
-            return true;
-        }
-
         if ($debug === true || $this->settings['debug'] === true) {
             return $response;
+        }
+
+        if ($response['status'] === 200) {
+            return true;
         }
 
         return false;

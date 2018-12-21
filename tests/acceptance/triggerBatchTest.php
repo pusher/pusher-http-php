@@ -9,7 +9,7 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET and
             PUSHERAPP_APPID keys.');
         } else {
-            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true, PUSHERAPP_HOST);
+            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, false, PUSHERAPP_HOST);
             $this->pusher->setLogger(new TestLogger());
         }
     }
