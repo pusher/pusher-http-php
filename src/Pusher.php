@@ -554,8 +554,6 @@ class Pusher implements LoggerAwareInterface
      */
     public function triggerBatch($batch = array(), $debug = false, $already_encoded = false)
     {
-        $has_encrypted_channel = false;
-
         foreach ($batch as $key => $event) {
             $this->validate_channel($event['channel']);
             $this->validate_socket_id($event['socket_id']);
