@@ -186,6 +186,17 @@ $pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array(
 
 **Important note: This will __not__ encrypt messages on channels that are not prefixed by `private-encrypted-`.**
 
+**Limitation**: you cannot trigger a single event on multiple channels in a call to `trigger`, e.g.
+
+```php
+$data['name'] = 'joe';
+$data['message_count'] = 23;
+
+$pusher->trigger(array('channel-1', 'private-encrypted-channel-2'), 'test_event', $data);
+```
+
+Rationale: the methods in this library map directly to individual Channels HTTP API requests. If we allowed triggering a single event on multiple channels (some encrypted, some unencrypted), then it would require two API requests: one where the event is encrypted to the encrypted channels, and one where the event is unencrypted for unencrypted channels.
+
 ### Presence example
 
 First set this variable in your JS app:
