@@ -42,7 +42,7 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($string_trigger, 'Trigger with string payload');
     }
 
-    public function testTriggerBatchMultipleEvents()
+    public function testTriggerBatchNonEncryptedEventsWithObjectPayloads()
     {
         $options = array(
             'useTLS' => true,
@@ -58,7 +58,7 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
 
-    public function testTriggerBatchWithSecretString()
+    public function testTriggerBatchWithSingleEvent()
     {
         $options = array(
             'useTLS' => true,
@@ -68,12 +68,12 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
+        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
 
-    public function testTriggerBatchWithMultipleSecretStrings()
+    public function testTriggerBatchWithMultipleNonEncryptedEventsWithStringPayloads()
     {
         $options = array(
             'useTLS' => true,
@@ -83,13 +83,13 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
-        $batch[] = array('channel' => 'test_channel2', 'name' => 'my_event2', 'data' => 'secret-string2');
+        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
+        $batch[] = array('channel' => 'test_channel2', 'name' => 'my_event2', 'data' => 'test-string2');
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
 
-    public function testTriggerBatchWithMultipleCombinationsofSecretStringsAndObjects()
+    public function testTriggerBatchWithMultipleCombinationsofStringAndObjectPayloads()
     {
         $options = array(
             'useTLS' => true,
@@ -99,13 +99,13 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
+        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
         $batch[] = array('channel' => 'test_channel2', 'name' => 'my_event2', 'data' => array('my' => 'data2'));
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
 
-    public function testTriggerBatchWithSecretStringWithEncryptedEventSuccess()
+    public function testTriggerBatchWithWithEncryptedEventSuccess()
     {
         $options = array(
             'useTLS'                => true,
@@ -116,12 +116,12 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'private-encrypted-test_channel', 'name' => 'my_event', 'data' => 'secret-string');
+        $batch[] = array('channel' => 'private-encrypted-test_channel', 'name' => 'my_event', 'data' => 'test-string');
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
 
-    public function testTriggerBatchWithMultipleSecretStringsWithEncryptedEventSuccess()
+    public function testTriggerBatchWithMultipleEncryptedEventsSuccess()
     {
         $options = array(
             'useTLS'                => true,
@@ -132,13 +132,13 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $pc->setLogger(new TestLogger());
 
         $batch = array();
-        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
-        $batch[] = array('channel' => 'private-encrypted-test_channel2', 'name' => 'my_event2', 'data' => 'secret-string2');
+        $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
+        $batch[] = array('channel' => 'private-encrypted-test_channel2', 'name' => 'my_event2', 'data' => 'test-string2');
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
 
-    public function testTriggerBatchWithMultipleCombinationsofSecretStringsAndObjectsWithEncryptedEventSuccess()
+    public function testTriggerBatchWithMultipleCombinationsofStringsAndObjectsWithEncryptedEventSuccess()
     {
         $options = array(
             'useTLS'                => true,
@@ -169,12 +169,12 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
 
         $batch = array();
         $batch[] = array('channel' => 'my_test_chan', 'name' => 'my_event', 'data' => array('my' => 'data'));
-        $batch[] = array('channel' => 'private-encrypted-ceppaio', 'name' => 'my_private_encrypted_event', 'data' => array('my' => 'encrypted_data_shhhht'));
+        $batch[] = array('channel' => 'private-encrypted-ceppaio', 'name' => 'my_private_encrypted_event', 'data' => array('my' => 'to_be_encrypted_data_shhhht'));
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
 
-    public function testTriggerBatchMultipleEventsWithEncryptedEventWithEncryptionMasterKeySuccess()
+    public function testTriggerBatchWithMultipleEncryptedEventsWithEncryptionMasterKeySuccess()
     {
         $options = array(
             'useTLS'                => true,
@@ -186,7 +186,7 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
 
         $batch = array();
         $batch[] = array('channel' => 'my_test_chan', 'name' => 'my_event', 'data' => array('my' => 'data'));
-        $batch[] = array('channel' => 'private-encrypted-ceppaio', 'name' => 'my_private_encrypted_event', 'data' => array('my' => 'encrypted_data_shhhht'));
+        $batch[] = array('channel' => 'private-encrypted-ceppaio', 'name' => 'my_private_encrypted_event', 'data' => array('my' => 'to_be_encrypted_data_shhhht'));
         $string_trigger = $pc->triggerBatch($batch);
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
