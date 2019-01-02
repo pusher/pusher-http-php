@@ -53,7 +53,8 @@ The fourth parameter is an `$options` array. The additional options are:
 * `useTLS` - quick option to use scheme of https and port 443.
 * `cluster` - specify the cluster where the application is running from.
 * `curl_options` - array with custom curl commands
-* `encryption_master_key` - a 32 character long key used to derive secrets for end to end encryption (see below!)
+* `encryption_master_key` - a 32 char long key. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used encrypt event data on encrypted channels.
+* `debug` - (default `false`) if `true`, every `trigger()` and `triggerBatch()` call will return a `$response` object (e.g.): ```Array ([body] => {} [status] => 200)```
 
 For example, by default calls will be made over a non-TLS connection. To change this to make calls over HTTPS use:
 
@@ -184,6 +185,17 @@ $pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array(
 4. Subscribe to these channels in your client, and you're done! You can verify it is working by checking out the debug console on the [https://dashboard.pusher.com/](dashboard) and seeing the scrambled ciphertext.
 
 **Important note: This will __not__ encrypt messages on channels that are not prefixed by `private-encrypted-`.**
+
+**Limitation**: you cannot trigger a single event on multiple channels in a call to `trigger`, e.g.
+
+```php
+$data['name'] = 'joe';
+$data['message_count'] = 23;
+
+$pusher->trigger(array('channel-1', 'private-encrypted-channel-2'), 'test_event', $data);
+```
+
+Rationale: the methods in this library map directly to individual Channels HTTP API requests. If we allowed triggering a single event on multiple channels (some encrypted, some unencrypted), then it would require two API requests: one where the event is encrypted to the encrypted channels, and one where the event is unencrypted for unencrypted channels.
 
 ### Presence example
 

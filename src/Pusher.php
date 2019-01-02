@@ -55,6 +55,9 @@ class Pusher implements LoggerAwareInterface
      *                         useTLS - quick option to use scheme of https and port 443.
      *                         encrypted - deprecated; renamed to `useTLS`.
      *                         cluster - cluster name to connect to.
+     *                         encryption_master_key - a 32 char long key. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used encrypt event data on encrypted channels.
+     *                         debug - (default `false`) if `true`, every `trigger()` and `triggerBatch()` call will return a `$response` object, useful for logging/inspection purposes.
+     *                         curl_options - wrapper for curl_setopt, more here: http://php.net/manual/en/function.curl-setopt.php
      *                         notification_host - host to connect to for native notifications.
      *                         notification_scheme - scheme for the notification_host.
      * @param string $host     [optional] - deprecated
@@ -494,11 +497,27 @@ class Pusher implements LoggerAwareInterface
         $this->validate_channels($channels);
         $this->validate_socket_id($socket_id);
 
+        $has_encrypted_channel = false;
+        foreach ($channels as $chan) {
+            if (PusherCrypto::is_encrypted_channel($chan)) {
+                $has_encrypted_channel = true;
+            }
+        }
+
+        if ($has_encrypted_channel) {
+            if (count($channels) > 1) {
+                // For rationale, see limitations of end-to-end encryption in the README
+                throw new PusherException('You cannot trigger to multiple channels when using encrypted channels');
+            } else {
+                $data_encoded = $this->crypto->encrypt_payload($channels[0], $already_encoded ? $data : json_encode($data));
+            }
+        } else {
+            $data_encoded = $already_encoded ? $data : json_encode($data);
+        }
+
         $query_params = array();
 
         $s_url = $this->settings['base_path'].'/events';
-
-        $data_encoded = $already_encoded ? $data : json_encode($data);
 
         // json_encode might return false on failure
         if (!$data_encoded) {
@@ -506,9 +525,7 @@ class Pusher implements LoggerAwareInterface
                 'error' => print_r($data, true),
             ), LogLevel::ERROR);
         }
-        if (PusherCrypto::is_encrypted_channel($channels[0])) {
-            $data_encoded = $this->crypto->encrypt_payload($channels[0], $data_encoded);
-        }
+
         $post_params = array();
         $post_params['name'] = $event;
         $post_params['data'] = $data_encoded;
@@ -530,12 +547,12 @@ class Pusher implements LoggerAwareInterface
 
         $response = $this->exec_curl($ch);
 
-        if ($response['status'] === 200 && $debug === false) {
-            return true;
-        }
-
         if ($debug === true || $this->settings['debug'] === true) {
             return $response;
+        }
+
+        if ($response['status'] === 200) {
+            return true;
         }
 
         return false;
@@ -581,12 +598,12 @@ class Pusher implements LoggerAwareInterface
 
         $response = $this->exec_curl($ch);
 
-        if ($response['status'] === 200 && $debug === false) {
-            return true;
-        }
-
         if ($debug === true || $this->settings['debug'] === true) {
             return $response;
+        }
+
+        if ($response['status'] === 200) {
+            return true;
         }
 
         return false;
