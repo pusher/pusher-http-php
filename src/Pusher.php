@@ -574,7 +574,7 @@ class Pusher implements LoggerAwareInterface
         foreach ($batch as $key => $event) {
             $this->validate_channel($event['channel']);
             if (isset($event['socket_id'])) {
-              $this->validate_socket_id($event['socket_id']);
+                $this->validate_socket_id($event['socket_id']);
             }
 
             $data = $event['data'];
