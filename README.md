@@ -1,8 +1,8 @@
-# Pusher PHP Library
+# Pusher Channels HTTP PHP Library
 
 [![Build Status](https://travis-ci.org/pusher/pusher-http-php.svg?branch=master)](https://travis-ci.org/pusher/pusher-http-php)
 
-PHP library for interacting with the Pusher HTTP API.
+PHP library for interacting with the Pusher Channels HTTP API.
 
 Register at <https://pusher.com> and use the application credentials within your app as shown below.
 
