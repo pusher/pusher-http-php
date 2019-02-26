@@ -5,7 +5,6 @@
     "license": "MIT",
     "require": {
         "php": ">=5.4 <7.3",
-        "hhvm": "^3.24",
         "ext-curl": "*",
         "psr/log": "^1.0",
         "paragonie/sodium_compat": "^1.6"
