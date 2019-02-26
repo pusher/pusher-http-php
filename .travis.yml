@@ -38,7 +38,6 @@ matrix:
     - php: 
       - 7.0
       - 7.1
-      - hhvm-3.24
       sudo: required
       dist: trusty
       before_script: 
@@ -56,6 +55,7 @@ matrix:
     # Test PHP 7.2 without LibSodium since it adds support natively.
     - php: 
       - 7.2
+      - hhvm-3.24
       dist: trusty
       before_script: 
         - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
