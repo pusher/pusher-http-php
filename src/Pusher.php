@@ -663,6 +663,26 @@ class Pusher implements LoggerAwareInterface
     }
 
     /**
+     * Fetch user ids currently subscribed to a presence channel.
+     *
+     * @param string $channel The name of the channel
+     *
+     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     *
+     * @return array|bool
+     */
+    public function get_users_info($channel)
+    {
+        $response = $this->get('/channels/'.$channel.'/users');
+
+        if ($response['status'] === 200) {
+            return json_decode($response['body']);
+        }
+
+        return false;
+    }
+
+    /**
      * GET arbitrary REST API resource using a synchronous http client.
      * All request signing is handled automatically.
      *

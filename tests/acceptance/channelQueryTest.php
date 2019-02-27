@@ -67,6 +67,15 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
     }
 
+    public function testUsersInfo()
+    {
+        $response = $this->pusher->get_users_info('presence-channel-test');
+
+        // print_r( $response );
+
+        $this->assertObjectHasAttribute('users', $response, 'class has users attribute');
+    }
+
     public function test_providing_info_parameter_with_prefix_query_fails_for_public_channel()
     {
         $options = array(
