@@ -58,9 +58,7 @@ matrix:
       # Test HHVM LTS releases: http://docs.hhvm.com/hhvm/installation/release-schedule#supported-releases
       - hhvm-3.24
       - hhvm-3.27
-      - hhvm-3.29
       - hhvm-3.30
-      - hhvm-4.0
       dist: trusty
       before_script: 
         - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
