@@ -55,7 +55,10 @@ matrix:
     # Test PHP 7.2 without LibSodium since it adds support natively.
     - php: 
       - 7.2
+      # Test HHVM LTS releases: http://docs.hhvm.com/hhvm/installation/release-schedule#supported-releases
       - hhvm-3.24
+      - hhvm-3.27
+      - hhvm-3.30
       dist: trusty
       before_script: 
         - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
