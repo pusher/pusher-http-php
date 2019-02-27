@@ -52,9 +52,10 @@ matrix:
         - travis_retry composer install --no-interaction --prefer-source
       notifications:
         webhooks: $ZAPIER_WEBHOOK_URL
-    # Test PHP 7.2 without LibSodium since it adds support natively.
+    # Test PHP >=7.2 without LibSodium since it adds support natively.
     - php: 
       - 7.2
+      - 7.3
       # Test HHVM LTS releases: http://docs.hhvm.com/hhvm/installation/release-schedule#supported-releases
       - hhvm-3.24
       - hhvm-3.27
