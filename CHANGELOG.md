@@ -1,3 +1,7 @@
+## 3.4.0 (2019-03-11)
+
+[ADDED] `get_users_info` method.
+
 ## 3.3.1 (2019-01-18)
 
 [FIXED] PHP Notice for Undefined `socket_id` in triggerBatch
