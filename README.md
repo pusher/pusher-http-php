@@ -307,6 +307,13 @@ var_dump($subscription_counts);
 ### Get user information from a presence channel
 
 ```php
+$results = $pusher->get_users_info( 'presence-channel-name' );
+$users_count = count($results->users); // $users is an Array
+```
+
+This can also be achieved using the generic `pusher->get` function:
+
+```php
 $response = $pusher->get( '/channels/presence-channel-name/users' )
 ```
 
