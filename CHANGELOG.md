@@ -1,3 +1,7 @@
+## 3.4.1 (2019-03-18)
+
+[ADDED] Support for PHP 7.3.
+
 ## 3.4.0 (2019-03-11)
 
 [ADDED] `get_users_info` method.
