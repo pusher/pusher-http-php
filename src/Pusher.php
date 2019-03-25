@@ -7,7 +7,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class Pusher implements LoggerAwareInterface
+class Pusher implements LoggerAwareInterface, PusherInterface
 {
     use LoggerAwareTrait;
 
