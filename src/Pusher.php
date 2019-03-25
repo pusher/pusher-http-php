@@ -827,8 +827,9 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param array  $headers a array of headers from the request (for example, from getallheaders())
      * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
      *
-     * @return Webhook marshalled object with the properties time_ms (an int) and events (an array of event objects)
      * @throws PusherException
+     *
+     * @return Webhook marshalled object with the properties time_ms (an int) and events (an array of event objects)
      */
     public function webhook($headers, $body)
     {
