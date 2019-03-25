@@ -2,7 +2,6 @@
 
 namespace Pusher;
 
-
 interface PusherInterface
 {
     /**
