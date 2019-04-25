@@ -1,71 +1,30 @@
 language: php
 matrix:
   include:
-    # Arbitrarily testing 5.6 (a version without libsodium support) to see if tests pass without it.
-    - php: 
-      - 5.6 
-      dist: trusty
-      before_script: 
-        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
-      script:
-        - vendor/bin/phpunit --testsuite unit
-      install:
-        - travis_retry composer install --no-interaction --prefer-source
-      notifications:
-        webhooks: $ZAPIER_WEBHOOK_URL
-    # Test PHP <=5.6 with old version of LibSodium (1.0.7).
-    - php:
-      - 5.4
-      - 5.5
-      - 5.6
-      sudo: required
-      dist: trusty
-      before_script: 
-        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
-        - sudo add-apt-repository ppa:chris-lea/libsodium -y
-        - sudo sh -c 'echo "deb http://ppa.launchpad.net/chris-lea/libsodium/ubuntu trusty main" >> /etc/apt/sources.list'
-        - sudo sh -c 'echo "deb-src http://ppa.launchpad.net/chris-lea/libsodium/ubuntu trusty main" >> /etc/apt/sources.list'
-        - sudo apt-get update && sudo apt-get install libsodium-dev -y
-        - pecl install libsodium-1.0.7
-      script:
-        - phpenv config-add encryption.ini
-        - vendor/bin/phpunit --testsuite unit
-      install:
-        - travis_retry composer install --no-interaction --prefer-source
-      notifications:
-        webhooks: $ZAPIER_WEBHOOK_URL
-    # Test PHP =<7.1 with the new version of LibSodium (2.0.11).
-    - php: 
-      - 7.0
-      - 7.1
-      sudo: required
-      dist: trusty
-      before_script: 
-        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
-        - sudo add-apt-repository ppa:ondrej/php -y
-        - sudo apt-get update && sudo apt-get install libsodium-dev -y
-        - pecl install libsodium-2.0.11
-      script:
-        - phpenv config-add encryption.ini
-        - vendor/bin/phpunit --testsuite unit
-      install:
-        - travis_retry composer install --no-interaction --prefer-source
-      notifications:
-        webhooks: $ZAPIER_WEBHOOK_URL
-    # Test PHP >=7.2 without LibSodium since it adds support natively.
-    - php: 
-      - 7.2
-      - 7.3
-      # Test HHVM LTS releases: http://docs.hhvm.com/hhvm/installation/release-schedule#supported-releases
-      - hhvm-3.24
-      - hhvm-3.27
-      - hhvm-3.30
-      dist: trusty
-      before_script: 
-        - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
-      script:
-        - vendor/bin/phpunit --testsuite unit
-      install:
-        - travis_retry composer install --no-interaction --prefer-source
-      notifications:
-        webhooks: $ZAPIER_WEBHOOK_URL
+  - php: 5.4
+    env: INSTALL_LIBSODIUM=true
+  - php: 5.4
+    env: INSTALL_LIBSODIUM=false
+  - php: 5.5
+    env: INSTALL_LIBSODIUM=true
+  - php: 5.6
+    env: INSTALL_LIBSODIUM=true
+  - php: 7.0
+    env: INSTALL_LIBSODIUM=true
+  - php: 7.1
+    env: INSTALL_LIBSODIUM=true
+  - php: 7.2
+    env: INSTALL_LIBSODIUM=false
+  - php: 7.3
+    env: INSTALL_LIBSODIUM=false
+  - php: hhvm-3.24
+    env: INSTALL_LIBSODIUM=false
+  - php: hhvm-3.27
+    env: INSTALL_LIBSODIUM=false
+  - php: hhvm-3.30
+    env: INSTALL_LIBSODIUM=false
+dist: trusty
+install: ./scripts/travis-install.sh
+script: vendor/bin/phpunit --testsuite unit
+notifications:
+  webhooks: $ZAPIER_WEBHOOK_URL
