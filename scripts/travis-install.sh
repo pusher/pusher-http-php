@@ -3,7 +3,7 @@
 set -e
 
 curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
-travis_retry composer install --no-interaction --prefer-source
+composer install --no-interaction --prefer-source
 
 if [ $INSTALL_LIBSODIUM = true ]; then
   if [ $TRAVIS_PHP_VERSION == '5.4' ] || [ $TRAVIS_PHP_VERSION == '5.5' ] || [ $TRAVIS_PHP_VERSION == '5.6' ]; then
