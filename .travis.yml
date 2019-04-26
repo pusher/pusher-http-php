@@ -19,10 +19,6 @@ matrix:
     env: INSTALL_LIBSODIUM=false
   - php: hhvm-3.24
     env: INSTALL_LIBSODIUM=false
-  - php: hhvm-3.27
-    env: INSTALL_LIBSODIUM=false
-  - php: hhvm-3.30
-    env: INSTALL_LIBSODIUM=false
 dist: trusty
 install: ./scripts/travis-install.sh
 script: vendor/bin/phpunit --testsuite unit
