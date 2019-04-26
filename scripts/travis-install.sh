@@ -6,7 +6,7 @@ curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpuni
 composer install --no-interaction --prefer-source
 
 if [ $INSTALL_LIBSODIUM = true ]; then
-  if [ $TRAVIS_PHP_VERSION == '5.4' ] || [ $TRAVIS_PHP_VERSION == '5.5' ] || [ $TRAVIS_PHP_VERSION == '5.6' ]; then
+  if [ $TRAVIS_PHP_VERSION == '5.4' ] || [ $TRAVIS_PHP_VERSION == '5.5' ]; then
     sudo add-apt-repository ppa:chris-lea/libsodium -y
     sudo sh -c 'echo "deb http://ppa.launchpad.net/chris-lea/libsodium/ubuntu trusty main" >> /etc/apt/sources.list'
     sudo sh -c 'echo "deb-src http://ppa.launchpad.net/chris-lea/libsodium/ubuntu trusty main" >> /etc/apt/sources.list'
