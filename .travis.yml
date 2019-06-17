@@ -1,23 +1,15 @@
 language: php
 matrix:
   include:
-  - php: 5.4
-    env: INSTALL_LIBSODIUM=true
-  - php: 5.4
-    env: INSTALL_LIBSODIUM=false
-  - php: 5.5
-    env: INSTALL_LIBSODIUM=true
-  - php: 5.6
-    env: INSTALL_LIBSODIUM=true
-  - php: 7.0
-    env: INSTALL_LIBSODIUM=true
   - php: 7.1
     env: INSTALL_LIBSODIUM=true
+  # Check tests still work without libsodium install (the tests shouldn't run)
+  - php: 7.1
+    env: INSTALL_LIBSODIUM=false
+  # PHP >=7.2 include libsodium in the standard library
   - php: 7.2
     env: INSTALL_LIBSODIUM=false
   - php: 7.3
-    env: INSTALL_LIBSODIUM=false
-  - php: hhvm-3.24
     env: INSTALL_LIBSODIUM=false
 dist: trusty
 install: ./scripts/travis-install.sh

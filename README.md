@@ -30,6 +30,9 @@ Or you can clone or download the library files.
 
 This library depends on PHP modules for cURL and JSON. See [cURL module installation instructions](http://php.net/manual/en/curl.installation.php) and [JSON module installation instructions](http://php.net/manual/en/json.installation.php).
 
+## PHP support
+
+We support the versions of PHP that have "Security Support" in https://php.net/supported-versions.php.
 
 ## Pusher constructor
 
