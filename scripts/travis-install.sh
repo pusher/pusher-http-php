@@ -2,7 +2,7 @@
 
 set -e
 
-curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
+curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-7.5.9.phar
 composer install --no-interaction --prefer-source
 
 if [ $INSTALL_LIBSODIUM = true ]; then
