@@ -30,6 +30,11 @@ Or you can clone or download the library files.
 
 This library depends on PHP modules for cURL and JSON. See [cURL module installation instructions](http://php.net/manual/en/curl.installation.php) and [JSON module installation instructions](http://php.net/manual/en/json.installation.php).
 
+## Laravel integration
+
+Laravel version 5.3 and above has built-in support for Pusher Channels as a Broadcasting backend.
+See the [official documentation](https://laravel.com/docs/master/broadcasting) for more information.
+
 ## PHP support
 
 We support the versions of PHP that have "Security Support" in https://php.net/supported-versions.php.
@@ -399,11 +404,6 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit).
 * Some tests require a client to be connected to the app you defined in the config;
   you can do this by opening https://dashboard.pusher.com/apps/<YOUR_TEST_APP_ID>/getting_started in the browser
 * From the root directory of the project, execute `composer exec phpunit` to run all the tests.
-
-## Framework Integrations
-
-- **Laravel 4** - https://github.com/artdarek/pusherer
-- **Laravel 5** - https://github.com/pusher/pusher-http-laravel/
 
 ## License
 
