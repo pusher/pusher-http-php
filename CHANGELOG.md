@@ -1,3 +1,7 @@
+## 4.0.0 (2019-06-17)
+
+[REMOVED] Support for PHP 5.x, PHP 7.0 and HHVM.
+
 ## 3.4.1 (2019-03-18)
 
 [ADDED] Support for PHP 7.3.
