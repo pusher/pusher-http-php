@@ -8,7 +8,7 @@ Register at <https://pusher.com> and use the application credentials within your
 
 ## Installation
 
-You can get the Pusher PHP library via a composer package called `pusher-php-server`. See <https://packagist.org/packages/pusher/pusher-php-server>
+You can get the Pusher Channels PHP library via a composer package called `pusher-php-server`. See <https://packagist.org/packages/pusher/pusher-php-server>
 
 ```bash
 $ composer require pusher/pusher-php-server
@@ -39,9 +39,9 @@ See the [official documentation](https://laravel.com/docs/master/broadcasting) f
 
 We support the versions of PHP that have "Security Support" in https://php.net/supported-versions.php.
 
-## Pusher constructor
+## Pusher Channels constructor
 
-Use the credentials from your Pusher application to create a new `Pusher\Pusher` instance.
+Use the credentials from your Pusher Channels application to create a new `Pusher\Pusher` instance.
 
 ```php
 $app_id = 'YOUR_APP_ID';
@@ -244,7 +244,7 @@ Note: this assumes that you store your users in a table called `users` and that 
 $pusher->get_channel_info( $name );
 ```
 
-It's also possible to get information about a channel from the Pusher HTTP API.
+It's also possible to get information about a channel from the Channels HTTP API.
 
 ```php
 $info = $pusher->get_channel_info('channel-name');
@@ -271,7 +271,7 @@ $subscription_count = $info->subscription_count;
 $pusher->get_channels()
 ```
 
-It's also possible to get a list of channels for an application from the Pusher HTTP API.
+It's also possible to get a list of channels for an application from the Channels HTTP API.
 
 ```php
 $result = $pusher->get_channels();
@@ -352,7 +352,7 @@ Array
 $pusher->get( $path, $params );
 ```
 
-Used to make `GET` queries against the Pusher HTTP API. Handles authentication.
+Used to make `GET` queries against the Channels HTTP API. Handles authentication.
 
 Response is an associative array with a `result` index. The contents of this index is dependent on the HTTP method that was called. However, a `status` property to allow the HTTP status code is always present and a `result` property will be set if the status code indicates a successful call to the API.
 
@@ -364,7 +364,7 @@ $result = $response[ 'result' ];
 
 ## Debugging & Logging
 
-The best way to debug your applications interaction with server is to set a logger for the library so you can see the internal workings within the library and interactions with the Pusher service.
+The best way to debug your applications interaction with server is to set a logger for the library so you can see the internal workings within the library and interactions with the Channels service.
 
 ### PSR-3 Support
 
@@ -400,7 +400,7 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit).
 
 * Run `composer install`
 * Go to the `test` directory
-* Rename `config.example.php` and replace the values with valid Pusher credentials **or** create environment variables.
+* Rename `config.example.php` and replace the values with valid Channels credentials **or** create environment variables.
 * Some tests require a client to be connected to the app you defined in the config;
   you can do this by opening https://dashboard.pusher.com/apps/<YOUR_TEST_APP_ID>/getting_started in the browser
 * From the root directory of the project, execute `composer exec phpunit` to run all the tests.
