@@ -30,14 +30,11 @@ Or you can clone or download the library files.
 
 This library depends on PHP modules for cURL and JSON. See [cURL module installation instructions](http://php.net/manual/en/curl.installation.php) and [JSON module installation instructions](http://php.net/manual/en/json.installation.php).
 
-## Laravel integration
+## Supported platforms
 
-Laravel version 5.3 and above has built-in support for Pusher Channels as a Broadcasting backend.
-See the [official documentation](https://laravel.com/docs/master/broadcasting) for more information.
-
-## PHP support
-
-We support the versions of PHP that have "Security Support" in https://php.net/supported-versions.php.
+* PHP - supports versions of PHP that have "Security Support" in <https://php.net/supported-versions.php.>
+* Laravel - version 5.3 and above has built-in support for Pusher Channels as a [Broadcasting backend](https://laravel.com/docs/master/broadcasting).
+* Other PHP frameworks - supported provided you are using a supported version of PHP.
 
 ## Pusher Channels constructor
 
