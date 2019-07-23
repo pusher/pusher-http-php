@@ -27,6 +27,7 @@ class Pusher implements LoggerAwareInterface
     private $settings = array(
         'scheme'                => 'http',
         'port'                  => 80,
+        'path'                  => '',
         'timeout'               => 30,
         'debug'                 => false,
         'curl_options'          => array(),
@@ -87,10 +88,12 @@ class Pusher implements LoggerAwareInterface
             }
 
             $this->settings['host'] = $host;
+            $this->settings['path'] = '';
 
             $this->log('Legacy $host parameter provided: {scheme} host: {host}', array(
                 'scheme' => $this->settings['scheme'],
                 'host'   => $this->settings['host'],
+                'path'   => $this->settings['path'],
             ));
         }
 
@@ -406,7 +409,7 @@ class Pusher implements LoggerAwareInterface
      */
     private function channels_domain()
     {
-        return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'];
+        return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'] . $this->settings['path'];
     }
 
     /**
