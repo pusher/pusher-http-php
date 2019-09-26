@@ -409,7 +409,7 @@ class Pusher implements LoggerAwareInterface
      */
     private function channels_domain()
     {
-        return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'] . $this->settings['path'];
+        return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'].$this->settings['path'];
     }
 
     /**
