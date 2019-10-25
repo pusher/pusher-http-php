@@ -54,6 +54,7 @@ The fourth parameter is an `$options` array. The additional options are:
 * `scheme` - e.g. http or https
 * `host` - the host e.g. api.pusherapp.com. No trailing forward slash
 * `port` - the http port
+* `path` - a prefix to append to all request paths. This is only useful if you are running the library against an endpoint you control yourself (e.g. a proxy that routes based on the path prefix).
 * `timeout` - the HTTP timeout
 * `useTLS` - quick option to use scheme of https and port 443.
 * `cluster` - specify the cluster where the application is running from.
