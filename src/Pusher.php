@@ -300,8 +300,8 @@ class Pusher implements LoggerAwareInterface
     /**
      * Utility function used to create the curl object with common settings.
      *
-     * @param string            $domain
-     * @param string            $s_url
+     * @param string            $url_prefix
+     * @param string            $path
      * @param string [optional] $request_method
      * @param array [optional]  $query_params
      *
@@ -309,18 +309,18 @@ class Pusher implements LoggerAwareInterface
      *
      * @return resource
      */
-    private function create_curl($domain, $s_url, $request_method = 'GET', $query_params = array())
+    private function create_curl($url_prefix, $path, $request_method = 'GET', $query_params = array())
     {
         // Create the signed signature...
         $signed_query = self::build_auth_query_string(
             $this->settings['auth_key'],
             $this->settings['secret'],
             $request_method,
-            $s_url,
+            $path,
             $query_params
         );
 
-        $full_url = $domain.$s_url.'?'.$signed_query;
+        $full_url = $url_prefix.$path.'?'.$signed_query;
 
         $this->log('create_curl( {full_url} )', array('full_url' => $full_url));
 
@@ -393,21 +393,21 @@ class Pusher implements LoggerAwareInterface
     }
 
     /**
-     * Build the notification domain.
+     * Build the notification url prefix.
      *
      * @return string
      */
-    private function notification_domain()
+    private function notification_url_prefix()
     {
         return $this->settings['notification_scheme'].'://'.$this->settings['notification_host'];
     }
 
     /**
-     * Build the Channels domain.
+     * Build the Channels url prefix.
      *
      * @return string
      */
-    private function channels_domain()
+    private function channels_url_prefix()
     {
         return $this->settings['scheme'].'://'.$this->settings['host'].':'.$this->settings['port'].$this->settings['path'];
     }
@@ -520,7 +520,7 @@ class Pusher implements LoggerAwareInterface
 
         $query_params = array();
 
-        $s_url = $this->settings['base_path'].'/events';
+        $path = $this->settings['base_path'].'/events';
 
         // json_encode might return false on failure
         if (!$data_encoded) {
@@ -542,7 +542,7 @@ class Pusher implements LoggerAwareInterface
 
         $query_params['body_md5'] = md5($post_value);
 
-        $ch = $this->create_curl($this->channels_domain(), $s_url, 'POST', $query_params);
+        $ch = $this->create_curl($this->channels_url_prefix(), $path, 'POST', $query_params);
 
         $this->log('trigger POST: {post_value}', compact('post_value'));
 
@@ -598,9 +598,9 @@ class Pusher implements LoggerAwareInterface
 
         $query_params = array();
         $query_params['body_md5'] = md5($post_value);
-        $s_url = $this->settings['base_path'].'/batch_events';
+        $path = $this->settings['base_path'].'/batch_events';
 
-        $ch = $this->create_curl($this->channels_domain(), $s_url, 'POST', $query_params);
+        $ch = $this->create_curl($this->channels_url_prefix(), $path, 'POST', $query_params);
 
         $this->log('trigger POST: {post_value}', compact('post_value'));
 
@@ -698,9 +698,9 @@ class Pusher implements LoggerAwareInterface
      */
     public function get($path, $params = array())
     {
-        $s_url = $this->settings['base_path'].$path;
+        $path = $this->settings['base_path'].$path;
 
-        $ch = $this->create_curl($this->channels_domain(), $s_url, 'GET', $params);
+        $ch = $this->create_curl($this->channels_url_prefix(), $path, 'GET', $params);
 
         $response = $this->exec_curl($ch);
 
@@ -804,8 +804,8 @@ class Pusher implements LoggerAwareInterface
 
         $query_params['body_md5'] = md5($post_value);
 
-        $notification_path = '/server_api/v1'.$this->settings['base_path'].'/notifications';
-        $ch = $this->create_curl($this->notification_domain(), $notification_path, 'POST', $query_params);
+        $path = '/server_api/v1'.$this->settings['base_path'].'/notifications';
+        $ch = $this->create_curl($this->notification_url_prefix(), $path, 'POST', $query_params);
 
         $this->log('trigger POST (Native notifications): {post_value}', compact('post_value'));
 
