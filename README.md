@@ -82,7 +82,8 @@ becoming unwieldy. However, backwards compatibility has been maintained.*
 
 ## Logging configuration
 
-The best way to debug your applications interaction with server is to set a logger for the library so you can see the internal workings within the library and interactions with the Channels service.
+It is strongly recommended that you configure a logger.
+By default errors are easy to miss because the library will only return `false` if anything fails.
 
 ### PSR-3 Support
 
