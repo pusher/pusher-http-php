@@ -11,7 +11,7 @@ matrix:
     env: INSTALL_LIBSODIUM=false
   - php: 7.3
     env: INSTALL_LIBSODIUM=false
-  - php: 7.4
+  - php: 7.4snapshot
     env: INSTALL_LIBSODIUM=false
 dist: trusty
 install: ./scripts/travis-install.sh
