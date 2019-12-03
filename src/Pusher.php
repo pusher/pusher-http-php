@@ -14,7 +14,7 @@ class Pusher implements LoggerAwareInterface
     /**
      * @var string Version
      */
-    public static $VERSION = '4.1.0';
+    public static $VERSION = '4.1.1';
 
     /**
      * @var null|PusherCrypto
