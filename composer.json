@@ -4,7 +4,7 @@
     "keywords": ["php-pusher-server", "pusher", "rest", "realtime", "real-time", "real time", "messaging", "push", "trigger", "publish", "events"],
     "license": "MIT",
     "require": {
-        "php": ">=7.1 <7.4",
+        "php": "^7.1",
         "ext-curl": "*",
         "psr/log": "^1.0",
         "paragonie/sodium_compat": "^1.6"

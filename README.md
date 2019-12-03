@@ -32,7 +32,7 @@ This library depends on PHP modules for cURL and JSON. See [cURL module installa
 
 ## Supported platforms
 
-* PHP - supports PHP versions 7.1, 7.2 and 7.3.
+* PHP - supports PHP versions 7.1, 7.2, 7.3 and 7.4.
 * Laravel - version 5.3 and above has built-in support for Pusher Channels as a [Broadcasting backend](https://laravel.com/docs/master/broadcasting).
 * Other PHP frameworks - supported provided you are using a supported version of PHP.
 
