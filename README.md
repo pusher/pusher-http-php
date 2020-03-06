@@ -215,7 +215,7 @@ $encryption_master_key = "abcdefghijklmnopqrstuvwxyzabcdef";
 $pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, array(
 	'cluster' => $app_cluster,
 	'encryption_master_key' => $encryption_master_key
-  );
+  )
 );
 ```
 
