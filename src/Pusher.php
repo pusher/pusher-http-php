@@ -163,12 +163,14 @@ class Pusher implements LoggerAwareInterface
         // ensure host doesn't have a scheme prefix
         $this->settings['host'] = preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
 
-        if (!array_key_exists('encryption_master_key', $options)) { $options['encryption_master_key'] = ''; }
-        if (!array_key_exists('encryption_master_key_base64', $options)) { $options['encryption_master_key_base64'] = ''; }
+        if (!array_key_exists('encryption_master_key', $options)) {
+            $options['encryption_master_key'] = '';
+        }
+        if (!array_key_exists('encryption_master_key_base64', $options)) {
+            $options['encryption_master_key_base64'] = '';
+        }
 
-        if ($options['encryption_master_key'] != '' or
-            $options['encryption_master_key_base64'] != '') {
-
+        if ($options['encryption_master_key'] != '' or $options['encryption_master_key_base64'] != '') {
             $parsedKey = PusherCrypto::parse_master_key(
                 $options['encryption_master_key'],
                 $options['encryption_master_key_base64']
@@ -433,9 +435,15 @@ class Pusher implements LoggerAwareInterface
      *
      * @return string
      */
-    public static function build_auth_query_string($auth_key, $auth_secret, $request_method, $request_path,
-    $query_params = array(), $auth_version = '1.0', $auth_timestamp = null)
-    {
+    public static function build_auth_query_string(
+        $auth_key,
+        $auth_secret,
+        $request_method,
+        $request_path,
+        $query_params = array(),
+        $auth_version = '1.0',
+        $auth_timestamp = null
+    ) {
         $params = array();
         $params['auth_key'] = $auth_key;
         $params['auth_timestamp'] = (is_null($auth_timestamp) ? time() : $auth_timestamp);

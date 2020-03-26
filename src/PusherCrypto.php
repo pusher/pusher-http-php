@@ -40,8 +40,8 @@ class PusherCrypto
         }
 
         if ($encryption_master_key_base64 != '') {
-            $decoded_key = base64_decode($encryption_master_key_base64, TRUE);
-            if ($decoded_key === FALSE) {
+            $decoded_key = base64_decode($encryption_master_key_base64, true);
+            if ($decoded_key === false) {
                 throw new PusherException('encryption_master_key_base64 must be a valid base64 string');
             }
 

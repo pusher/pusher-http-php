@@ -14,9 +14,11 @@ class PusherAuthQueryString extends PHPUnit\Framework\TestCase
         $expected = 'testKey=testValue';
         $actual = Pusher\Pusher::array_implode('=', '&', $val);
 
-        $this->assertEquals($actual,
-        $expected,
-        'auth signature valid');
+        $this->assertEquals(
+            $actual,
+            $expected,
+            'auth signature valid'
+        );
     }
 
     public function testArrayImplodeWithTwoValues()
@@ -26,9 +28,11 @@ class PusherAuthQueryString extends PHPUnit\Framework\TestCase
         $expected = 'testKey=testValue&testKey2=testValue2';
         $actual = Pusher\Pusher::array_implode('=', '&', $val);
 
-        $this->assertEquals($actual,
-        $expected,
-        'auth signature valid');
+        $this->assertEquals(
+            $actual,
+            $expected,
+            'auth signature valid'
+        );
     }
 
     public function testGenerateSignature()
@@ -56,6 +60,10 @@ class PusherAuthQueryString extends PHPUnit\Framework\TestCase
         $expected_auth_signature = hash_hmac('sha256', $expected_to_sign, $auth_secret, false);
         $expected_query_string = "auth_key=$auth_key&auth_signature=$expected_auth_signature&auth_timestamp=$time&auth_version=$auth_version&name=an_event";
 
-        $this->assertEquals($auth_query_string, $expected_query_string, 'auth signature valid');
+        $this->assertEquals(
+            $auth_query_string,
+            $expected_query_string,
+            'auth signature valid'
+        );
     }
 }
