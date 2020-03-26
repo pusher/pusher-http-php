@@ -31,7 +31,6 @@ class Pusher implements LoggerAwareInterface
         'timeout'               => 30,
         'debug'                 => false,
         'curl_options'          => array(),
-        'encryption_master_key' => '',
     );
 
     /**
@@ -56,7 +55,8 @@ class Pusher implements LoggerAwareInterface
      *                         useTLS - quick option to use scheme of https and port 443.
      *                         encrypted - deprecated; renamed to `useTLS`.
      *                         cluster - cluster name to connect to.
-     *                         encryption_master_key - a 32 char long key. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used encrypt event data on encrypted channels.
+     *                         encryption_master_key - deprecated; use `encryption_master_key_base64`
+     *                         encryption_master_key_base64 - a 32 byte key, encoded as base64. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used encrypt event data on encrypted channels.
      *                         debug - (default `false`) if `true`, every `trigger()` and `triggerBatch()` call will return a `$response` object, useful for logging/inspection purposes.
      *                         curl_options - wrapper for curl_setopt, more here: http://php.net/manual/en/function.curl-setopt.php
      *                         notification_host - host to connect to for native notifications.
@@ -161,11 +161,19 @@ class Pusher implements LoggerAwareInterface
         }
 
         // ensure host doesn't have a scheme prefix
-        $this->settings['host'] =
-        preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
+        $this->settings['host'] = preg_replace('/http[s]?\:\/\//', '', $this->settings['host'], 1);
 
-        if ($this->settings['encryption_master_key'] != '') {
-            $this->crypto = new PusherCrypto($this->settings['encryption_master_key']);
+        if (!array_key_exists('encryption_master_key', $options)) { $options['encryption_master_key'] = ''; }
+        if (!array_key_exists('encryption_master_key_base64', $options)) { $options['encryption_master_key_base64'] = ''; }
+
+        if ($options['encryption_master_key'] != '' or
+            $options['encryption_master_key_base64'] != '') {
+
+            $parsedKey = PusherCrypto::parse_master_key(
+                $options['encryption_master_key'],
+                $options['encryption_master_key_base64']
+            );
+            $this->crypto = new PusherCrypto($parsedKey);
         }
     }
 
@@ -849,7 +857,7 @@ class Pusher implements LoggerAwareInterface
                     }
                     array_push($decoded_events, $decryptedEvent);
                 } else {
-                    $this->log('Got an encrypted webhook event payload, but no encryption_master_key specified. Ignoring.', null, LogLevel::WARNING);
+                    $this->log('Got an encrypted webhook event payload, but no master key specified. Ignoring.', null, LogLevel::WARNING);
                     continue;
                 }
             } else {
