@@ -56,7 +56,7 @@ class Pusher implements LoggerAwareInterface
      *                         encrypted - deprecated; renamed to `useTLS`.
      *                         cluster - cluster name to connect to.
      *                         encryption_master_key - deprecated; use `encryption_master_key_base64`
-     *                         encryption_master_key_base64 - a 32 byte key, encoded as base64. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used encrypt event data on encrypted channels.
+     *                         encryption_master_key_base64 - a 32 byte key, encoded as base64. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used to encrypt event data on encrypted channels.
      *                         debug - (default `false`) if `true`, every `trigger()` and `triggerBatch()` call will return a `$response` object, useful for logging/inspection purposes.
      *                         curl_options - wrapper for curl_setopt, more here: http://php.net/manual/en/function.curl-setopt.php
      *                         notification_host - host to connect to for native notifications.
