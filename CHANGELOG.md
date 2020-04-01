@@ -1,4 +1,4 @@
-## next
+## 4.1.2 (2020-04-01)
 
 [ADDED] option `encryption_master_key_base64`
 [DEPRECATED] option `encryption_master_key`
