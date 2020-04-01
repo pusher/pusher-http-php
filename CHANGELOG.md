@@ -1,3 +1,7 @@
+## 4.1.3 (2020-04-01)
+
+No functional change, previous release was only partially successful
+
 ## 4.1.2 (2020-04-01)
 
 [ADDED] option `encryption_master_key_base64`
