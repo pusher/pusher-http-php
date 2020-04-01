@@ -1,3 +1,8 @@
+## next
+
+[ADDED] option `encryption_master_key_base64`
+[DEPRECATED] option `encryption_master_key`
+
 ## 4.1.1 (2019-12-03)
 
 [ADDED] Support for PHP 7.4.
