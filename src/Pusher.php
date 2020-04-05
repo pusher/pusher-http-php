@@ -554,7 +554,7 @@ class Pusher implements LoggerAwareInterface
             return $response;
         }
 
-        if ($response['status'] === 200) {
+        if (isset($response['status']) && $response['status'] === 200) {
             return true;
         }
 
@@ -612,7 +612,7 @@ class Pusher implements LoggerAwareInterface
             return $response;
         }
 
-        if ($response['status'] === 200) {
+        if (isset($response['status']) && $response['status'] === 200) {
             return true;
         }
 
@@ -635,7 +635,7 @@ class Pusher implements LoggerAwareInterface
 
         $response = $this->get('/channels/'.$channel, $params);
 
-        if ($response['status'] === 200) {
+        if (isset($response['status']) && $response['status'] === 200) {
             return json_decode($response['body']);
         }
 
@@ -655,7 +655,7 @@ class Pusher implements LoggerAwareInterface
     {
         $response = $this->get('/channels', $params);
 
-        if ($response['status'] === 200) {
+        if (isset($response['status']) && $response['status'] === 200) {
             $response = json_decode($response['body']);
             $response->channels = get_object_vars($response->channels);
 
@@ -678,7 +678,7 @@ class Pusher implements LoggerAwareInterface
     {
         $response = $this->get('/channels/'.$channel.'/users');
 
-        if ($response['status'] === 200) {
+        if (isset($response['status']) && $response['status'] === 200) {
             return json_decode($response['body']);
         }
 
@@ -704,7 +704,7 @@ class Pusher implements LoggerAwareInterface
 
         $response = $this->exec_curl($ch);
 
-        if ($response['status'] === 200) {
+        if (isset($response['status']) && $response['status'] === 200) {
             $response['result'] = json_decode($response['body'], true);
 
             return $response;
