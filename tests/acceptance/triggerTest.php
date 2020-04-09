@@ -55,7 +55,7 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
     /**
      * @expectedException \Pusher\PusherException
      */
-    public function test_triggering_event_on_over_100_channels_throws_exception()
+    public function testTriggeringEventOnOver100ChannelsThrowsException()
     {
         $channels = array();
         while (count($channels) <= 101) {
@@ -65,7 +65,7 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
         $response = $this->pusher->trigger($channels, 'my_event', $data);
     }
 
-    public function test_triggering_event_on_multiple_channels()
+    public function testTriggeringEventOnMultipleChannels()
     {
         $data = array('event_name' => 'event_data');
         $channels = array('test_channel_1', 'test_channel_2');
@@ -74,7 +74,7 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($response);
     }
 
-    public function test_triggering_event_on_private_encrypted_channel_success()
+    public function testTriggeringEventOnPrivateEncryptedChannelSuccess()
     {
         $options = array('encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV');
         $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options, PUSHERAPP_HOST);
@@ -89,7 +89,7 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
     /**
      * @expectedException \Pusher\PusherException
      */
-    public function test_triggering_event_on_multiple_channels_with_encrypted_channel_present_error()
+    public function testTriggeringEventOnMultipleChannelsWithEncryptedChannelPresentError()
     {
         $options = array('encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV');
         $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options, PUSHERAPP_HOST);

@@ -16,6 +16,68 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $this->assertNotNull($this->crypto, 'Created new Pusher\PusherCrypto object');
     }
 
+    public function testValidMasterEncryptionKeys()
+    {
+        $this->assertEquals(Pusher\PusherCrypto::parse_master_key('this is 32 bytes 123456789012345', ''), 'this is 32 bytes 123456789012345');
+        $this->assertEquals(Pusher\PusherCrypto::parse_master_key("this key has nonprintable char \x00", ''), "this key has nonprintable char \x00");
+        $this->assertEquals(Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMiBieXRlcyAxMjM0NTY3ODkwMTIzNDU='), 'this is 32 bytes 123456789012345');
+        $this->assertEquals(Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBrZXkgaGFzIG5vbnByaW50YWJsZSBjaGFyIAA='), "this key has nonprintable char \x00");
+    }
+
+    /**
+     * @expectedException \Pusher\PusherException
+     * @expectedExceptionMessage both
+     */
+    public function testInvalidMasterEncryptionKeyTwoProvided()
+    {
+        Pusher\PusherCrypto::parse_master_key('this is 32 bytes 123456789012345', 'dGhpcyBpcyAzMiBieXRlcyAxMjM0NTY3ODkwMTIzNDU=');
+    }
+
+    /**
+     * @expectedException \Pusher\PusherException
+     * @expectedExceptionMessage 32 bytes
+     */
+    public function testInvalidMasterEncryptionKeyTooShort()
+    {
+        Pusher\PusherCrypto::parse_master_key('this is 31 bytes 12345678901234', '');
+    }
+
+    /**
+     * @expectedException \Pusher\PusherException
+     * @expectedExceptionMessage 32 bytes
+     */
+    public function testInvalidMasterEncryptionKeyTooLong()
+    {
+        Pusher\PusherCrypto::parse_master_key('this is 33 bytes 1234567890123456', '');
+    }
+
+    /**
+     * @expectedException \Pusher\PusherException
+     * @expectedExceptionMessage 32 bytes
+     */
+    public function testInvalidMasterEncryptionKeyBase64TooShort()
+    {
+        Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMSBieXRlcyAxMjM0NTY3ODkwMTIzNA==');
+    }
+
+    /**
+     * @expectedException \Pusher\PusherException
+     * @expectedExceptionMessage 32 bytes
+     */
+    public function testInvalidMasterEncryptionKeyBase64TooLong()
+    {
+        Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMyBieXRlcyAxMjM0NTY3ODkwMTIzNDU2');
+    }
+
+    /**
+     * @expectedException \Pusher\PusherException
+     * @expectedExceptionMessage valid base64
+     */
+    public function testInvalidMasterEncryptionKeyBase64InvalidBase64()
+    {
+        Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMyBi!XRlcyAxMjM0NTY3ODkw#TIzNDU2');
+    }
+
     public function testGenerateSharedSecret()
     {
         $expected = 'Rp+wpkNpL89qhqco1JkIG31AVXyU8PUVJBr1B2MvdoA=';

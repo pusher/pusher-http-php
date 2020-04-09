@@ -76,7 +76,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
         $this->assertObjectHasAttribute('users', $response, 'class has users attribute');
     }
 
-    public function test_providing_info_parameter_with_prefix_query_fails_for_public_channel()
+    public function testProvidingInfoParameterWithPrefixQueryFailsForPublicChannel()
     {
         $options = array(
             'filter_by_prefix' => 'test_',
@@ -87,7 +87,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
         $this->assertFalse($result, 'query should fail');
     }
 
-    public function test_channel_list_using_generic_get()
+    public function testChannelListUsingGenericGet()
     {
         $response = $this->pusher->get('/channels');
 
@@ -104,7 +104,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(0, count($my_channel));
     }
 
-    public function test_channel_list_using_generic_get_and_prefix_param()
+    public function testChannelListUsingGenericGetAndPrefixParam()
     {
         $response = $this->pusher->get('/channels', array('filter_by_prefix' => 'my-'));
 
@@ -121,7 +121,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(0, count($my_channel));
     }
 
-    public function test_single_channel_info_using_generic_get()
+    public function testSingleChannelInfoUsingGenericGet()
     {
         $response = $this->pusher->get('/channels/channel-test');
 
