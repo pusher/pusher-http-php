@@ -650,12 +650,8 @@ class Pusher implements LoggerAwareInterface
         $this->validate_channel($channel);
 
         $response = $this->get('/channels/'.$channel, $params);
-
-        if ($response['status'] === 200) {
-            return json_decode($response['body']);
-        }
-
-        return false;
+        
+        return (is_array($response) && $response['status'] === 200) ? json_decode($response['body']) : false;
     }
 
     /**
@@ -671,7 +667,7 @@ class Pusher implements LoggerAwareInterface
     {
         $response = $this->get('/channels', $params);
 
-        if ($response['status'] === 200) {
+        if (is_array($response) && $response['status'] === 200) {
             $response = json_decode($response['body']);
             $response->channels = get_object_vars($response->channels);
 
@@ -693,12 +689,8 @@ class Pusher implements LoggerAwareInterface
     public function get_users_info($channel)
     {
         $response = $this->get('/channels/'.$channel.'/users');
-
-        if ($response['status'] === 200) {
-            return json_decode($response['body']);
-        }
-
-        return false;
+        
+        return (is_array($response) && $response['status'] === 200) ? json_decode($response['body']) : false;
     }
 
     /**
