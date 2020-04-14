@@ -1,3 +1,7 @@
+## 4.1.4 (2020-04-14)
+
+[FIXED] Errors in the failure path of `get_...` methods revealed by stricter type checking in PHP7.4
+
 ## 4.1.3 (2020-04-01)
 
 No functional change, previous release was only partially successful
