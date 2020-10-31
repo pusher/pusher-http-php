@@ -2,7 +2,7 @@
 
 class PusherCryptoTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         if (function_exists('sodium_crypto_secretbox')) {
             $this->crypto = new Pusher\PusherCrypto('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
@@ -24,57 +24,51 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBrZXkgaGFzIG5vbnByaW50YWJsZSBjaGFyIAA='), "this key has nonprintable char \x00");
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     * @expectedExceptionMessage both
-     */
     public function testInvalidMasterEncryptionKeyTwoProvided()
     {
+        $this->expectException(\Pusher\PusherException::class);
+        $this->expectExceptionMessage('both');
+
         Pusher\PusherCrypto::parse_master_key('this is 32 bytes 123456789012345', 'dGhpcyBpcyAzMiBieXRlcyAxMjM0NTY3ODkwMTIzNDU=');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     * @expectedExceptionMessage 32 bytes
-     */
     public function testInvalidMasterEncryptionKeyTooShort()
     {
+        $this->expectException(\Pusher\PusherException::class);
+        $this->expectExceptionMessage('32 bytes');
+
         Pusher\PusherCrypto::parse_master_key('this is 31 bytes 12345678901234', '');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     * @expectedExceptionMessage 32 bytes
-     */
     public function testInvalidMasterEncryptionKeyTooLong()
     {
+        $this->expectException(\Pusher\PusherException::class);
+        $this->expectExceptionMessage('32 bytes');
+
         Pusher\PusherCrypto::parse_master_key('this is 33 bytes 1234567890123456', '');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     * @expectedExceptionMessage 32 bytes
-     */
     public function testInvalidMasterEncryptionKeyBase64TooShort()
     {
+        $this->expectException(\Pusher\PusherException::class);
+        $this->expectExceptionMessage('32 bytes');
+
         Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMSBieXRlcyAxMjM0NTY3ODkwMTIzNA==');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     * @expectedExceptionMessage 32 bytes
-     */
     public function testInvalidMasterEncryptionKeyBase64TooLong()
     {
+        $this->expectException(\Pusher\PusherException::class);
+        $this->expectExceptionMessage('32 bytes');
+
         Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMyBieXRlcyAxMjM0NTY3ODkwMTIzNDU2');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     * @expectedExceptionMessage valid base64
-     */
     public function testInvalidMasterEncryptionKeyBase64InvalidBase64()
     {
+        $this->expectException(\Pusher\PusherException::class);
+        $this->expectExceptionMessage('valid base64');
+
         Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMyBi!XRlcyAxMjM0NTY3ODkw#TIzNDU2');
     }
 
@@ -92,11 +86,10 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $this->assertNotEquals(base64_encode($crypto2->generate_shared_secret('private-encrypted-channel-a')), $expected);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testGenerateSharedSecretNoChannel()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->crypto->generate_shared_secret('');
     }
 
@@ -123,33 +116,30 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($decrypted_payload, $payload);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testEncryptPayloadNoChannel()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $channel = '';
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);
         $this->assertEquals($encrypted_payload, false);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testEncryptPayloadPublicChannel()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $channel = 'public-static-void-main';
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);
         $this->assertEquals($encrypted_payload, false);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testDecryptPayloadWrongKey()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $channel = 'private-encrypted-bla';
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);

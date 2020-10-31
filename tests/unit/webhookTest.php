@@ -2,7 +2,7 @@
 
 class webhookTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->auth_key = 'thisisaauthkey';
         $this->pusher = new Pusher\Pusher($this->auth_key, 'thisisasecret', 1, true);
@@ -18,13 +18,14 @@ class webhookTest extends PHPUnit\Framework\TestCase
         );
 
         $this->pusher->ensure_valid_signature($headers, $body);
+        
+        $this->assertTrue(true);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testInvalidWebhookSignature()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $signature = 'potato';
         $body = '{"hello":"world"}';
         $headers = array(

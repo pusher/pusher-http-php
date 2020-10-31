@@ -2,7 +2,7 @@
 
 class PusherPushTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         if (PUSHERAPP_AUTHKEY === '' || PUSHERAPP_SECRET === '' || PUSHERAPP_APPID === '') {
             $this->markTestSkipped('Please set the
@@ -52,11 +52,10 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(413, $response['status'], '413 HTTP status response expected');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTriggeringEventOnOver100ChannelsThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $channels = array();
         while (count($channels) <= 101) {
             $channels[] = ('channel-'.count($channels));
@@ -86,11 +85,10 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($response);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTriggeringEventOnMultipleChannelsWithEncryptedChannelPresentError()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $options = array('encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV');
         $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options, PUSHERAPP_HOST);
 

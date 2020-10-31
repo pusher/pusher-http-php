@@ -2,7 +2,7 @@
 
 class PusherAuthQueryString extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1, true);
     }
