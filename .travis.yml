@@ -13,7 +13,7 @@ matrix:
     env: INSTALL_LIBSODIUM=false
   - php: 7.4
     env: INSTALL_LIBSODIUM=false
-  - php: nightly
+  - php: 8.0
     env: INSTALL_LIBSODIUM=false
 dist: bionic
 install: ./scripts/travis-install.sh
