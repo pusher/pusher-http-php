@@ -2,7 +2,7 @@
 
 class PusherBatchPushTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         if (PUSHERAPP_AUTHKEY === '' || PUSHERAPP_SECRET === '' || PUSHERAPP_APPID === '') {
             $this->markTestSkipped('Please set the

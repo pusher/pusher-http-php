@@ -2,82 +2,73 @@
 
 class PusherTriggerUnitTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1, true);
         $this->eventName = 'test_event';
         $this->data = array();
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger('test_channel:', $this->eventName, $this->data);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger(':test_channel', $this->eventName, $this->data);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonNLChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger(':\ntest_channel', $this->eventName, $this->data);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonNLChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger('test_channel\n:', $this->eventName, $this->data);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testChannelArrayThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger(array('this_one_is_okay', 'test_channel\n:'), $this->eventName, $this->data);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger('test_channel:', $this->eventName, $this->data, '1.1:');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger('test_channel:', $this->eventName, $this->data, ':1.1');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonNLSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger('test_channel:', $this->eventName, $this->data, ':\n1.1');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonNLSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger('test_channel:', $this->eventName, $this->data, '1.1\n:');
     }
 
@@ -85,21 +76,21 @@ class PusherTriggerUnitTest extends PHPUnit\Framework\TestCase
     {
         // Check this does not throw an exception
         $this->pusher->trigger('test_channel', $this->eventName, $this->data, null);
+
+        $this->assertTrue(true);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testFalseSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger('test_channel', $this->eventName, $this->data, false);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testEmptyStrSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->trigger('test_channel', $this->eventName, $this->data, '');
     }
 }

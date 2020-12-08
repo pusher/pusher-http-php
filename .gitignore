@@ -2,3 +2,4 @@ composer.lock
 phpunit.xml
 tests/config.php
 vendor
+.phpunit.result.cache

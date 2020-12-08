@@ -2,10 +2,6 @@
 
 class pusherConstructorTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
-    {
-    }
-
     public function testDebugCanBeSetViaLegacyParameter()
     {
         $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', true);

@@ -2,7 +2,7 @@
 
 class PusherSocketAuthTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1, true);
     }
@@ -32,67 +32,59 @@ class PusherSocketAuthTest extends PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->socket_auth('testing_pusher-php', '1.1:');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->socket_auth('testing_pusher-php', ':1.1');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonNLSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->socket_auth('testing_pusher-php', ':\n1.1');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonNLSocketIDThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->socket_auth('testing_pusher-php', '1.1\n:');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->socket_auth('test_channel:', '1.1');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->socket_auth(':test_channel', '1.1');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonNLChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->socket_auth(':\ntest_channel', '1.1');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonNLChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->socket_auth('test_channel\n:', '1.1');
     }
 }

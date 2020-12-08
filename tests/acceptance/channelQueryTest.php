@@ -2,7 +2,7 @@
 
 class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true, PUSHERAPP_HOST);
         $this->pusher->setLogger(new TestLogger());

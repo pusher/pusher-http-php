@@ -2,40 +2,36 @@
 
 class PusherChannelInfoUnitTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1, true);
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->get_channel_info('test_channel:');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->get_channel_info(':test_channel');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testLeadingColonNLChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+        
         $this->pusher->get_channel_info(':\ntest_channel');
     }
 
-    /**
-     * @expectedException \Pusher\PusherException
-     */
     public function testTrailingColonNLChannelThrowsException()
     {
+        $this->expectException(\Pusher\PusherException::class);
+
         $this->pusher->get_channel_info('test_channel\n:');
     }
 }
