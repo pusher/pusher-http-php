@@ -1,3 +1,7 @@
+## 4.1.5 (2020-12-08)
+
+[ADDED] Support for PHP 8.
+
 ## 4.1.4 (2020-04-14)
 
 [FIXED] Errors in the failure path of `get_...` methods revealed by stricter type checking in PHP7.4
