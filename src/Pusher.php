@@ -7,7 +7,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class Pusher implements LoggerAwareInterface
+class Pusher implements LoggerAwareInterface, PusherInterface
 {
     use LoggerAwareTrait;
 
@@ -846,7 +846,9 @@ class Pusher implements LoggerAwareInterface
      * @param array  $headers a array of headers from the request (for example, from getallheaders())
      * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
      *
-     * @return array marshalled object with the properties time_ms (an int) and events (an array of event objects)
+     * @throws PusherException
+     *
+     * @return Webhook marshalled object with the properties time_ms (an int) and events (an array of event objects)
      */
     public function webhook($headers, $body)
     {
