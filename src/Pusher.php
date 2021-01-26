@@ -665,7 +665,7 @@ class Pusher implements LoggerAwareInterface
      *
      * @throws PusherException Throws exception if curl wasn't initialized correctly
      *
-     * @return array|bool
+     * @return object|bool
      */
     public function get_channels($params = array())
     {
