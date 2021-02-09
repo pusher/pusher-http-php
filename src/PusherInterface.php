@@ -127,19 +127,6 @@ interface PusherInterface
     public function presence_auth($channel, $socket_id, $user_id, $user_info = null);
 
     /**
-     * Send a native notification via the Push Notifications Api.
-     *
-     * @param array $interests
-     * @param array $data
-     * @param bool  $debug
-     *
-     * @throws PusherException If validation fails
-     *
-     * @return array|bool|string
-     */
-    public function notify($interests, $data = array(), $debug = false);
-
-    /**
      * Verify that a webhook actually came from Pusher, decrypts any encrypted events, and marshals them into a PHP object.
      *
      * @param array  $headers a array of headers from the request (for example, from getallheaders())

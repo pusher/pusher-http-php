@@ -59,8 +59,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *                         encryption_master_key_base64 - a 32 byte key, encoded as base64. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used to encrypt event data on encrypted channels.
      *                         debug - (default `false`) if `true`, every `trigger()` and `triggerBatch()` call will return a `$response` object, useful for logging/inspection purposes.
      *                         curl_options - wrapper for curl_setopt, more here: http://php.net/manual/en/function.curl-setopt.php
-     *                         notification_host - host to connect to for native notifications.
-     *                         notification_scheme - scheme for the notification_host.
      * @param string $host     [optional] - deprecated
      * @param int    $port     [optional] - deprecated
      * @param int    $timeout  [optional] - deprecated
@@ -133,20 +131,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             if (isset($this->settings[$key])) {
                 $this->settings[$key] = $value;
             }
-        }
-
-        // Set the native notification host
-        if (isset($options['notification_host'])) {
-            $this->settings['notification_host'] = $options['notification_host'];
-        } else {
-            $this->settings['notification_host'] = 'nativepush-cluster1.pusher.com';
-        }
-
-        // Set scheme for native notifications
-        if (isset($options['notification_scheme'])) {
-            $this->settings['notification_scheme'] = $options['notification_scheme'];
-        } else {
-            $this->settings['notification_scheme'] = 'https';
         }
 
         // handle the case when 'host' and 'cluster' are specified in the options.
@@ -400,16 +384,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         $this->log('exec_curl response: {response}', array('response' => print_r($response, true)));
 
         return $response;
-    }
-
-    /**
-     * Build the notification url prefix.
-     *
-     * @return string
-     */
-    private function notification_url_prefix()
-    {
-        return $this->settings['notification_scheme'].'://'.$this->settings['notification_host'];
     }
 
     /**
@@ -788,56 +762,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         }
 
         return $this->socket_auth($channel, $socket_id, json_encode($user_data));
-    }
-
-    /**
-     * Send a native notification via the Push Notifications Api.
-     *
-     * @param array $interests
-     * @param array $data
-     * @param bool  $debug
-     *
-     * @throws PusherException If validation fails
-     *
-     * @return array|bool|string
-     */
-    public function notify($interests, $data = array(), $debug = false)
-    {
-        $query_params = array();
-
-        if (is_string($interests)) {
-            $this->log('->notify received string interests "{interests}" Converting to array.', compact('interests'));
-            $interests = array($interests);
-        }
-
-        if (count($interests) === 0) {
-            throw new PusherException('$interests array must not be empty');
-        }
-
-        $data['interests'] = $interests;
-
-        $post_value = json_encode($data);
-
-        $query_params['body_md5'] = md5($post_value);
-
-        $path = '/server_api/v1'.$this->settings['base_path'].'/notifications';
-        $ch = $this->create_curl($this->notification_url_prefix(), $path, 'POST', $query_params);
-
-        $this->log('trigger POST (Native notifications): {post_value}', compact('post_value'));
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_value);
-
-        $response = $this->exec_curl($ch);
-
-        if ($response['status'] === 202 && $debug === false) {
-            return true;
-        }
-
-        if ($debug === true || $this->settings['debug'] === true) {
-            return $response;
-        }
-
-        return false;
     }
 
     /**
