@@ -474,14 +474,14 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param string       $event
      * @param mixed        $data            Event data
      * @param string|null  $socket_id       [optional]
-     * @param bool         $debug           [optional]
      * @param bool         $already_encoded [optional]
      *
-     * @throws PusherException Throws exception if $channels is an array of size 101 or above or $socket_id is invalid
+     * @throws PusherException   Throws PusherException if $channels is an array of size 101 or above or $socket_id is invalid
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return bool|array
+     * @return object
      */
-    public function trigger($channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false)
+    public function trigger($channels, $event, $data, $socket_id = null, $already_encoded = false)
     {
         if (is_string($channels) === true) {
             $channels = array($channels);
@@ -540,29 +540,25 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
         $response = $this->exec_curl($ch);
 
-        if ($debug === true || $this->settings['debug'] === true) {
-            return $response;
+        if ($response['status'] !== 200) {
+            throw new ApiErrorException($response['body'], $response['status']);
         }
 
-        if ($response['status'] === 200) {
-            return true;
-        }
-
-        return false;
+        return json_decode($response['body']);
     }
 
     /**
      * Trigger multiple events at the same time.
      *
      * @param array $batch           [optional] An array of events to send
-     * @param bool  $debug           [optional]
      * @param bool  $already_encoded [optional]
      *
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     * @throws PusherException   Throws exception if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return array|bool|string
+     * @return object
      */
-    public function triggerBatch($batch = array(), $debug = false, $already_encoded = false)
+    public function triggerBatch($batch = array(), $already_encoded = false)
     {
         foreach ($batch as $key => $event) {
             $this->validate_channel($event['channel']);
@@ -598,15 +594,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
         $response = $this->exec_curl($ch);
 
-        if ($debug === true || $this->settings['debug'] === true) {
-            return $response;
+        if ($response['status'] !== 200) {
+            throw new ApiErrorException($response['body'], $response['status']);
         }
 
-        if ($response['status'] === 200) {
-            return true;
-        }
-
-        return false;
+        return json_decode($response['body']);
     }
 
     /**
@@ -615,21 +607,16 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param string $channel The name of the channel
      * @param array  $params  Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
-     * @throws PusherException If $channel is invalid or if curl wasn't initialized correctly
+     * @throws PusherException   If $channel is invalid or if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return bool|object
+     * @return object
      */
     public function get_channel_info($channel, $params = array())
     {
         $this->validate_channel($channel);
 
-        $response = $this->get('/channels/'.$channel, $params);
-
-        if ($response === false) {
-            return false;
-        }
-
-        return json_decode($response['body']);
+        return $this->get('/channels/'.$channel, $params);
     }
 
     /**
@@ -637,19 +624,15 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     * @throws PusherException   Throws exception if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return object|bool
+     * @return object
      */
     public function get_channels($params = array())
     {
-        $response = $this->get('/channels', $params);
+        $result = $this->get('/channels', $params);
 
-        if ($response === false) {
-            return false;
-        }
-
-        $result = json_decode($response['body']);
         $result->channels = get_object_vars($result->channels);
 
         return $result;
@@ -660,33 +643,30 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @param string $channel The name of the channel
      *
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     * @throws PusherException   Throws exception if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return array|bool
+     * @return object
      */
     public function get_users_info($channel)
     {
-        $response = $this->get('/channels/'.$channel.'/users');
-
-        if ($response === false) {
-            return false;
-        }
-
-        return json_decode($response['body']);
+        return $this->get('/channels/'.$channel.'/users');
     }
 
     /**
      * GET arbitrary REST API resource using a synchronous http client.
      * All request signing is handled automatically.
      *
-     * @param string $path   Path excluding /apps/APP_ID
-     * @param array  $params API params (see http://pusher.com/docs/rest_api)
+     * @param string $path        Path excluding /apps/APP_ID
+     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
+     * @param bool   $associative When true, return the response body as an associative array, else return as an object
      *
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     * @throws PusherException   Throws exception if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return array|bool See Pusher API docs
+     * @return mixed See Pusher API docs
      */
-    public function get($path, $params = array())
+    public function get($path, $params = array(), $associative = false)
     {
         $path = $this->settings['base_path'].$path;
 
@@ -694,13 +674,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
         $response = $this->exec_curl($ch);
 
-        if ($response['status'] === 200) {
-            $response['result'] = json_decode($response['body'], true);
-
-            return $response;
+        if ($response['status'] !== 200) {
+            throw new ApiErrorException($response['body'], $response['status']);
         }
 
-        return false;
+        return json_decode($response['body'], $associative);
     }
 
     /**

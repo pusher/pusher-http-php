@@ -99,8 +99,7 @@ maintained.
 
 ## Logging configuration
 
-It is strongly recommended that you configure a logger.  By default errors are
-easy to miss because the library will only return `false` if anything fails.
+It is strongly recommended that you configure a logger.
 
 ### PSR-3 Support
 
@@ -200,7 +199,7 @@ If your data is already encoded in JSON format, you can avoid a second encoding
 step by setting the sixth argument true, like so:
 
 ```php
-$pusher->trigger('my-channel', 'event', 'data', null, false, true)
+$pusher->trigger('my-channel', 'event', 'data', null, true)
 ```
 
 ## Authenticating Private channels

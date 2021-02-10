@@ -30,27 +30,27 @@ interface PusherInterface
      * @param string       $event
      * @param mixed        $data            Event data
      * @param string|null  $socket_id       [optional]
-     * @param bool         $debug           [optional]
      * @param bool         $already_encoded [optional]
      *
-     * @throws PusherException Throws exception if $channels is an array of size 101 or above or $socket_id is invalid
+     * @throws PusherException   Throws exception if $channels is an array of size 101 or above or $socket_id is invalid
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return bool|array
+     * @return object
      */
-    public function trigger($channels, $event, $data, $socket_id = null, $debug = false, $already_encoded = false);
+    public function trigger($channels, $event, $data, $socket_id = null, $already_encoded = false);
 
     /**
      * Trigger multiple events at the same time.
      *
      * @param array $batch           [optional] An array of events to send
-     * @param bool  $debug           [optional]
      * @param bool  $already_encoded [optional]
      *
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     * @throws PusherException   Throws exception if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return array|bool|string
+     * @return object
      */
-    public function triggerBatch($batch = array(), $debug = false, $already_encoded = false);
+    public function triggerBatch($batch = array(), $already_encoded = false);
 
     /**
      * Fetch channel information for a specific channel.
@@ -58,9 +58,10 @@ interface PusherInterface
      * @param string $channel The name of the channel
      * @param array  $params  Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
-     * @throws PusherException If $channel is invalid or if curl wasn't initialized correctly
+     * @throws PusherException   If $channel is invalid or if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return bool|object
+     * @return object
      */
     public function get_channel_info($channel, $params = array());
 
@@ -69,9 +70,10 @@ interface PusherInterface
      *
      * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     * @throws PusherException   Throws exception if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return array|bool
+     * @return object
      */
     public function get_channels($params = array());
 
@@ -80,9 +82,10 @@ interface PusherInterface
      *
      * @param string $channel The name of the channel
      *
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     * @throws PusherException   Throws exception if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return array|bool
+     * @return object
      */
     public function get_users_info($channel);
 
@@ -92,10 +95,12 @@ interface PusherInterface
      *
      * @param string $path   Path excluding /apps/APP_ID
      * @param array  $params API params (see http://pusher.com/docs/rest_api)
+     * @param bool   $associative When true, return the response body as an associative array, else return as an object
      *
-     * @throws PusherException Throws exception if curl wasn't initialized correctly
+     * @throws PusherException   Throws exception if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      *
-     * @return array|bool See Pusher API docs
+     * @return mixed See Pusher API docs
      */
     public function get($path, $params = array());
 
