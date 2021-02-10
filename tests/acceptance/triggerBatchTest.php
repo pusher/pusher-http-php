@@ -155,9 +155,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
     }
 
-    /**
-     * @expectedException Error
-     */
     public function testTriggerBatchMultipleEventsWithEncryptedEventWithoutEncryptionMasterKeyError()
     {
         $options = array(
@@ -170,8 +167,10 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $batch = array();
         $batch[] = array('channel' => 'my_test_chan', 'name' => 'my_event', 'data' => array('my' => 'data'));
         $batch[] = array('channel' => 'private-encrypted-ceppaio', 'name' => 'my_private_encrypted_event', 'data' => array('my' => 'to_be_encrypted_data_shhhht'));
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
+
+        $this->expectException(Error::class);
+
+        $pc->triggerBatch($batch);
     }
 
     public function testTriggerBatchWithMultipleEncryptedEventsWithEncryptionMasterKeySuccess()
