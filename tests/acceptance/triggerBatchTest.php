@@ -157,6 +157,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
 
     public function testTriggerBatchMultipleEventsWithEncryptedEventWithoutEncryptionMasterKeyError()
     {
+        $this->expectException(Error::class);
+
         $options = array(
             'useTLS' => true,
             'host'   => PUSHERAPP_HOST,
@@ -167,9 +169,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $batch = array();
         $batch[] = array('channel' => 'my_test_chan', 'name' => 'my_event', 'data' => array('my' => 'data'));
         $batch[] = array('channel' => 'private-encrypted-ceppaio', 'name' => 'my_private_encrypted_event', 'data' => array('my' => 'to_be_encrypted_data_shhhht'));
-
-        $this->expectException(Error::class);
-
         $pc->triggerBatch($batch);
     }
 
