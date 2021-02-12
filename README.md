@@ -184,10 +184,37 @@ The output of this will be:
 
 In order to avoid duplicates you can optionally specify the sender's socket id
 while triggering an event
-([https://pusher.com/docs/duplicates](http://pusherapp.com/docs/duplicates)):
+([https://pusher.com/docs/duplicates](https://pusher.com/docs/channels/server_api/excluding-event-recipients)):
 
 ```php
-$pusher->trigger('my-channel','event','data','socket_id');
+$pusher->trigger('my-channel', 'event', 'data', array('socket_id' => $socket_id));
+```
+
+```php
+$batch = array();
+$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'), array('socket_id' => $socket_id));
+$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'), array('socket_id' => $socket_id);
+$pusher->triggerBatch($batch);
+```
+
+### Fetch channel info on publish
+
+It is possible to request for attributes about the channels that were
+published to with the `info` param
+([https://pusher.com/docs/duplicates](https://pusher.com/docs/channels/library_auth_reference/rest-api#request)):
+
+```php
+$result = $pusher->trigger('my-channel', 'my_event', 'hello world', array('info' => 'subscription_count'));
+$subscription_count = $result->channels['my-channel']->subscription_count;
+```
+
+```php
+$batch = array();
+$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'), 'info' => array('info' => 'subscription_count'));
+$batch[] = array('channel' => 'presence-my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'), 'info' => array('info' => 'user_count,subscription_count'));
+$channels = $pusher->triggerBatch($batch);
+$subscription_count = count($result->channels['my-channel']->subscription_count);
+$user_count = count($result->channels['presence-my-channel']->user_count);
 ```
 
 ### JSON format
@@ -196,7 +223,7 @@ If your data is already encoded in JSON format, you can avoid a second encoding
 step by setting the sixth argument true, like so:
 
 ```php
-$pusher->trigger('my-channel', 'event', 'data', null, true)
+$pusher->trigger('my-channel', 'event', 'data', array(), true)
 ```
 
 ## Authenticating Private channels

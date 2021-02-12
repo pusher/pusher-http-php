@@ -48,41 +48,41 @@ class PusherTriggerUnitTest extends PHPUnit\Framework\TestCase
     {
         $this->expectException(\Pusher\PusherException::class);
 
-        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, '1.1:');
+        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, array('socket_id' => '1.1:'));
     }
 
     public function testLeadingColonSocketIDThrowsException()
     {
         $this->expectException(\Pusher\PusherException::class);
 
-        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, ':1.1');
+        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, array('socket_id' => ':1.1'));
     }
 
     public function testLeadingColonNLSocketIDThrowsException()
     {
         $this->expectException(\Pusher\PusherException::class);
 
-        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, ':\n1.1');
+        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, array('socket_id' => ':\n1.1'));
     }
 
     public function testTrailingColonNLSocketIDThrowsException()
     {
         $this->expectException(\Pusher\PusherException::class);
 
-        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, '1.1\n:');
+        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, array('socket_id' => '1.1\n:'));
     }
 
     public function testFalseSocketIDThrowsException()
     {
         $this->expectException(\Pusher\PusherException::class);
 
-        $this->pusher->trigger('test_channel', $this->eventName, $this->data, false);
+        $this->pusher->trigger('test_channel', $this->eventName, $this->data, array('socket_id' => false));
     }
 
     public function testEmptyStrSocketIDThrowsException()
     {
         $this->expectException(\Pusher\PusherException::class);
 
-        $this->pusher->trigger('test_channel', $this->eventName, $this->data, '');
+        $this->pusher->trigger('test_channel', $this->eventName, $this->data, array('socket_id' => ''));
     }
 }
