@@ -91,7 +91,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
     {
         $response = $this->pusher->get('/channels');
 
-        $this->assertEquals($response['status'], 200);
+        $this->assertEquals(200, $response['status']);
 
         $result = $response['result'];
 
@@ -108,7 +108,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
     {
         $response = $this->pusher->get('/channels', array('filter_by_prefix' => 'my-'));
 
-        $this->assertEquals($response['status'], 200);
+        $this->assertEquals(200, $response['status']);
 
         $result = $response['result'];
 
@@ -125,7 +125,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
     {
         $response = $this->pusher->get('/channels/channel-test');
 
-        $this->assertEquals($response['status'], 200);
+        $this->assertEquals(200, $response['status']);
 
         $result = $response['result'];
 
