@@ -29,7 +29,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         'port'                  => 80,
         'path'                  => '',
         'timeout'               => 30,
-        'debug'                 => false,
         'curl_options'          => array(),
     );
 
@@ -40,14 +39,12 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
     /**
      * Initializes a new Pusher instance with key, secret, app ID and channel.
-     * You can optionally turn on debugging for all requests by setting debug to true.
      *
      * @param string $auth_key
      * @param string $secret
      * @param int    $app_id
      * @param array  $options  [optional]
      *                         Options to configure the Pusher instance.
-     *                         Was previously a debug flag. Legacy support for this exists if a boolean is passed.
      *                         scheme - e.g. http or https
      *                         host - the host e.g. api.pusherapp.com. No trailing forward slash.
      *                         port - the http port
@@ -57,7 +54,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *                         cluster - cluster name to connect to.
      *                         encryption_master_key - deprecated; use `encryption_master_key_base64`
      *                         encryption_master_key_base64 - a 32 byte key, encoded as base64. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used to encrypt event data on encrypted channels.
-     *                         debug - (default `false`) if `true`, every `trigger()` and `triggerBatch()` call will return a `$response` object, useful for logging/inspection purposes.
      *                         curl_options - wrapper for curl_setopt, more here: http://php.net/manual/en/function.curl-setopt.php
      * @param string $host     [optional] - deprecated
      * @param int    $port     [optional] - deprecated
@@ -68,13 +64,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     public function __construct($auth_key, $secret, $app_id, $options = array(), $host = null, $port = null, $timeout = null)
     {
         $this->check_compatibility();
-
-        /* Start backward compatibility with old constructor **/
-        if (is_bool($options) === true) {
-            $options = array(
-                'debug' => $options,
-            );
-        }
 
         if (!is_null($host)) {
             $match = null;

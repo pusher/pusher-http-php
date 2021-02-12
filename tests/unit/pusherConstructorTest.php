@@ -2,20 +2,12 @@
 
 class pusherConstructorTest extends PHPUnit\Framework\TestCase
 {
-    public function testDebugCanBeSetViaLegacyParameter()
-    {
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', true);
-
-        $settings = $pusher->getSettings();
-        $this->assertEquals(true, $settings['debug']);
-    }
-
     public function testHostAndSchemeCanBeSetViaLegacyParameter()
     {
         $scheme = 'http';
         $host = 'test.com';
         $legacy_host = "$scheme://$host";
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', false, $legacy_host);
+        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', array(), $legacy_host);
 
         $settings = $pusher->getSettings();
         $this->assertEquals($scheme, $settings['scheme']);
@@ -25,7 +17,7 @@ class pusherConstructorTest extends PHPUnit\Framework\TestCase
     public function testLegacyHostParamWithNoSchemeCanBeUsedResultsInHostBeingUsedWithDefaultScheme()
     {
         $host = 'test.com';
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', false, $host);
+        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', array(), $host);
 
         $settings = $pusher->getSettings();
         $this->assertEquals($host, $settings['host']);
@@ -35,7 +27,7 @@ class pusherConstructorTest extends PHPUnit\Framework\TestCase
     {
         $host = 'https://test.com';
         $port = 90;
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', false, $host, $port);
+        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', array(), $host, $port);
 
         $settings = $pusher->getSettings();
         $this->assertEquals('https', $settings['scheme']);
@@ -45,7 +37,7 @@ class pusherConstructorTest extends PHPUnit\Framework\TestCase
     {
         $host = 'https://test.com';
         $port = 90;
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', false, $host, $port);
+        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', array(), $host, $port);
 
         $settings = $pusher->getSettings();
         $this->assertEquals($port, $settings['port']);
@@ -56,7 +48,7 @@ class pusherConstructorTest extends PHPUnit\Framework\TestCase
         $host = 'http://test.com';
         $port = 90;
         $timeout = 90;
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', false, $host, $port, $timeout);
+        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', array(), $host, $port, $timeout);
 
         $settings = $pusher->getSettings();
         $this->assertEquals($timeout, $settings['timeout']);

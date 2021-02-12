@@ -4,7 +4,7 @@ class PusherTriggerUnitTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
-        $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1, true);
+        $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1);
         $this->eventName = 'test_event';
         $this->data = array();
     }
