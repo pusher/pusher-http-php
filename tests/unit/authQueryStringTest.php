@@ -15,8 +15,8 @@ class PusherAuthQueryString extends PHPUnit\Framework\TestCase
         $actual = Pusher\Pusher::array_implode('=', '&', $val);
 
         $this->assertEquals(
-            $actual,
             $expected,
+            $actual,
             'auth signature valid'
         );
     }
@@ -29,8 +29,8 @@ class PusherAuthQueryString extends PHPUnit\Framework\TestCase
         $actual = Pusher\Pusher::array_implode('=', '&', $val);
 
         $this->assertEquals(
-            $actual,
             $expected,
+            $actual,
             'auth signature valid'
         );
     }
@@ -61,8 +61,8 @@ class PusherAuthQueryString extends PHPUnit\Framework\TestCase
         $expected_query_string = "auth_key=$auth_key&auth_signature=$expected_auth_signature&auth_timestamp=$time&auth_version=$auth_version&name=an_event";
 
         $this->assertEquals(
-            $auth_query_string,
             $expected_query_string,
+            $auth_query_string,
             'auth signature valid'
         );
     }
