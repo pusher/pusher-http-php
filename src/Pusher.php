@@ -593,13 +593,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             throw new ApiErrorException($response['body'], $response['status']);
         }
 
-        $result = json_decode($response['body']);
-
-        if ($result->channels) {
-            $result->channels = get_object_vars($result->channels);
-        }
-
-        return $result;
+        return json_decode($response['body']);
     }
 
     /**

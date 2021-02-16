@@ -91,10 +91,10 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $expectedPresenceMyChannel->user_count = 0;
         $expectedPresenceMyChannel->subscription_count = 0;
         $expectedResult = new stdClass();
-        $expectedResult->channels = array(
-            'my-channel' => $expectedMyChannel,
-            'my-channel-2' => $expectedMyChannel2,
-            'presence-my-channel' => $expectedPresenceMyChannel
+        $expectedResult->batch = array(
+            $expectedMyChannel,
+            $expectedMyChannel2,
+            $expectedPresenceMyChannel
         );
 
         $batch = array();

@@ -210,11 +210,20 @@ $subscription_count = $result->channels['my-channel']->subscription_count;
 
 ```php
 $batch = array();
-$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'), 'info' => array('info' => 'subscription_count'));
-$batch[] = array('channel' => 'presence-my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'), 'info' => array('info' => 'user_count,subscription_count'));
-$channels = $pusher->triggerBatch($batch);
-$subscription_count = count($result->channels['my-channel']->subscription_count);
-$user_count = count($result->channels['presence-my-channel']->user_count);
+$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'), 'info' => 'subscription_count');
+$batch[] = array('channel' => 'presence-my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'), 'info' => 'user_count,subscription_count');
+$result = $pusher->triggerBatch($batch);
+
+foreach ($result->batch as $i => $attributes) {
+  echo "channel: {$batch[$i]['channel']}, name: {$batch[$i]['name']}";
+  if (isset($attributes->subscription_count)) {
+    echo ", subscription_count: {$attributes->subscription_count}";
+  }
+  if (isset($attributes->user_count)) {
+    echo ", user_count: {$attributes->user_count}";
+  }
+  echo PHP_EOL;
+}
 ```
 
 ### JSON format
