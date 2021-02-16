@@ -462,7 +462,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param array|string $channels        A channel name or an array of channel names to publish the event on.
      * @param string       $event
      * @param mixed        $data            Event data
-     * @param array        $params       [optional]
+     * @param array        $params          [optional]
      * @param bool         $already_encoded [optional]
      *
      * @throws PusherException   Throws PusherException if $channels is an array of size 101 or above or $socket_id is invalid
