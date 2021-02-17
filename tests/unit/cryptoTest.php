@@ -18,10 +18,10 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
 
     public function testValidMasterEncryptionKeys()
     {
-        $this->assertEquals(Pusher\PusherCrypto::parse_master_key('this is 32 bytes 123456789012345', ''), 'this is 32 bytes 123456789012345');
-        $this->assertEquals(Pusher\PusherCrypto::parse_master_key("this key has nonprintable char \x00", ''), "this key has nonprintable char \x00");
-        $this->assertEquals(Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMiBieXRlcyAxMjM0NTY3ODkwMTIzNDU='), 'this is 32 bytes 123456789012345');
-        $this->assertEquals(Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBrZXkgaGFzIG5vbnByaW50YWJsZSBjaGFyIAA='), "this key has nonprintable char \x00");
+        $this->assertEquals('this is 32 bytes 123456789012345', Pusher\PusherCrypto::parse_master_key('this is 32 bytes 123456789012345', ''));
+        $this->assertEquals("this key has nonprintable char \x00", Pusher\PusherCrypto::parse_master_key("this key has nonprintable char \x00", ''));
+        $this->assertEquals('this is 32 bytes 123456789012345', Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMiBieXRlcyAxMjM0NTY3ODkwMTIzNDU='));
+        $this->assertEquals("this key has nonprintable char \x00", Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBrZXkgaGFzIG5vbnByaW50YWJsZSBjaGFyIAA='));
     }
 
     public function testInvalidMasterEncryptionKeyTwoProvided()
@@ -76,14 +76,14 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
     {
         $expected = 'Rp+wpkNpL89qhqco1JkIG31AVXyU8PUVJBr1B2MvdoA=';
         // Check that the secret generation is generating consistent secrets
-        $this->assertEquals(base64_encode($this->crypto->generate_shared_secret('private-encrypted-channel-a')), $expected);
+        $this->assertEquals($expected, base64_encode($this->crypto->generate_shared_secret('private-encrypted-channel-a')));
 
         // Check that the secret generation is using the channel as a part of the generation
-        $this->assertNotEquals(base64_encode($this->crypto->generate_shared_secret('private-encrypted-channel-b')), $expected);
+        $this->assertNotEquals($expected, base64_encode($this->crypto->generate_shared_secret('private-encrypted-channel-b')));
 
         // Check that specifying a different key results in a different result
         $crypto2 = new Pusher\PusherCrypto('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
-        $this->assertNotEquals(base64_encode($crypto2->generate_shared_secret('private-encrypted-channel-a')), $expected);
+        $this->assertNotEquals($expected, base64_encode($crypto2->generate_shared_secret('private-encrypted-channel-a')));
     }
 
     public function testGenerateSharedSecretNoChannel()
@@ -95,9 +95,9 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
 
     public function testIsEncryptedChannel()
     {
-        $this->assertEquals(Pusher\PusherCrypto::is_encrypted_channel('private-encrypted-test'), true);
-        $this->assertEquals(Pusher\PusherCrypto::is_encrypted_channel('private-encrypted'), false);
-        $this->assertEquals(Pusher\PusherCrypto::is_encrypted_channel('test-private-encrypted'), false);
+        $this->assertEquals(true, Pusher\PusherCrypto::is_encrypted_channel('private-encrypted-test'));
+        $this->assertEquals(false, Pusher\PusherCrypto::is_encrypted_channel('private-encrypted'));
+        $this->assertEquals(false, Pusher\PusherCrypto::is_encrypted_channel('test-private-encrypted'));
     }
 
     public function testEncryptDecryptEventValid()
@@ -113,7 +113,7 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $event->channel = $channel;
         $decrypted_event = $this->crypto->decrypt_event($event);
         $decrypted_payload = $decrypted_event->data;
-        $this->assertEquals($decrypted_payload, $payload);
+        $this->assertEquals($payload, $decrypted_payload);
     }
 
     public function testEncryptPayloadNoChannel()
@@ -123,7 +123,7 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $channel = '';
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);
-        $this->assertEquals($encrypted_payload, false);
+        $this->assertEquals(false, $encrypted_payload);
     }
 
     public function testEncryptPayloadPublicChannel()
@@ -133,7 +133,7 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $channel = 'public-static-void-main';
         $payload = "now that's what I call a payload!";
         $encrypted_payload = $this->crypto->encrypt_payload($channel, $payload);
-        $this->assertEquals($encrypted_payload, false);
+        $this->assertEquals(false, $encrypted_payload);
     }
 
     public function testDecryptPayloadWrongKey()
@@ -151,6 +151,6 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
 
         $crypto2 = new Pusher\PusherCrypto('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
         $decrypted_event = $crypto2->decrypt_event($event);
-        $this->assertEquals($decrypted_event, false);
+        $this->assertEquals(false, $decrypted_event);
     }
 }

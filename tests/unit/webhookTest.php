@@ -18,7 +18,7 @@ class webhookTest extends PHPUnit\Framework\TestCase
         );
 
         $this->pusher->ensure_valid_signature($headers, $body);
-        
+
         $this->assertTrue(true);
     }
 
@@ -42,7 +42,7 @@ class webhookTest extends PHPUnit\Framework\TestCase
         $headers = json_decode($headers_json, true);
 
         $decodedWebhook = $this->pusher->webhook($headers, $body);
-        $this->assertEquals($decodedWebhook->get_time_ms(), 1530710011901);
-        $this->assertEquals(count($decodedWebhook->get_events()), 1);
+        $this->assertEquals(1530710011901, $decodedWebhook->get_time_ms());
+        $this->assertEquals(1, count($decodedWebhook->get_events()));
     }
 }

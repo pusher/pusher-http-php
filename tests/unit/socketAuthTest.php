@@ -16,8 +16,8 @@ class PusherSocketAuthTest extends PHPUnit\Framework\TestCase
     {
         $socket_auth = $this->pusher->socket_auth('testing_pusher-php', '1.1');
         $this->assertEquals(
-            $socket_auth,
             '{"auth":"thisisaauthkey:751ccc12aeaa79d46f7c199bced5fa47527d3480b51fe61a0bd10438241bd52d"}',
+            $socket_auth,
             'Socket auth key valid'
         );
     }
@@ -26,8 +26,8 @@ class PusherSocketAuthTest extends PHPUnit\Framework\TestCase
     {
         $socket_auth = $this->pusher->socket_auth('-azAZ9_=@,.;', '45055.28877557');
         $this->assertEquals(
-            $socket_auth,
             '{"auth":"thisisaauthkey:d1c20ad7684c172271f92c108e11b45aef07499b005796ae1ec5beb924f361c4"}',
+            $socket_auth,
             'Socket auth key valid'
         );
     }
