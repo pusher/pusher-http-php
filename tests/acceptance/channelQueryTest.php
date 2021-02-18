@@ -4,17 +4,17 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
-        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, true, PUSHERAPP_HOST);
+        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, array(), PUSHERAPP_HOST);
         $this->pusher->setLogger(new TestLogger());
     }
 
     public function testChannelInfo()
     {
-        $response = $this->pusher->get_channel_info('channel-test');
+        $result = $this->pusher->get_channel_info('channel-test');
 
-        //print_r( $response );
+        //print_r( $result );
 
-        $this->assertObjectHasAttribute('occupied', $response, 'class has occupied attribute');
+        $this->assertObjectHasAttribute('occupied', $result, 'class has occupied attribute');
     }
 
     public function testChannelList()
@@ -69,31 +69,27 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
 
     public function testUsersInfo()
     {
-        $response = $this->pusher->get_users_info('presence-channel-test');
+        $result = $this->pusher->get_users_info('presence-channel-test');
 
-        // print_r( $response );
+        // print_r( $result );
 
-        $this->assertObjectHasAttribute('users', $response, 'class has users attribute');
+        $this->assertObjectHasAttribute('users', $result, 'class has users attribute');
     }
 
     public function testProvidingInfoParameterWithPrefixQueryFailsForPublicChannel()
     {
+        $this->expectException(\Pusher\ApiErrorException::class);
+
         $options = array(
             'filter_by_prefix' => 'test_',
             'info'             => 'user_count',
         );
         $result = $this->pusher->get_channels($options);
-
-        $this->assertFalse($result, 'query should fail');
     }
 
     public function testChannelListUsingGenericGet()
     {
-        $response = $this->pusher->get('/channels');
-
-        $this->assertEquals(200, $response['status']);
-
-        $result = $response['result'];
+        $result = $this->pusher->get('/channels', array(), true);
 
         $channels = $result['channels'];
 
@@ -106,11 +102,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
 
     public function testChannelListUsingGenericGetAndPrefixParam()
     {
-        $response = $this->pusher->get('/channels', array('filter_by_prefix' => 'my-'));
-
-        $this->assertEquals(200, $response['status']);
-
-        $result = $response['result'];
+        $result = $this->pusher->get('/channels', array('filter_by_prefix' => 'my-'), true);
 
         $channels = $result['channels'];
 
@@ -123,12 +115,8 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
 
     public function testSingleChannelInfoUsingGenericGet()
     {
-        $response = $this->pusher->get('/channels/channel-test');
+        $result = $this->pusher->get('/channels/channel-test');
 
-        $this->assertEquals(200, $response['status']);
-
-        $result = $response['result'];
-
-        $this->assertArrayHasKey('occupied', $result, 'class has occupied attribute');
+        $this->assertObjectHasAttribute('occupied', $result, 'class has occupied attribute');
     }
 }

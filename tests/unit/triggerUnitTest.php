@@ -4,7 +4,7 @@ class PusherTriggerUnitTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
-        $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1, true);
+        $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1);
         $this->eventName = 'test_event';
         $this->data = array();
     }
@@ -70,14 +70,6 @@ class PusherTriggerUnitTest extends PHPUnit\Framework\TestCase
         $this->expectException(\Pusher\PusherException::class);
 
         $this->pusher->trigger('test_channel:', $this->eventName, $this->data, '1.1\n:');
-    }
-
-    public function testNullSocketID()
-    {
-        // Check this does not throw an exception
-        $this->pusher->trigger('test_channel', $this->eventName, $this->data, null);
-
-        $this->assertTrue(true);
     }
 
     public function testFalseSocketIDThrowsException()

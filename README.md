@@ -64,9 +64,6 @@ The fourth parameter is an `$options` array. The additional options are:
 * `encryption_master_key` - a 32 char long key. This key, along with the
   channel name, are used to derive per-channel encryption keys. Per-channel
   keys are used encrypt event data on encrypted channels.
-* `debug` - (default `false`) if `true`, every `trigger()` and `triggerBatch()`
-  call will return a `$response` object (e.g.): `Array ([body] => {} [status]
-  => 200)`
 
 For example, by default calls will be made over a non-TLS connection. To change
 this to make calls over HTTPS use:
@@ -99,8 +96,7 @@ maintained.
 
 ## Logging configuration
 
-It is strongly recommended that you configure a logger.  By default errors are
-easy to miss because the library will only return `false` if anything fails.
+It is strongly recommended that you configure a logger.
 
 ### PSR-3 Support
 
@@ -200,7 +196,7 @@ If your data is already encoded in JSON format, you can avoid a second encoding
 step by setting the sixth argument true, like so:
 
 ```php
-$pusher->trigger('my-channel', 'event', 'data', null, false, true)
+$pusher->trigger('my-channel', 'event', 'data', null, true)
 ```
 
 ## Authenticating Private channels

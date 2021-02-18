@@ -9,7 +9,7 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET and
             PUSHERAPP_APPID keys.');
         } else {
-            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, false, PUSHERAPP_HOST);
+            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, array(), PUSHERAPP_HOST);
             $this->pusher->setLogger(new TestLogger());
         }
     }
@@ -23,8 +23,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
     {
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => array('my' => 'data'));
-        $string_trigger = $this->pusher->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Trigger with string payload');
+        $result = $this->pusher->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testTLSPush()
@@ -38,8 +38,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
 
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => array('my' => 'data'));
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Trigger with string payload');
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testTriggerBatchNonEncryptedEventsWithObjectPayloads()
@@ -54,8 +54,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => array('my' => 'data'));
         $batch[] = array('channel' => 'mio_canale', 'name' => 'my_event2', 'data' => array('my' => 'data2'));
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testTriggerBatchWithSingleEvent()
@@ -69,8 +69,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
 
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testTriggerBatchWithMultipleNonEncryptedEventsWithStringPayloads()
@@ -85,8 +85,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
         $batch[] = array('channel' => 'test_channel2', 'name' => 'my_event2', 'data' => 'test-string2');
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testTriggerBatchWithMultipleCombinationsofStringAndObjectPayloads()
@@ -101,8 +101,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
         $batch[] = array('channel' => 'test_channel2', 'name' => 'my_event2', 'data' => array('my' => 'data2'));
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testTriggerBatchWithWithEncryptedEventSuccess()
@@ -117,8 +117,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
 
         $batch = array();
         $batch[] = array('channel' => 'private-encrypted-test_channel', 'name' => 'my_event', 'data' => 'test-string');
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testTriggerBatchWithMultipleEncryptedEventsSuccess()
@@ -134,8 +134,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
         $batch[] = array('channel' => 'private-encrypted-test_channel2', 'name' => 'my_event2', 'data' => 'test-string2');
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testTriggerBatchWithMultipleCombinationsofStringsAndObjectsWithEncryptedEventSuccess()
@@ -151,8 +151,8 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
         $batch[] = array('channel' => 'private-encrypted-test_channel2', 'name' => 'my_event2', 'data' => array('my' => 'data2'));
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testTriggerBatchMultipleEventsWithEncryptedEventWithoutEncryptionMasterKeyError()
@@ -185,28 +185,32 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $batch = array();
         $batch[] = array('channel' => 'my_test_chan', 'name' => 'my_event', 'data' => array('my' => 'data'));
         $batch[] = array('channel' => 'private-encrypted-ceppaio', 'name' => 'my_private_encrypted_event', 'data' => array('my' => 'to_be_encrypted_data_shhhht'));
-        $string_trigger = $pc->triggerBatch($batch);
-        $this->assertTrue($string_trigger, 'Failed to triggerBatch Multiple Events');
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals(new stdClass(), $result);
     }
 
     public function testSendingOver10kBMessageReturns413()
     {
+        $this->expectException(\Pusher\ApiErrorException::class);
+        $this->expectExceptionMessage('content of this event');
+        $this->expectExceptionCode('413');
+
         $data = str_pad('', 11 * 1024, 'a');
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => $data);
-        $response = $this->pusher->triggerBatch($batch, true, true);
-        $this->assertContains('content of this event', $response['body']);
-        $this->assertEquals(413, $response['status'], '413 HTTP status response expected');
+        $this->pusher->triggerBatch($batch, true, true);
     }
 
     public function testSendingOver10messagesReturns400()
     {
+        $this->expectException(\Pusher\ApiErrorException::class);
+        $this->expectExceptionMessage('Batch too large');
+        $this->expectExceptionCode('400');
+
         $batch = array();
         foreach (range(1, 11) as $i) {
             $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => array('index' => $i));
         }
-        $response = $this->pusher->triggerBatch($batch, true, false);
-        $this->assertContains('Batch too large', $response['body']);
-        $this->assertEquals(400, $response['status'], '400 HTTP status response expected');
+        $this->pusher->triggerBatch($batch, true, false);
     }
 }
