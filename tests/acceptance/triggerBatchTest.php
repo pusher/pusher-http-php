@@ -73,6 +73,38 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(new stdClass(), $result);
     }
 
+    public function testTriggerBatchWithInfo()
+    {
+        $this->markTestIncomplete('Pending support in Channels server');
+
+        $options = array(
+            'useTLS' => true,
+            'host'   => PUSHERAPP_HOST,
+        );
+        $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
+        $pc->setLogger(new TestLogger());
+
+        $expectedMyChannel = new stdClass();
+        $expectedMyChannel->subscription_count = 1;
+        $expectedMyChannel2 = new stdClass();
+        $expectedPresenceMyChannel = new stdClass();
+        $expectedPresenceMyChannel->user_count = 0;
+        $expectedPresenceMyChannel->subscription_count = 0;
+        $expectedResult = new stdClass();
+        $expectedResult->batch = array(
+            $expectedMyChannel,
+            $expectedMyChannel2,
+            $expectedPresenceMyChannel
+        );
+
+        $batch = array();
+        $batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => 'test-string', array('info' => 'subscription_count'));
+        $batch[] = array('channel' => 'my-channel-2', 'name' => 'my_event', 'data' => 'test-string');
+        $batch[] = array('channel' => 'presence-my-channel', 'name' => 'my_event', 'data' => 'test-string', array('info' => 'user_count,subscription_count'));
+        $result = $pc->triggerBatch($batch);
+        $this->assertEquals($expectedResult, $result);
+    }
+
     public function testTriggerBatchWithMultipleNonEncryptedEventsWithStringPayloads()
     {
         $options = array(
@@ -198,7 +230,7 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         $data = str_pad('', 11 * 1024, 'a');
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => $data);
-        $this->pusher->triggerBatch($batch, true, true);
+        $this->pusher->triggerBatch($batch, true);
     }
 
     public function testSendingOver10messagesReturns400()
@@ -211,6 +243,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         foreach (range(1, 11) as $i) {
             $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => array('index' => $i));
         }
-        $this->pusher->triggerBatch($batch, true, false);
+        $this->pusher->triggerBatch($batch, false);
     }
 }

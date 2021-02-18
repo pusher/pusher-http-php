@@ -31,6 +31,31 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(new stdClass(), $result);
     }
 
+    public function testPushWithSocketId()
+    {
+        $result = $this->pusher->trigger('test_channel', 'my_event', array('test' => 1), array('socket_id' => '123.456'));
+        $this->assertEquals(new stdClass(), $result);
+    }
+
+    public function testPushWithInfo()
+    {
+        $this->markTestIncomplete('Pending support in Channels server');
+        $expectedMyChannel = new stdClass();
+        $expectedMyChannel->user_count = 0;
+        $expectedMyChannel->subscription_count = 1;
+        $expectedPresenceMyChannel = new stdClass();
+        $expectedPresenceMyChannel->user_count = 0;
+        $expectedPresenceMyChannel->subscription_count = 0;
+        $expectedResult = new stdClass();
+        $expectedResult->channels = array(
+            "my-channel" => $expectedMyChannel,
+            "presence-my-channel" => $expectedPresenceMyChannel,
+        );
+
+        $result = $this->pusher->trigger(['my-channel', 'presence-my-channel'], 'my_event', array('test' => 1), array('info' => 'user_count,subscription_count'));
+        $this->assertEquals($expectedResult, $result);
+    }
+
     public function testTLSPush()
     {
         $options = array(
@@ -51,7 +76,7 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
 
         $data = str_pad('', 11 * 1024, 'a');
         echo  'sending data of size: '.mb_strlen($data, '8bit');
-        $this->pusher->trigger('test_channel', 'my_event', $data, null, true);
+        $this->pusher->trigger('test_channel', 'my_event', $data, array(), true);
     }
 
     public function testTriggeringEventOnOver100ChannelsThrowsException()

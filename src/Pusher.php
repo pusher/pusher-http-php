@@ -462,7 +462,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param array|string $channels        A channel name or an array of channel names to publish the event on.
      * @param string       $event
      * @param mixed        $data            Event data
-     * @param string|null  $socket_id       [optional]
+     * @param array        $params          [optional]
      * @param bool         $already_encoded [optional]
      *
      * @throws PusherException   Throws PusherException if $channels is an array of size 101 or above or $socket_id is invalid
@@ -470,14 +470,16 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @return object
      */
-    public function trigger($channels, $event, $data, $socket_id = null, $already_encoded = false)
+    public function trigger($channels, $event, $data, $params = array(), $already_encoded = false)
     {
         if (is_string($channels) === true) {
             $channels = array($channels);
         }
 
         $this->validate_channels($channels);
-        $this->validate_socket_id($socket_id);
+        if (isset($params['socket_id'])) {
+            $this->validate_socket_id($params['socket_id']);
+        }
 
         $has_encrypted_channel = false;
         foreach ($channels as $chan) {
@@ -513,11 +515,9 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         $post_params['data'] = $data_encoded;
         $post_params['channels'] = array_values($channels);
 
-        if ($socket_id !== null) {
-            $post_params['socket_id'] = $socket_id;
-        }
+        $all_params = array_merge($post_params, $params);
 
-        $post_value = json_encode($post_params);
+        $post_value = json_encode($all_params);
 
         $query_params['body_md5'] = md5($post_value);
 
@@ -533,7 +533,13 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             throw new ApiErrorException($response['body'], $response['status']);
         }
 
-        return json_decode($response['body']);
+        $result = json_decode($response['body']);
+
+        if ($result->channels) {
+            $result->channels = get_object_vars($result->channels);
+        }
+
+        return $result;
     }
 
     /**
