@@ -75,8 +75,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
 
     public function testTriggerBatchWithInfo()
     {
-        $this->markTestIncomplete('Pending support in Channels server');
-
         $options = array(
             'useTLS' => true,
             'host'   => PUSHERAPP_HOST,
@@ -98,9 +96,9 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
         );
 
         $batch = array();
-        $batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => 'test-string', array('info' => 'subscription_count'));
+        $batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => 'test-string', 'info' => 'subscription_count');
         $batch[] = array('channel' => 'my-channel-2', 'name' => 'my_event', 'data' => 'test-string');
-        $batch[] = array('channel' => 'presence-my-channel', 'name' => 'my_event', 'data' => 'test-string', array('info' => 'user_count,subscription_count'));
+        $batch[] = array('channel' => 'presence-my-channel', 'name' => 'my_event', 'data' => 'test-string', 'info' => 'user_count,subscription_count');
         $result = $pc->triggerBatch($batch);
         $this->assertEquals($expectedResult, $result);
     }

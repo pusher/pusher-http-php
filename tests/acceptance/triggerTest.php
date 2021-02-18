@@ -39,9 +39,7 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
 
     public function testPushWithInfo()
     {
-        $this->markTestIncomplete('Pending support in Channels server');
         $expectedMyChannel = new stdClass();
-        $expectedMyChannel->user_count = 0;
         $expectedMyChannel->subscription_count = 1;
         $expectedPresenceMyChannel = new stdClass();
         $expectedPresenceMyChannel->user_count = 0;
