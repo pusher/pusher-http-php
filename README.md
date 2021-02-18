@@ -197,7 +197,7 @@ $batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => arra
 $pusher->triggerBatch($batch);
 ```
 
-### Fetch channel info on publish
+### Fetch channel info on publish [[EXPERIMENTAL](https://pusher.com/docs/lab#experimental-program)]
 
 It is possible to request for attributes about the channels that were
 published to with the `info` param
