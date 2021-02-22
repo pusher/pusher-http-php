@@ -1,3 +1,7 @@
+## 5.0.1 (2021-02-22)
+
+[FIXED] Notice raised due to reference to potentially missing object property in `trigger` method
+
 ## 5.0.0 (2021-02-19)
 
 [CHANGED] The methods that make HTTP requests now throw an `ApiErrorException` instead of returning `false` for non-2xx responses
