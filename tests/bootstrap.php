@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(E_ALL);
+
 $dir = dirname(__FILE__);
 $config_path = $dir.'/config.php';
 if (file_exists($config_path) === true) {
