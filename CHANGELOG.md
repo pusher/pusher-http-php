@@ -1,9 +1,13 @@
 ## 5.0.0 (2021-02-19)
 
 [CHANGED] The methods that make HTTP requests now throw an `ApiErrorException` instead of returning `false` for non-2xx responses
+
 [CHANGED] `trigger` now accepts a `$params` associative array instead of a `$socket_id` as the third parameter
+
 [ADDED] Support for requesting channel attributes as part of a `trigger` and `triggerBatch` request via an `info` parameter
+
 [REMOVED] `debug` parameter from methods that make HTTP requests and from the constructor options
+
 [REMOVED] Support for legacy push notifications (this has been superseded by https://github.com/pusher/push-notifications-php)
 
 ## 4.1.5 (2020-12-08)
@@ -21,6 +25,7 @@ No functional change, previous release was only partially successful
 ## 4.1.2 (2020-04-01)
 
 [ADDED] option `encryption_master_key_base64`
+
 [DEPRECATED] option `encryption_master_key`
 
 ## 4.1.1 (2019-12-03)
@@ -50,6 +55,7 @@ No functional change, previous release was only partially successful
 ## 3.3.0 (2019-01-03)
 
 [ADDED] Support for End-to-end encrypted channels for triggerbatch
+
 [FIXED] trigger behavior with mixtures of encrypted and non-encrypted channels
 
 ## 3.2.0 (2018-08-13)
