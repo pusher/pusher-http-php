@@ -12,8 +12,6 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
     {
         $result = $this->pusher->get_channel_info('channel-test');
 
-        //print_r( $result );
-
         $this->assertObjectHasAttribute('occupied', $result, 'class has occupied attribute');
     }
 
@@ -21,8 +19,6 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
     {
         $result = $this->pusher->get_channels();
         $channels = $result->channels;
-
-        // print_r( $channels );
 
         foreach ($channels as $channel_name => $channel_info) {
             echo  "channel_name: $channel_name\n";
@@ -41,11 +37,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
         );
         $result = $this->pusher->get_channels($options);
 
-        // print_r( $result );
-
         $channels = $result->channels;
-
-        // print_r( $channels );
 
         $this->assertTrue(is_array($channels), 'channels is an array');
         $this->assertEquals(0, count($channels), 'should be an empty array');
@@ -58,11 +50,7 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
         );
         $result = $this->pusher->get_channels($options);
 
-        // print_r( $result );
-
         $channels = $result->channels;
-
-        // print_r( $channels );
 
         $this->assertEquals(1, count($channels), 'channels have a single test-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
     }
@@ -70,8 +58,6 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
     public function testUsersInfo()
     {
         $result = $this->pusher->get_users_info('presence-channel-test');
-
-        // print_r( $result );
 
         $this->assertObjectHasAttribute('users', $result, 'class has users attribute');
     }
