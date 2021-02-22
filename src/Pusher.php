@@ -535,7 +535,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
         $result = json_decode($response['body']);
 
-        if (property_exists($result, 'channels') === true) {
+        if (property_exists($result, 'channels')) {
             $result->channels = get_object_vars($result->channels);
         }
 
