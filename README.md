@@ -182,9 +182,9 @@ The output of this will be:
 
 ### Socket id
 
-In order to avoid duplicates you can optionally specify the sender's socket id
-while triggering an event
-([https://pusher.com/docs/duplicates](https://pusher.com/docs/channels/server_api/excluding-event-recipients)):
+In order to avoid duplicates you can optionally [specify the sender's
+socket id](https://pusher.com/docs/channels/server_api/excluding-event-recipients)
+while triggering an event:
 
 ```php
 $pusher->trigger('my-channel', 'event', 'data', array('socket_id' => $socket_id));
@@ -200,8 +200,8 @@ $pusher->triggerBatch($batch);
 ### Fetch channel info on publish [[EXPERIMENTAL](https://pusher.com/docs/lab#experimental-program)]
 
 It is possible to request for attributes about the channels that were
-published to with the `info` param
-([https://pusher.com/docs/duplicates](https://pusher.com/docs/channels/library_auth_reference/rest-api#request)):
+published to with the
+[`info` param](https://pusher.com/docs/channels/library_auth_reference/rest-api#request):
 
 ```php
 $result = $pusher->trigger('my-channel', 'my_event', 'hello world', array('info' => 'subscription_count'));
