@@ -268,7 +268,7 @@ $number_of_events = count($webhook->get_events());
 $time_recieved = $webhook->get_time_ms();
 ```
 
-## End to end encryption (beta)
+## End to end encryption
 
 This library supports end to end encryption of your private channels. This
 means that only you and your connected clients will be able to read your
