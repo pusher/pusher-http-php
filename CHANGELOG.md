@@ -1,196 +1,178 @@
-## 5.0.1 (2021-02-22)
+# Changelog
 
-[FIXED] Notice raised due to reference to potentially missing object property in `trigger` method
+## 5.0.1
 
-## 5.0.0 (2021-02-19)
+* [FIXED] Notice raised due to reference to potentially missing object property in `trigger` method
 
-[CHANGED] The methods that make HTTP requests now throw an `ApiErrorException` instead of returning `false` for non-2xx responses
+## 5.0.0
 
-[CHANGED] `trigger` now accepts a `$params` associative array instead of a `$socket_id` as the third parameter
+* [CHANGED] The methods that make HTTP requests now throw an `ApiErrorException` instead of returning `false` for non-2xx responses
+* [CHANGED] `trigger` now accepts a `$params` associative array instead of a `$socket_id` as the third parameter
+* [ADDED] Support for requesting channel attributes as part of a `trigger` and `triggerBatch` request via an `info` parameter
+* [REMOVED] `debug` parameter from methods that make HTTP requests and from the constructor options
+* [REMOVED] Support for legacy push notifications (this has been superseded by https://github.com/pusher/push-notifications-php)
 
-[ADDED] Support for requesting channel attributes as part of a `trigger` and `triggerBatch` request via an `info` parameter
+## 4.1.5
 
-[REMOVED] `debug` parameter from methods that make HTTP requests and from the constructor options
+* [ADDED] Support for PHP 8.
 
-[REMOVED] Support for legacy push notifications (this has been superseded by https://github.com/pusher/push-notifications-php)
+## 4.1.4
 
-## 4.1.5 (2020-12-08)
+* [FIXED] Errors in the failure path of `get_...` methods revealed by stricter type checking in PHP7.4
 
-[ADDED] Support for PHP 8.
+## 4.1.3
 
-## 4.1.4 (2020-04-14)
+* No functional change, previous release was only partially successful
 
-[FIXED] Errors in the failure path of `get_...` methods revealed by stricter type checking in PHP7.4
+## 4.1.2
 
-## 4.1.3 (2020-04-01)
+* [ADDED] option `encryption_master_key_base64`
+* [DEPRECATED] option `encryption_master_key`
 
-No functional change, previous release was only partially successful
+## 4.1.1
 
-## 4.1.2 (2020-04-01)
+* [ADDED] Support for PHP 7.4.
 
-[ADDED] option `encryption_master_key_base64`
+## 4.1.0
 
-[DEPRECATED] option `encryption_master_key`
+* [ADDED] `path` configuration option.
 
-## 4.1.1 (2019-12-03)
+## 4.0.0
 
-[ADDED] Support for PHP 7.4.
+* [REMOVED] Support for PHP 5.x, PHP 7.0 and HHVM.
 
-## 4.1.0 (2019-10-28)
+## 3.4.1
 
-[ADDED] `path` configuration option.
+* [ADDED] Support for PHP 7.3.
 
-## 4.0.0 (2019-06-17)
+## 3.4.0
 
-[REMOVED] Support for PHP 5.x, PHP 7.0 and HHVM.
+* [ADDED] `get_users_info` method.
 
-## 3.4.1 (2019-03-18)
+## 3.3.1
 
-[ADDED] Support for PHP 7.3.
+* [FIXED] PHP Notice for Undefined `socket_id` in triggerBatch
 
-## 3.4.0 (2019-03-11)
+## 3.3.0
 
-[ADDED] `get_users_info` method.
+* [ADDED] Support for End-to-end encrypted channels for triggerbatch
+* [FIXED] trigger behavior with mixtures of encrypted and non-encrypted channels
 
-## 3.3.1 (2019-01-18)
+## 3.2.0
 
-[FIXED] PHP Notice for Undefined `socket_id` in triggerBatch
+* [ADDED] This release adds support for end to end encrypted channels, a new feature for Channels. Read more [in our docs](https://pusher.com/docs/client_api_guide/client_encrypted_channels).
+* [DEPRECATED] Renamed `encrypted` option to `useTLS` - `encrypted` will still work!
 
-## 3.3.0 (2019-01-03)
+## 3.1.0
 
-[ADDED] Support for End-to-end encrypted channels for triggerbatch
+* [ADDED] This release adds Webhook validation as well as a data structure to store Webhook payloads.
 
-[FIXED] trigger behavior with mixtures of encrypted and non-encrypted channels
+## 3.0.4
 
-## 3.2.0 (2018-08-13)
+* [FIXED] Non zero indexed arrays of channels no longer get serialized as an object.
 
-[ADDED] This release adds support for end to end encrypted channels, a new feature for Channels. Read more [in our docs](https://pusher.com/docs/client_api_guide/client_encrypted_channels).
+## 3.0.3
 
-[DEPRECATED] Renamed `encrypted` option to `useTLS` - `encrypted` will still work!
+* [ADDED] PSR-3 logger compatibility.
+* [CHANGED] Improved PHP docs.
 
-## 3.1.0 (2018-08-13)
+## 3.0.2
 
-[ADDED] This release adds Webhook validation as well as a data structure to store Webhook payloads.
+* [FIXED] Insufficient check for un-initialized curl resource.
+* [FIXED] Acceptance tests.
 
+## 3.0.1
 
-## 3.0.4 (2018-05-21)
+* [CHANGED] Info messages are now prefixed with INFO and errors are now prefixed with ERROR.
 
-[FIXED] Non zero indexed arrays of channels no longer get serialized as an object.
+## 3.0.0
 
-## 3.0.3 (2018-04-26)
+* [NEW] Added namespaces (thanks [@vinkla](https://github.com/vinkla)).
 
-[ADDED] PSR-3 logger compatibility.
+## 2.6.4
 
-[CHANGED] Improved PHP docs.
+* [FIXED] Log the curl error in more circumstances
 
-## 3.0.2 (2018-04-23)
+## 2.6.1
 
-[FIXED] Insufficient check for un-initialized curl resource.
+* [FIXED] Check for correct status code when POSTing to native push notifications API.
 
-[FIXED] Acceptance tests.
+## 2.6.0
 
-## 3.0.1 (2017-10-20)
+* [ADDED] support for publishing push notifications on up to 10 interests.
 
-[CHANGED] Info messages are now prefixed with INFO and errors are now prefixed with ERROR.
+## 2.5.0
 
-## 3.0.0 (2017-07-10)
+* [REMOVED] Native push notifications payload validation in the client.
 
-[NEW] Added namespaces (thanks [@vinkla](https://github.com/vinkla)).
+## 2.5.0-rc2
 
-## 2.6.4 (2017-06-11)
+* [FIXED] DDN and Native Push endpoints were not assembled correctly.
 
-[FIXED] Log the curl error in more circumstances
+## 2.5.0-rc1
 
-## 2.6.1 (2016-11-11)
+* [NEW] Native push notifications
 
-[FIXED] Check for correct status code when POSTing to native push notifications API.
+## 2.4.2
 
-## 2.6.0 (2016-08-23)
+* [CHANGED] One curl instance per Pusher instance
 
-[ADDED] support for publishing push notifications on up to 10 interests.
+## 2.4.1
 
-## 2.5.0 (2016-08-15)
+* [FIXED] Presence data could not be submitted after the style changes
 
-[REMOVED] Native push notifications payload validation in the client.
+## 2.4.0
 
-## 2.5.0-rc2 (2016-07-19)
+* [ADDED] Support for batch events
+* [ADDED] Curl options
+* [FIXED] Applied fixes from StyleCI
 
-[FIXED] DDN and Native Push endpoints were not assembled correctly.
+## 2.3.0
 
-## 2.5.0-rc1 (2016-07-18)
+* [ADDED] A new `cluster` option for the Pusher constructor.
 
-[NEW] Native push notifications
+## 2.2.2
 
-## 2.4.2 (2016-07-04)
+* [FIXED] Fixed a PHP 5.2 incompatibility caused by referencing a private method in array_walk.
 
-[CHANGED] One curl instance per Pusher instance
+## 2.2.1
 
-## 2.4.1 (2016-05-27)
+* [FIXED] Channel name and socket_id values are now validated.
+* [BROKE] Inadvertently broke PHP 5.2 compatibility by referencing a private method in array_walk.
 
-[FIXED] Presence data could not be submitted after the style changes
+## 2.2.0
 
-## 2.4.0 (2016-05-25)
+* [CHANGED] `new Pusher($app_key, $app_secret, $app_id, $options)` - The `$options` parameter
+  has been added as the forth parameter to the constructor and other additional
+  parameters are now deprecated.
 
-[ADDED] Support for batch events
+## 2.1.3
 
-[ADDED] Curl options
+* [NEW] `$pusher->trigger` can now take an `array` of channel names as a first parameter to allow the same event to be published on multiple channels.
+* [NEW] `$pusher->get` generic function can be used to make `GET` calls to the REST API
+* [NEW] `$pusher->set_logger` to allow internal logging to be exposed and logged in your own logs.
 
-[FIXED] Applied fixes from StyleCI
+## 2.1.2
 
-## 2.3.0 (2015-02-16)
+* [CHANGED] Debug response from `$pusher->trigger` call is now an associative array in the form `array( 'body' => '{String} body text of response', 'status' => '{Number} http status of the response' )`
 
-[ADDED] A new `cluster` option for the Pusher constructor.
+## 2.1.1
 
-## 2.2.2 (2015-05-15)
+* [CHANGED] Added optional $options parameter to get_channel_info. get_channel_info($channel, $options = array() )
 
-[FIXED] Fixed a PHP 5.2 incompatibility caused by referencing a private method in array_walk.
+## 2.1.0
 
-## 2.2.1 (2015-05-13)
+* [CHANGED] Renamed get_channel_stats to get_channel_info
+* [CHANGED] get_channels now takes and $options parameter. get_channels( $options = array() )
+* [REMOVED] get_presence_channels
 
-[FIXED] Channel name and socket_id values are now validated.
+## 2.0.1
 
-[BROKE] Inadvertently broke PHP 5.2 compatibility by referencing a private method in array_walk.
+* [FIXED] Overwritten socket_id parameter in trigger: https://github.com/pusher/pusher-php-server/pull/3
 
-## 2.2.0 (2015-01-20)
+## 2.0.0
 
-[CHANGED] `new Pusher($app_key, $app_secret, $app_id, $options)` - The `$options` parameter
-has been added as the forth parameter to the constructor and other additional
-parameters are now deprecated.
-
-## 2.1.3 (2012-12-22)
-
-[NEW] `$pusher->trigger` can now take an `array` of channel names as a first parameter to allow the same event to be published on multiple channels.
-
-[NEW] `$pusher->get` generic function can be used to make `GET` calls to the REST API
-
-[NEW] `$pusher->set_logger` to allow internal logging to be exposed and logged in your own logs.
-
-## 2.1.2 (2012-11-18)
-
-[CHANGED] Debug response from `$pusher->trigger` call is now an associative array in the form `array( 'body' => '{String} body text of response', 'status' => '{Number} http status of the response' )`
-
-## 2.1.1 (2012-10-07)
-
-[CHANGED] Added optional $options parameter to get_channel_info. get_channel_info($channel, $options = array() )
-
-## 2.1.0 (2012-09-28)
-
-[CHANGED] Renamed get_channel_stats to get_channel_info
-
-[CHANGED] get_channels now takes and $options parameter. get_channels( $options = array() )
-
-[REMOVED] get_presence_channels
-
-## 2.0.1 (2012-09-18)
-
-[FIXED] Overwritten socket_id parameter in trigger: https://github.com/pusher/pusher-php-server/pull/3
-
-## 2.0.0 (2012-08-30)
-
-[NEW] Versioning introduced at 2.0.0
-
-[NEW] Added composer.json for submission to http://packagist.org/
-
-[CHANGED] `get_channels()` now returns an object which has a `channels` property. This must be accessed to get the Array of channels in an application.
-
-[CHANGED] `get_presence_channels()` now returns an object which has a `channels` property. This must be accessed to get the Array of channels in an application.
+* [NEW] Versioning introduced at 2.0.0
+* [NEW] Added composer.json for submission to http://packagist.org/
+* [CHANGED] `get_channels()` now returns an object which has a `channels` property. This must be accessed to get the Array of channels in an application.
+* [CHANGED] `get_presence_channels()` now returns an object which has a `channels` property. This must be accessed to get the Array of channels in an application.

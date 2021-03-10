@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  pull_request:
+    types: [ labeled ]
+    branches:
+      - master
+
+jobs:
+  prepare-release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set major release
+        if: ${{ github.event.label.name == 'release-major' }}
+        run: echo "RELEASE=major" >> $GITHUB_ENV
+      - name: Set minor release
+        if: ${{ github.event.label.name == 'release-minor' }}
+        run: echo "RELEASE=minor" >> $GITHUB_ENV
+      - name: Set patch release
+        if: ${{ github.event.label.name == 'release-patch' }}
+        run: echo "RELEASE=patch" >> $GITHUB_ENV
+      - name: Check release env
+        run: |
+          if [[ -z "${{ env.RELEASE }}" ]];
+          then
+            echo "You need to set a release label on PRs to the main branch"
+            exit 1
+          else
+            exit 0
+          fi
+      - name: Install semver-tool
+        run: |
+          export DIR=$(mtemp)
+          cd $DIR
+          curl https://github.com/fsaintjacques/semver-tool/archive/3.2.0.tar.gz -L -o semver.tar.gz
+          tar -xvf semver.tar.gz
+          sudo cp semver-tool-3.2.0/src/semver /usr/local/bin
+      - name: Bump version
+        run: |
+          export CURRENT=$(curl https://repo.packagist.org/p2/pusher/pusher-php-server.json | jq '.packages | ."pusher/pusher-php-server" | first | .version' | egrep -o '[0-9]+.[0-9]+.[0-9]+')
+          export NEW_VERSION=$(semver bump ${{ env.RELEASE }} $CURRENT)
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup git
+        run: |
+          git config user.email "pusher-ci@pusher.com"
+          git config user.name "Pusher CI"
+          git fetch
+          git checkout ${{ github.event.pull_request.head.ref }}
+      - name: Prepare CHANGELOG
+        run: |
+          echo "${{ github.event.pull_request.body }}" | csplit -s - "/##/"
+          echo "# Changelog
+
+          ## ${{ env.VERSION }}
+          " >> CHANGELOG.tmp
+          grep "^*" xx01 >> CHANGELOG.tmp
+          grep -v "^# " CHANGELOG.md >> CHANGELOG.tmp
+          cp CHANGELOG.tmp CHANGELOG.md
+          git add CHANGELOG.md
+          git commit -m "Bump to version ${{ env.VERSION }}"
+      - name: Push
+        run: git push
+

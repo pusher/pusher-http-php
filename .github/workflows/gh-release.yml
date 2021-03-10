@@ -1,0 +1,35 @@
+name: Github Release
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup git
+        run: |
+          git config user.email "pusher-ci@pusher.com"
+          git config user.name "Pusher CI"
+      - name: Prepare description
+        run: |
+          csplit -s CHANGELOG.md "/##/" {1}
+          cat xx01 > CHANGELOG.tmp
+      - name: Prepare tag
+        run: |
+          export TAG=$(head -1 CHANGELOG.tmp | cut -d' ' -f2)
+          echo "TAG=$TAG" >> $GITHUB_ENV
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG }}
+          release_name: ${{ env.TAG }}
+          body_path: CHANGELOG.tmp
+          draft: false
+          prerelease: false
