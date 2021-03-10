@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.2
+
+* [CHANGED] Add release automation actions.
+
 ## 5.0.1
 
 * [FIXED] Notice raised due to reference to potentially missing object property in `trigger` method
