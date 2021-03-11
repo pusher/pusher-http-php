@@ -1,6 +1,6 @@
 # Pusher Channels HTTP PHP Library
 
-[![Build Status](https://travis-ci.org/pusher/pusher-http-php.svg?branch=master)](https://travis-ci.org/pusher/pusher-http-php)
+[![Tests](https://github.com/pusher/pusher-http-php/actions/workflows/test.yml/badge.svg)](https://github.com/pusher/pusher-http-php/actions/workflows/test.yml) [![Packagist Version](https://img.shields.io/packagist/v/pusher/pusher-php-server)](https://packagist.org/packages/pusher/pusher-php-server) [![Packagist License](https://img.shields.io/packagist/l/pusher/pusher-php-server)](https://packagist.org/packages/pusher/pusher-php-server) [![Packagist Downloads](https://img.shields.io/packagist/dm/pusher/pusher-php-server)](https://packagist.org/packages/pusher/pusher-php-server)
 
 PHP library for interacting with the Pusher Channels HTTP API.
 
