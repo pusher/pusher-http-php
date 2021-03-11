@@ -32,7 +32,7 @@ jobs:
           fi
       - name: Install semver-tool
         run: |
-          export DIR=$(mtemp)
+          export DIR=$(mktemp -d)
           cd $DIR
           curl https://github.com/fsaintjacques/semver-tool/archive/3.2.0.tar.gz -L -o semver.tar.gz
           tar -xvf semver.tar.gz
@@ -60,7 +60,13 @@ jobs:
           grep "^*" xx01 >> CHANGELOG.tmp
           grep -v "^# " CHANGELOG.md >> CHANGELOG.tmp
           cp CHANGELOG.tmp CHANGELOG.md
-          git add CHANGELOG.md
+      - name: Prepare README
+        run: |
+          export MAJOR=$(echo "${{ env.VERSION }}" | cut -d'.' -f1)
+          sed -i "s|\"pusher/pusher-php-server\": \"^[0-9]*\.0\"|\"pusher/pusher-php-server\": \"^${MAJOR}.0\"|" README.md
+      - name: Commit changes
+        run: |
+          git add CHANGELOG.md README.md
           git commit -m "Bump to version ${{ env.VERSION }}"
       - name: Push
         run: git push
