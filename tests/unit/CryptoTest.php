@@ -1,6 +1,6 @@
 <?php
 
-class PusherCryptoTest extends PHPUnit\Framework\TestCase
+class CryptoTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
@@ -18,18 +18,8 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
 
     public function testValidMasterEncryptionKeys()
     {
-        $this->assertEquals('this is 32 bytes 123456789012345', Pusher\PusherCrypto::parse_master_key('this is 32 bytes 123456789012345', ''));
-        $this->assertEquals("this key has nonprintable char \x00", Pusher\PusherCrypto::parse_master_key("this key has nonprintable char \x00", ''));
-        $this->assertEquals('this is 32 bytes 123456789012345', Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMiBieXRlcyAxMjM0NTY3ODkwMTIzNDU='));
-        $this->assertEquals("this key has nonprintable char \x00", Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBrZXkgaGFzIG5vbnByaW50YWJsZSBjaGFyIAA='));
-    }
-
-    public function testInvalidMasterEncryptionKeyTwoProvided()
-    {
-        $this->expectException(\Pusher\PusherException::class);
-        $this->expectExceptionMessage('both');
-
-        Pusher\PusherCrypto::parse_master_key('this is 32 bytes 123456789012345', 'dGhpcyBpcyAzMiBieXRlcyAxMjM0NTY3ODkwMTIzNDU=');
+        $this->assertEquals('this is 32 bytes 123456789012345', Pusher\PusherCrypto::parse_master_key('dGhpcyBpcyAzMiBieXRlcyAxMjM0NTY3ODkwMTIzNDU='));
+        $this->assertEquals("this key has nonprintable char \x00", Pusher\PusherCrypto::parse_master_key('dGhpcyBrZXkgaGFzIG5vbnByaW50YWJsZSBjaGFyIAA='));
     }
 
     public function testInvalidMasterEncryptionKeyTooShort()
@@ -37,7 +27,7 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $this->expectException(\Pusher\PusherException::class);
         $this->expectExceptionMessage('32 bytes');
 
-        Pusher\PusherCrypto::parse_master_key('this is 31 bytes 12345678901234', '');
+        Pusher\PusherCrypto::parse_master_key('dGhpcyBpcyAzMSBieXRlcyAxMjM0NTY3ODkwMTIzNA==');
     }
 
     public function testInvalidMasterEncryptionKeyTooLong()
@@ -45,7 +35,7 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $this->expectException(\Pusher\PusherException::class);
         $this->expectExceptionMessage('32 bytes');
 
-        Pusher\PusherCrypto::parse_master_key('this is 33 bytes 1234567890123456', '');
+        Pusher\PusherCrypto::parse_master_key('dGhpcyBpcyAzMSBieXRlcyAxMjM0NTY3ODkwMTIzNDU2');
     }
 
     public function testInvalidMasterEncryptionKeyBase64TooShort()
@@ -53,7 +43,7 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $this->expectException(\Pusher\PusherException::class);
         $this->expectExceptionMessage('32 bytes');
 
-        Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMSBieXRlcyAxMjM0NTY3ODkwMTIzNA==');
+        Pusher\PusherCrypto::parse_master_key('dGhpcyBpcyAzMSBieXRlcyAxMjM0NTY3ODkwMTIzNA==');
     }
 
     public function testInvalidMasterEncryptionKeyBase64TooLong()
@@ -61,7 +51,7 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $this->expectException(\Pusher\PusherException::class);
         $this->expectExceptionMessage('32 bytes');
 
-        Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMyBieXRlcyAxMjM0NTY3ODkwMTIzNDU2');
+        Pusher\PusherCrypto::parse_master_key('dGhpcyBpcyAzMyBieXRlcyAxMjM0NTY3ODkwMTIzNDU2');
     }
 
     public function testInvalidMasterEncryptionKeyBase64InvalidBase64()
@@ -69,7 +59,7 @@ class PusherCryptoTest extends PHPUnit\Framework\TestCase
         $this->expectException(\Pusher\PusherException::class);
         $this->expectExceptionMessage('valid base64');
 
-        Pusher\PusherCrypto::parse_master_key('', 'dGhpcyBpcyAzMyBi!XRlcyAxMjM0NTY3ODkw#TIzNDU2');
+        Pusher\PusherCrypto::parse_master_key('dGhpcyBpcyAzMyBi!XRlcyAxMjM0NTY3ODkw#TIzNDU2');
     }
 
     public function testGenerateSharedSecret()

@@ -1,6 +1,6 @@
 <?php
 
-class PusherSocketAuthTest extends PHPUnit\Framework\TestCase
+class SocketAuthTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {

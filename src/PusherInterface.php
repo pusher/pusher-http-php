@@ -12,17 +12,6 @@ interface PusherInterface
     public function getSettings();
 
     /**
-     * Set a logger to be informed of internal log messages.
-     *
-     * @deprecated Use the PSR-3 compliant Pusher::setLogger() instead. This method will be removed in the next breaking release.
-     *
-     * @param object $logger A object with a public function log($message) method
-     *
-     * @return void
-     */
-    public function set_logger($logger);
-
-    /**
      * Trigger an event by providing event name and payload.
      * Optionally provide a socket ID to exclude a client (most likely the sender).
      *

@@ -1,6 +1,6 @@
 <?php
 
-class webhookTest extends PHPUnit\Framework\TestCase
+class WebhookTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {

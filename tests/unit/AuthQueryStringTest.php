@@ -1,6 +1,6 @@
 <?php
 
-class PusherAuthQueryString extends PHPUnit\Framework\TestCase
+class AuthQueryStringTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
@@ -46,7 +46,7 @@ class PusherAuthQueryString extends PHPUnit\Framework\TestCase
         $query_params = array(
             'name' => 'an_event',
         );
-        $auth_query_string = Pusher\Pusher::build_auth_query_string(
+        $auth_query_string = Pusher\Pusher::build_auth_query_params(
             $auth_key,
             $auth_secret,
             $method,
@@ -58,10 +58,16 @@ class PusherAuthQueryString extends PHPUnit\Framework\TestCase
 
         $expected_to_sign = "POST\n$request_path\nauth_key=$auth_key&auth_timestamp=$time&auth_version=$auth_version&name=an_event";
         $expected_auth_signature = hash_hmac('sha256', $expected_to_sign, $auth_secret, false);
-        $expected_query_string = "auth_key=$auth_key&auth_signature=$expected_auth_signature&auth_timestamp=$time&auth_version=$auth_version&name=an_event";
+        $expected_query_params = [
+            'auth_key' => $auth_key,
+            'auth_signature' => $expected_auth_signature,
+            'auth_timestamp' => $time,
+            'auth_version' => $auth_version,
+            'name' => 'an_event'
+        ];
 
         $this->assertEquals(
-            $expected_query_string,
+            $expected_query_params,
             $auth_query_string,
             'auth signature valid'
         );
