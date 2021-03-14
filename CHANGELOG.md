@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.3
+
+* [CHANGED] Ensure version in Pusher.php is bumped on release.
+
 ## 5.0.2
 
 * [CHANGED] Add release automation actions.
