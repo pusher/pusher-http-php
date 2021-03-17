@@ -23,10 +23,10 @@ interface PusherInterface
      *
      * @throws PusherException   Throws exception if $channels is an array of size 101 or above or $socket_id is invalid
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function trigger($channels, $event, $data, $socket_id = null, $already_encoded = false);
+    public function trigger($channels, $event, $data, $socket_id = null, $already_encoded = false) : object;
 
     /**
      * Trigger multiple events at the same time.
@@ -36,10 +36,10 @@ interface PusherInterface
      *
      * @throws PusherException   Throws exception if curl wasn't initialized correctly
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function triggerBatch($batch = array(), $already_encoded = false);
+    public function triggerBatch($batch = array(), $already_encoded = false) : object;
 
     /**
      * Fetch channel information for a specific channel.
@@ -49,10 +49,10 @@ interface PusherInterface
      *
      * @throws PusherException   If $channel is invalid or if curl wasn't initialized correctly
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function get_channel_info($channel, $params = array());
+    public function get_channel_info($channel, $params = array()) : object;
 
     /**
      * Fetch a list containing all channels.
@@ -61,10 +61,10 @@ interface PusherInterface
      *
      * @throws PusherException   Throws exception if curl wasn't initialized correctly
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function get_channels($params = array());
+    public function get_channels($params = array()) : object;
 
     /**
      * Fetch user ids currently subscribed to a presence channel.
@@ -73,10 +73,10 @@ interface PusherInterface
      *
      * @throws PusherException   Throws exception if curl wasn't initialized correctly
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function get_users_info($channel);
+    public function get_users_info($channel) : object;
 
     /**
      * GET arbitrary REST API resource using a synchronous http client.
@@ -88,6 +88,7 @@ interface PusherInterface
      *
      * @throws PusherException   Throws exception if curl wasn't initialized correctly
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
      * @return mixed See Pusher API docs
      */
@@ -104,7 +105,7 @@ interface PusherInterface
      *
      * @return string Json encoded authentication string.
      */
-    public function socket_auth($channel, $socket_id, $custom_data = null);
+    public function socket_auth($channel, $socket_id, $custom_data = null) : string;
 
     /**
      * Creates a presence signature (an extension of socket signing).
@@ -116,12 +117,12 @@ interface PusherInterface
      *
      * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      *
-     * @return string
      */
-    public function presence_auth($channel, $socket_id, $user_id, $user_info = null);
+    public function presence_auth($channel, $socket_id, $user_id, $user_info = null) : string;
 
     /**
-     * Verify that a webhook actually came from Pusher, decrypts any encrypted events, and marshals them into a PHP object.
+     * Verify that a webhook actually came from Pusher, decrypts any
+     * encrypted events, and marshals them into a PHP object.
      *
      * @param array  $headers a array of headers from the request (for example, from getallheaders())
      * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
@@ -130,7 +131,7 @@ interface PusherInterface
      *
      * @return Webhook marshalled object with the properties time_ms (an int) and events (an array of event objects)
      */
-    public function webhook($headers, $body);
+    public function webhook($headers, $body) : object;
 
     /**
      * Verify that a given Pusher Signature is valid.

@@ -14,7 +14,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     /**
      * @var string Version
      */
-    public static $VERSION = '6.0.0';
+    public static $VERSION = '6.0.1';
 
     /**
      * @var null|PusherCrypto
@@ -337,10 +337,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @throws PusherException   Throws PusherException if $channels is an array of size 101 or above or $socket_id is invalid
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function trigger($channels, $event, $data, $params = array(), $already_encoded = false)
+    public function trigger($channels, $event, $data, $params = array(), $already_encoded = false) : object
     {
         if (is_string($channels) === true) {
             $channels = array($channels);
@@ -431,10 +431,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param bool  $already_encoded [optional]
      *
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function triggerBatch($batch = array(), $already_encoded = false)
+    public function triggerBatch($batch = array(), $already_encoded = false) : object
     {
         foreach ($batch as $key => $event) {
             $this->validate_channel($event['channel']);
@@ -497,10 +497,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @throws PusherException   If $channel is invalid
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function get_channel_info($channel, $params = array())
+    public function get_channel_info($channel, $params = array()) : object
     {
         $this->validate_channel($channel);
 
@@ -513,10 +513,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
      *
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function get_channels($params = array())
+    public function get_channels($params = array()) : object
     {
         $result = $this->get('/channels', $params);
 
@@ -531,10 +531,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param string $channel The name of the channel
      *
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
-     * @return object
      */
-    public function get_users_info($channel)
+    public function get_users_info($channel) : object
     {
         return $this->get('/channels/'.$channel.'/users');
     }
@@ -548,6 +548,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param bool   $associative When true, return the response body as an associative array, else return as an object
      *
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
      *
      * @return mixed See Pusher API docs
      */
@@ -590,7 +591,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @return string Json encoded authentication string.
      */
-    public function socket_auth($channel, $socket_id, $custom_data = null)
+    public function socket_auth($channel, $socket_id, $custom_data = null) : string
     {
         $this->validate_channel($channel);
         $this->validate_socket_id($socket_id);
@@ -628,9 +629,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      *
-     * @return string
      */
-    public function presence_auth($channel, $socket_id, $user_id, $user_info = null)
+    public function presence_auth($channel, $socket_id, $user_id, $user_info = null) : string
     {
         $user_data = array('user_id' => $user_id);
         if ($user_info) {
@@ -650,7 +650,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @return Webhook marshalled object with the properties time_ms (an int) and events (an array of event objects)
      */
-    public function webhook($headers, $body)
+    public function webhook($headers, $body) : object
     {
         $this->ensure_valid_signature($headers, $body);
 
