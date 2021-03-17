@@ -6,6 +6,8 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Promise\PromiseInterface;
 
 class Pusher implements LoggerAwareInterface, PusherInterface
 {
@@ -326,8 +328,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     }
 
     /**
-     * Trigger an event by providing event name and payload.
-     * Optionally provide a socket ID to exclude a client (most likely the sender).
+     * Helper function to prepare trigger request. Takes the same
+     * parameters as the public trigger functions.
      *
      * @param array|string $channels        A channel name or an array of channel names to publish the event on.
      * @param string       $event
@@ -340,7 +342,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @throws GuzzleException
      *
      */
-    public function trigger($channels, $event, $data, $params = array(), $already_encoded = false) : object
+    public function make_request($channels, $event, $data, $params = array(), $already_encoded = false) : Request
     {
         if (is_string($channels) === true) {
             $channels = array($channels);
@@ -355,6 +357,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         foreach ($channels as $chan) {
             if (PusherCrypto::is_encrypted_channel($chan)) {
                 $has_encrypted_channel = true;
+                break;
             }
         }
 
@@ -400,10 +403,33 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             'X-Pusher-Library' => 'pusher-http-php '.self::$VERSION
         ];
 
-        $response = $this->client->post($path, [
-            'query' => array_merge($signature, $query_params),
-            'headers' => $headers,
-            'body' => $post_value,
+        $params = array_merge($signature, $query_params);
+        $query_string = self::array_implode('=', '&', $params);
+        $full_path = $path."?".$query_string;
+        $request = new Request('POST', $full_path, $headers, $post_value);
+
+        return $request;
+    }
+
+    /**
+     * Trigger an event by providing event name and payload.
+     * Optionally provide a socket ID to exclude a client (most likely the sender).
+     *
+     * @param array|string $channels        A channel name or an array of channel names to publish the event on.
+     * @param string       $event
+     * @param mixed        $data            Event data
+     * @param array        $params          [optional]
+     * @param bool         $already_encoded [optional]
+     *
+     * @throws PusherException   Throws PusherException if $channels is an array of size 101 or above or $socket_id is invalid
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
+     *
+     */
+    public function trigger($channels, $event, $data, $params = array(), $already_encoded = false) : object {
+        $request = $this->make_request($channels, $event, $data, $params, $already_encoded);
+
+        $response = $this->client->send($request, [
             'http_errors' => false,
             'base_uri' => $this->channels_url_prefix()
         ]);
@@ -425,16 +451,53 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     }
 
     /**
-     * Trigger multiple events at the same time.
+     * Asynchronously trigger an event by providing event name and payload.
+     * Optionally provide a socket ID to exclude a client (most likely the sender).
+     *
+     * @param array|string $channels        A channel name or an array of channel names to publish the event on.
+     * @param string       $event
+     * @param mixed        $data            Event data
+     * @param array        $params          [optional]
+     * @param bool         $already_encoded [optional]
+     *
+     */
+    public function triggerAsync($channels, $event, $data, $params = array(), $already_encoded = false) : PromiseInterface
+    {
+        $request = $this->make_request($channels, $event, $data, $params, $already_encoded);
+
+        $promise = $this->client->sendAsync($request, [
+            'http_errors' => false,
+            'base_uri' => $this->channels_url_prefix()
+        ])->then(function ($response) {
+            $status = $response->getStatusCode();
+
+            if ($status !== 200) {
+                $body = (string) $response->getBody();
+                throw new ApiErrorException($body, $status);
+            }
+
+            $result = json_decode($response->getBody());
+
+            if (property_exists($result, 'channels')) {
+                $result->channels = get_object_vars($result->channels);
+            }
+
+            return $result;
+        });
+
+        return $promise;
+    }
+
+    /**
+     * Helper function to prepare batch trigger request. Takes the same                                                                                                                                               * parameters as the public batch trigger functions.
      *
      * @param array $batch           [optional] An array of events to send
      * @param bool  $already_encoded [optional]
      *
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
-     * @throws GuzzleException
      *
-     */
-    public function triggerBatch($batch = array(), $already_encoded = false) : object
+     **/
+    public function make_batch_request($batch = array(), $already_encoded = false) : Request
     {
         foreach ($batch as $key => $event) {
             $this->validate_channel($event['channel']);
@@ -471,10 +534,29 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             'X-Pusher-Library' => 'pusher-http-php '.self::$VERSION
         ];
 
-        $response = $this->client->post($path, [
-            'query' => array_merge($query_params, $signature),
-            'body' => $post_value,
-            'headers' => $headers,
+        $params = array_merge($signature, $query_params);
+        $query_string = self::array_implode('=', '&', $params);
+        $full_path = $path."?".$query_string;
+        $request = new Request('POST', $full_path, $headers, $post_value);
+
+        return $request;
+    }
+
+    /**
+     * Trigger multiple events at the same time.
+     *
+     * @param array $batch           [optional] An array of events to send
+     * @param bool  $already_encoded [optional]
+     *
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
+     *
+     */
+    public function triggerBatch($batch = array(), $already_encoded = false) : object
+    {
+        $request = $this->make_batch_request($batch, $already_encoded);
+
+        $response = $this->client->send($request, [
             'http_errors' => false,
             'base_uri' => $this->channels_url_prefix()
         ]);
@@ -486,7 +568,50 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             throw new ApiErrorException($body, $status);
         }
 
-        return json_decode($response->getBody());
+        $result = json_decode($response->getBody());
+
+        if (property_exists($result, 'channels')) {
+            $result->channels = get_object_vars($result->channels);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Asynchronously trigger multiple events at the same time.
+     *
+     * @param array $batch           [optional] An array of events to send
+     * @param bool  $already_encoded [optional]
+     *
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     *
+     */
+    public function triggerBatchAsync($batch = array(), $already_encoded = false) : PromiseInterface
+    {
+        $request = $this->make_batch_request($batch, $already_encoded);
+
+        $promise = $this->client->sendAsync($request, [
+            'http_errors' => false,
+            'base_uri' => $this->channels_url_prefix()
+        ])->then(function ($response) {
+            $status = $response->getStatusCode();
+
+            if ($status !== 200) {
+                $body = (string) $response->getBody();
+                throw new ApiErrorException($body, $status);
+            }
+
+            $result = json_decode($response->getBody());
+
+            if (property_exists($result, 'channels')) {
+                $result->channels = get_object_vars($result->channels);
+            }
+
+            return $result;
+        });
+
+        return $promise;
+
     }
 
     /**

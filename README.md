@@ -132,6 +132,24 @@ $batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => arra
 $pusher->triggerBatch($batch);
 ```
 
+### Asynchronous interface
+
+Both `trigger` and `triggerBatch` have asynchronous counterparts in
+`triggerAsync` and `triggerBatchAsync`. These functions return [Guzzle
+promises](https://github.com/guzzle/promises) which can be chained
+with `->then`:
+
+```php
+$promise = $pusher->triggerAsync( [ 'channel-1', 'channel-2' ], 'my_event', 'hello world' );
+
+$promise->then(function ($result) {
+  // do something with $result
+  return $result;
+});
+
+$final_result = $promise->wait();
+```
+
 ### Arrays
 
 Objects are automatically converted to JSON format:
