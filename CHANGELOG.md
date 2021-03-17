@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.0.1
+
+* [CHANGED] Use type hints where possible (mixed type not available in PHP7).
+* [CHANGED] Document that functions can throw GuzzleException.
+
 ## 6.0.0
 
 * [CHANGED] internal HTTP client to Guzzle
