@@ -63,7 +63,8 @@ jobs:
       - name: Prepare README
         run: |
           export MAJOR=$(echo "${{ env.VERSION }}" | cut -d'.' -f1)
-          sed -i "s|\"pusher/pusher-php-server\": \"^[0-9]*\.0\"|\"pusher/pusher-php-server\": \"^${MAJOR}.0\"|" README.md
+          export MINOR=$(echo "${{ env.VERSION }}" | cut -d'.' -f2)
+          sed -i "s|\"pusher/pusher-php-server\": \"^[0-9]*\.[0-9]*\"|\"pusher/pusher-php-server\": \"^${MAJOR}.${MINOR}\"|" README.md
       - name: Prepare Pusher.php
         run: |
           sed -i "s|public static \$VERSION = '[^']*'|public static \$VERSION = '${{ env.VERSION }}'|" src/Pusher.php
