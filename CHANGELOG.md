@@ -1,5 +1,16 @@
 # Changelog
 
+## 6.0.0
+
+* [CHANGED] internal HTTP client to Guzzle
+* [ADDED] optional client parameter to constructor
+* [CHANGED] useTLS is true by default
+* [REMOVED]  from options
+* [REMOVED] customer logger
+* [REMOVED] host, port and timeout constructor parameters
+* [REMOVED] support for PHP 7.1
+* [CHANGED] lower severity level of logging to DEBUG level
+
 ## 5.0.3
 
 * [CHANGED] Ensure version in Pusher.php is bumped on release.

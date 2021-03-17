@@ -1,6 +1,6 @@
 <?php
 
-class PusherBatchPushTest extends PHPUnit\Framework\TestCase
+class TriggerBatchTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
@@ -9,8 +9,7 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET and
             PUSHERAPP_APPID keys.');
         } else {
-            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, array(), PUSHERAPP_HOST);
-            $this->pusher->setLogger(new TestLogger());
+            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, ['host' => PUSHERAPP_HOST]);
         }
     }
 
@@ -34,7 +33,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             'host'   => PUSHERAPP_HOST,
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => array('my' => 'data'));
@@ -49,7 +47,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             'host'   => PUSHERAPP_HOST,
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => array('my' => 'data'));
@@ -65,7 +62,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             'host'   => PUSHERAPP_HOST,
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
@@ -80,7 +76,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             'host'   => PUSHERAPP_HOST,
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $expectedMyChannel = new stdClass();
         $expectedMyChannel->subscription_count = 1;
@@ -110,7 +105,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             'host'   => PUSHERAPP_HOST,
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
@@ -126,7 +120,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             'host'   => PUSHERAPP_HOST,
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
@@ -138,12 +131,11 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
     public function testTriggerBatchWithWithEncryptedEventSuccess()
     {
         $options = array(
-            'useTLS'                => true,
-            'host'                  => PUSHERAPP_HOST,
-            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV',
+            'useTLS'                       => true,
+            'host'                         => PUSHERAPP_HOST,
+            'encryption_master_key_base64' => 'Y0F6UkgzVzlGWk0zaVhxU05JR3RLenR3TnVDejl4TVY=',
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'private-encrypted-test_channel', 'name' => 'my_event', 'data' => 'test-string');
@@ -154,12 +146,11 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
     public function testTriggerBatchWithMultipleEncryptedEventsSuccess()
     {
         $options = array(
-            'useTLS'                => true,
-            'host'                  => PUSHERAPP_HOST,
-            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV',
+            'useTLS'                       => true,
+            'host'                         => PUSHERAPP_HOST,
+            'encryption_master_key_base64' => 'Y0F6UkgzVzlGWk0zaVhxU05JR3RLenR3TnVDejl4TVY=',
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'test-string');
@@ -171,12 +162,11 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
     public function testTriggerBatchWithMultipleCombinationsofStringsAndObjectsWithEncryptedEventSuccess()
     {
         $options = array(
-            'useTLS'                => true,
-            'host'                  => PUSHERAPP_HOST,
-            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV',
+            'useTLS'                       => true,
+            'host'                         => PUSHERAPP_HOST,
+            'encryption_master_key_base64' => 'Y0F6UkgzVzlGWk0zaVhxU05JR3RLenR3TnVDejl4TVY=',
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'test_channel', 'name' => 'my_event', 'data' => 'secret-string');
@@ -194,7 +184,6 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
             'host'   => PUSHERAPP_HOST,
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'my_test_chan', 'name' => 'my_event', 'data' => array('my' => 'data'));
@@ -205,12 +194,11 @@ class PusherBatchPushTest extends PHPUnit\Framework\TestCase
     public function testTriggerBatchWithMultipleEncryptedEventsWithEncryptionMasterKeySuccess()
     {
         $options = array(
-            'useTLS'                => true,
-            'host'                  => PUSHERAPP_HOST,
-            'encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV',
+            'useTLS'                       => true,
+            'host'                         => PUSHERAPP_HOST,
+            'encryption_master_key_base64' => 'Y0F6UkgzVzlGWk0zaVhxU05JR3RLenR3TnVDejl4TVY=',
         );
         $pc = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pc->setLogger(new TestLogger());
 
         $batch = array();
         $batch[] = array('channel' => 'my_test_chan', 'name' => 'my_event', 'data' => array('my' => 'data'));

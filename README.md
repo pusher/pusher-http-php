@@ -18,22 +18,16 @@ Or add to `composer.json`:
 
 ```json
 "require": {
-    "pusher/pusher-php-server": "^5.0"
+	"pusher/pusher-php-server": "^6.0"
 }
 ```
 
 and then run `composer update`.
 
-Or you can clone or download the library files.
-
-**We recommend you [use composer](http://getcomposer.org/).**
-
-This library depends on PHP modules for cURL and JSON. See [cURL module installation instructions](http://php.net/manual/en/curl.installation.php) and [JSON module installation instructions](http://php.net/manual/en/json.installation.php).
-
 ## Supported platforms
 
-* PHP - supports PHP versions 7.1, 7.2, 7.3, 7.4 and 8.0.
-* Laravel - version 5.3 and above has built-in support for Pusher Channels as a [Broadcasting backend](https://laravel.com/docs/master/broadcasting).
+* PHP - supports PHP versions 7.2, 7.3, 7.4 and 8.0.
+* Laravel - version 8.29 and above has built-in support for Pusher Channels as a [Broadcasting backend](https://laravel.com/docs/master/broadcasting).
 * Other PHP frameworks - supported provided you are using a supported version of PHP.
 
 ## Pusher Channels constructor
@@ -60,45 +54,22 @@ The fourth parameter is an `$options` array. The additional options are:
 * `timeout` - the HTTP timeout
 * `useTLS` - quick option to use scheme of https and port 443.
 * `cluster` - specify the cluster where the application is running from.
-* `curl_options` - array with custom curl commands
 * `encryption_master_key` - a 32 char long key. This key, along with the
   channel name, are used to derive per-channel encryption keys. Per-channel
   keys are used encrypt event data on encrypted channels.
 
-For example, by default calls will be made over a non-TLS connection. To change
-this to make calls over HTTPS use:
+For example, by default calls will be made over HTTPS. To use plain
+HTTP you can set useTLS to false:
 
 ```php
-$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, array( 'cluster' => $app_cluster, 'useTLS' => true ) );
+$options = [
+  'cluster' => $app_cluster,
+  'useTLS' => false
+];
+$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, $options );
 ```
-
-For example, if you want to set custom curl options, use this:
-
-```php
-$pusher = new Pusher\Pusher(
-    $app_key,
-    $app_secret,
-    $app_id,
-    array(
-        'cluster' => $app_cluster,
-        'useTLS' => true,
-        'curl_options' => array( CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4 )
-    )
-);
-```
-
-**Note**: The `host` option overrides the `cluster` option!
-
-**Note:** The `$options` parameter was introduced in version 2.2.0 of the
-library.  Previously additional parameters could be passed for each option, but
-this was becoming unwieldy. However, backwards compatibility has been
-maintained.
 
 ## Logging configuration
-
-It is strongly recommended that you configure a logger.
-
-### PSR-3 Support
 
 The recommended approach of logging is to use a
 [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md)
@@ -112,28 +83,26 @@ implements `Psr\Log\LoggerAwareInterface`, meaning you call
 $pusher->setLogger($logger);
 ```
 
-### Custom Logger (deprecated)
+## Custom Guzzle client
 
-> **Warning**: Using `Pusher::set_logger()` and a custom object implementing
-> `log()` is now deprecated and will be removed in the future. Please use a
-> PSR-3 compliant logger.
-
-You set up logging by passing an object with a `log` function to the
-`pusher->set_logger` function:
+This library uses Guzzle internally to make HTTP calls. You can pass
+your own Guzzle instance to the Pusher constructor:
 
 ```php
-class MyLogger {
-  public function log( $msg ) {
-    print_r( $msg . "\n" );
-  }
-}
+$custom_client = new GuzzleHttp\Client();
 
-$pusher->set_logger( new MyLogger() );
+$pusher = new Pusher\Pusher(
+	$app_key,
+	$app_secret,
+	$app_id,
+	array(),
+	$custom_client
+	)
+);
 ```
 
-If you use the above example in code executed from the console/terminal the
-debug information will be output there. If you use this within a web app then
-the output will appear within the generated app output e.g. HTML.
+This allows you to pass in your own middleware, see the tests for an
+[example](tests/acceptance/middlewareTest.php).
 
 ## Publishing/Triggering events
 
@@ -217,10 +186,10 @@ $result = $pusher->triggerBatch($batch);
 foreach ($result->batch as $i => $attributes) {
   echo "channel: {$batch[$i]['channel']}, name: {$batch[$i]['name']}";
   if (isset($attributes->subscription_count)) {
-    echo ", subscription_count: {$attributes->subscription_count}";
+	echo ", subscription_count: {$attributes->subscription_count}";
   }
   if (isset($attributes->user_count)) {
-    echo ", user_count: {$attributes->user_count}";
+	echo ", user_count: {$attributes->user_count}";
   }
   echo PHP_EOL;
 }
@@ -294,13 +263,13 @@ these steps:
 
    ```php
    $pusher = new Pusher\Pusher(
-       $app_key,
-       $app_secret,
-       $app_id,
-       array(
-           'cluster' => $app_cluster,
-           'encryption_master_key_base64' => "<your base64 encoded master key>"
-       )
+	   $app_key,
+	   $app_secret,
+	   $app_id,
+	   array(
+		   'cluster' => $app_cluster,
+		   'encryption_master_key_base64' => "<your base64 encoded master key>"
+	   )
    );
    ```
 
@@ -445,8 +414,8 @@ approach consumes (number of channels + 1) messages!
 $subscription_counts = array();
 foreach ($pusher->get_channels()->channels as $channel => $v) {
   $subscription_counts[$channel] =
-    $pusher->get_channel_info(
-      $channel, array('info' => 'subscription_count'))->subscription_count;
+	$pusher->get_channel_info(
+	  $channel, array('info' => 'subscription_count'))->subscription_count;
 }
 var_dump($subscription_counts);
 ```
@@ -468,16 +437,16 @@ The `$response` is in the format:
 
 ```php
 Array (
-    [body] => {"users":[{"id":"a_user_id"}]}
-    [status] => 200
-    [result] => Array (
-        [users] => Array (
-            [0] => Array (
-                [id] => a_user_id
-            ),
-            /* Additional users */
-        )
-    )
+	[body] => {"users":[{"id":"a_user_id"}]}
+	[status] => 200
+	[result] => Array (
+		[users] => Array (
+			[0] => Array (
+				[id] => a_user_id
+			),
+			/* Additional users */
+		)
+	)
 )
 ```
 

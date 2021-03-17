@@ -1,6 +1,6 @@
 <?php
 
-class PusherPushTest extends PHPUnit\Framework\TestCase
+class TriggerTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
@@ -9,8 +9,7 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
             PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET and
             PUSHERAPP_APPID keys.');
         } else {
-            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, array(), PUSHERAPP_HOST);
-            $this->pusher->setLogger(new TestLogger());
+            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, ['host' => PUSHERAPP_HOST]);
         }
     }
 
@@ -61,7 +60,6 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
             'host'   => PUSHERAPP_HOST,
         );
         $pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
-        $pusher->setLogger(new TestLogger());
 
         $result = $pusher->trigger('test_channel', 'my_event', array('encrypted' => 1));
         $this->assertEquals(new stdClass(), $result);
@@ -73,7 +71,6 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
         $this->expectExceptionCode('413');
 
         $data = str_pad('', 11 * 1024, 'a');
-        echo  'sending data of size: '.mb_strlen($data, '8bit');
         $this->pusher->trigger('test_channel', 'my_event', $data, array(), true);
     }
 
@@ -99,8 +96,9 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
 
     public function testTriggeringEventOnPrivateEncryptedChannelSuccess()
     {
-        $options = array('encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV');
-        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options, PUSHERAPP_HOST);
+        $options = ['encryption_master_key_base64' => 'Y0F6UkgzVzlGWk0zaVhxU05JR3RLenR3TnVDejl4TVY=',
+                    'host' => PUSHERAPP_HOST];
+        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
 
         $data = array('event_name' => 'event_data');
         $channels = array('private-encrypted-ceppaio');
@@ -112,8 +110,9 @@ class PusherPushTest extends PHPUnit\Framework\TestCase
     {
         $this->expectException(\Pusher\PusherException::class);
 
-        $options = array('encryption_master_key' => 'cAzRH3W9FZM3iXqSNIGtKztwNuCz9xMV');
-        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options, PUSHERAPP_HOST);
+        $options = ['encryption_master_key_base64' => 'Y0F6UkgzVzlGWk0zaVhxU05JR3RLenR3TnVDejl4TVY=',
+                    'host' => PUSHERAPP_HOST];
+        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
 
         $data = array('event_name' => 'event_data');
         $channels = array('my-chan-ceppaio', 'private-encrypted-ceppaio');

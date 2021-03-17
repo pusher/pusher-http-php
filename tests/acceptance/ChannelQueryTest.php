@@ -1,11 +1,10 @@
 <?php
 
-class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
+class ChannelQueryTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
-        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, array(), PUSHERAPP_HOST);
-        $this->pusher->setLogger(new TestLogger());
+        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, ['host' => PUSHERAPP_HOST]);
     }
 
     public function testChannelInfo()
@@ -19,13 +18,6 @@ class PusherChannelQueryTest extends PHPUnit\Framework\TestCase
     {
         $result = $this->pusher->get_channels();
         $channels = $result->channels;
-
-        foreach ($channels as $channel_name => $channel_info) {
-            echo  "channel_name: $channel_name\n";
-            echo  'channel_info: ';
-            print_r($channel_info);
-            echo  "\n\n";
-        }
 
         $this->assertTrue(is_array($channels), 'channels is an array');
     }
