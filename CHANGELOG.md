@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.1.0
+
+* [ADDED] triggerAsync and triggerBatchAsync using the Guzzle async interface.
+
 ## 6.0.1
 
 * [CHANGED] Use type hints where possible (mixed type not available in PHP7).
