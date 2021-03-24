@@ -1,6 +1,7 @@
 <?php
 
 namespace Pusher;
+use GuzzleHttp\Promise\PromiseInterface;
 
 interface PusherInterface
 {
@@ -29,7 +30,20 @@ interface PusherInterface
     public function trigger($channels, $event, $data, $socket_id = null, $already_encoded = false) : object;
 
     /**
-     * Trigger multiple events at the same time.
+     * Asynchronously trigger an event by providing event name and payload.
+     * Optionally provide a socket ID to exclude a client (most likely the sender).
+     *
+     * @param array|string $channels        A channel name or an array of channel names to publish the event on.
+     * @param string       $event
+     * @param mixed        $data            Event data
+     * @param array        $params          [optional]
+     * @param bool         $already_encoded [optional]
+     *
+     */
+    public function triggerAsync($channels, $event, $data, $params = array(), $already_encoded = false) : PromiseInterface;
+    
+    /**
+     * 
      *
      * @param array $batch           [optional] An array of events to send
      * @param bool  $already_encoded [optional]
@@ -42,7 +56,19 @@ interface PusherInterface
     public function triggerBatch($batch = array(), $already_encoded = false) : object;
 
     /**
-     * Fetch channel information for a specific channel.
+     * Trigger multiple events at the same time.
+     *
+     * @param array $batch           [optional] An array of events to send
+     * @param bool  $already_encoded [optional]
+     *
+     * @throws PusherException   Throws exception if curl wasn't initialized correctly
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     *
+     */
+    public function triggerBatchAsync($batch = array(), $already_encoded = false) : PromiseInterface;
+
+    /**
+     * Asynchronously trigger multiple events at the same time.
      *
      * @param string $channel The name of the channel
      * @param array  $params  Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )

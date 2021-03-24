@@ -18,7 +18,7 @@ Or add to `composer.json`:
 
 ```json
 "require": {
-	"pusher/pusher-php-server": "^6.0"
+	"pusher/pusher-php-server": "^6.1"
 }
 ```
 
@@ -130,6 +130,24 @@ $batch = array();
 $batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'));
 $batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'));
 $pusher->triggerBatch($batch);
+```
+
+### Asynchronous interface
+
+Both `trigger` and `triggerBatch` have asynchronous counterparts in
+`triggerAsync` and `triggerBatchAsync`. These functions return [Guzzle
+promises](https://github.com/guzzle/promises) which can be chained
+with `->then`:
+
+```php
+$promise = $pusher->triggerAsync( [ 'channel-1', 'channel-2' ], 'my_event', 'hello world' );
+
+$promise->then(function ($result) {
+  // do something with $result
+  return $result;
+});
+
+$final_result = $promise->wait();
 ```
 
 ### Arrays
