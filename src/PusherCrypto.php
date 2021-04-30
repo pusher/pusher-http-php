@@ -21,7 +21,7 @@ class PusherCrypto
         return substr($channel, 0, strlen(self::ENCRYPTED_PREFIX)) === self::ENCRYPTED_PREFIX;
     }
 
-    public static function parse_master_key($encryption_master_key_base64)
+    public static function parse_master_key($encryption_master_key_base64): string
     {
         if (!function_exists('sodium_crypto_secretbox')) {
             throw new PusherException('To use end to end encryption, you must either be using PHP 7.2 or greater or have installed the libsodium-php extension for php < 7.2.');
@@ -65,9 +65,6 @@ class PusherCrypto
         $parsed_payload = $this->parse_encrypted_message($event->data);
         $shared_secret = $this->generate_shared_secret($event->channel, $this->encryption_master_key);
         $decrypted_payload = $this->decrypt_payload($parsed_payload->ciphertext, $parsed_payload->nonce, $shared_secret);
-        if (!$decrypted_payload) {
-            throw new PusherException('Decryption of the payload failed. Wrong key?');
-        }
         $event->data = $decrypted_payload;
 
         return $event;
@@ -121,8 +118,8 @@ class PusherCrypto
     public function decrypt_payload($payload, $nonce, $shared_secret)
     {
         $plaintext = sodium_crypto_secretbox_open($payload, $nonce, $shared_secret);
-        if (empty($plaintext)) {
-            return false;
+        if (!is_string($plaintext) || empty($plaintext)) {
+            throw new PusherException('Decryption of the payload failed. Wrong key?');
         }
 
         return $plaintext;
@@ -167,8 +164,10 @@ class PusherCrypto
 
     /**
      * Generates a nonce that is SODIUM_CRYPTO_SECRETBOX_NONCEBYTES long.
+     *
+     * @return string
      */
-    private function generate_nonce()
+    private function generate_nonce(): string
     {
         return random_bytes(
             SODIUM_CRYPTO_SECRETBOX_NONCEBYTES

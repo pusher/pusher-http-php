@@ -132,7 +132,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * Log a string.
      *
      * @param string           $msg     The message to log
-     * @param array|\Exception $context [optional] Any extraneous information that does not fit well in a string.
+     * @param array            $context [optional] Any extraneous information that does not fit well in a string.
      * @param string           $level   [optional] Importance of log message, highly recommended to use Psr\Log\LogLevel::{level}
      *
      * @return void
@@ -220,8 +220,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param string $socket_id The socket ID to validate
      *
      * @throws PusherException If $socket_id is invalid
+     *
+     * @return void
      */
-    private function validate_socket_id($socket_id)
+    private function validate_socket_id($socket_id): void
     {
         if ($socket_id !== null && !preg_match('/\A\d+\.\d+\z/', $socket_id)) {
             throw new PusherException('Invalid socket ID '.$socket_id);
@@ -236,8 +238,9 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param array [optional]  $query_params
      *
      * @return array
+     *
      */
-    private function sign($path, $request_method = 'GET', $query_params = array())
+    private function sign($path, string $request_method = 'GET', array $query_params = array()): array
     {
         $signed_params = self::build_auth_query_params(
             $this->settings['auth_key'],
@@ -271,7 +274,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param string $auth_version   [optional]
      * @param string $auth_timestamp [optional]
      *
-     * @return string
+     * @return array
+     *
      */
     public static function build_auth_query_params(
         $auth_key,
@@ -281,7 +285,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         $query_params = array(),
         $auth_version = '1.0',
         $auth_timestamp = null
-    ) {
+    ): array {
         $params = array();
         $params['auth_key'] = $auth_key;
         $params['auth_timestamp'] = (is_null($auth_timestamp) ? time() : $auth_timestamp);
@@ -811,6 +815,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
      *
      * @throws PusherException if signature is inccorrect.
+     *
+     * @return void
      */
     public function ensure_valid_signature($headers, $body)
     {
