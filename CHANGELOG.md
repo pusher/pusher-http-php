@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.1.1
+
+* [FIXED] Type signatures as recommended by psalm.
+
 ## 6.1.0
 
 * [ADDED] triggerAsync and triggerBatchAsync using the Guzzle async interface.
