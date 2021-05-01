@@ -18,15 +18,15 @@ Or add to `composer.json`:
 
 ```json
 "require": {
-	"pusher/pusher-php-server": "^6.1"
+    "pusher/pusher-php-server": "^6.1"
 }
 ```
 
-and then run `composer update`.
+then run `composer update`.
 
 ## Supported platforms
 
-* PHP - supports PHP versions 7.2, 7.3, 7.4 and 8.0.
+* PHP - supports PHP versions 7.3, 7.4 and 8.0.
 * Laravel - version 8.29 and above has built-in support for Pusher Channels as a [Broadcasting backend](https://laravel.com/docs/master/broadcasting).
 * Other PHP frameworks - supported provided you are using a supported version of PHP.
 
@@ -40,7 +40,7 @@ $app_key = 'YOUR_APP_KEY';
 $app_secret = 'YOUR_APP_SECRET';
 $app_cluster = 'YOUR_APP_CLUSTER';
 
-$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, array('cluster' => $app_cluster) );
+$pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, ['cluster' => $app_cluster]);
 ```
 
 The fourth parameter is an `$options` array. The additional options are:
@@ -66,7 +66,7 @@ $options = [
   'cluster' => $app_cluster,
   'useTLS' => false
 ];
-$pusher = new Pusher\Pusher( $app_key, $app_secret, $app_id, $options );
+$pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, $options);
 ```
 
 ## Logging configuration
@@ -92,12 +92,11 @@ your own Guzzle instance to the Pusher constructor:
 $custom_client = new GuzzleHttp\Client();
 
 $pusher = new Pusher\Pusher(
-	$app_key,
-	$app_secret,
-	$app_id,
-	array(),
-	$custom_client
-	)
+    $app_key,
+    $app_secret,
+    $app_id,
+    [],
+    $custom_client
 );
 ```
 
@@ -111,13 +110,13 @@ To trigger an event on one or more channels use the `trigger` function.
 ### A single channel
 
 ```php
-$pusher->trigger( 'my-channel', 'my_event', 'hello world' );
+$pusher->trigger('my-channel', 'my_event', 'hello world');
 ```
 
 ### Multiple channels
 
 ```php
-$pusher->trigger( [ 'channel-1', 'channel-2' ], 'my_event', 'hello world' );
+$pusher->trigger([ 'channel-1', 'channel-2' ], 'my_event', 'hello world');
 ```
 
 ### Batches
@@ -126,9 +125,9 @@ It's also possible to send multiple events with a single API call (max 10
 events per call on multi-tenant clusters):
 
 ```php
-$batch = array();
-$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'));
-$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'));
+$batch = [];
+$batch[] = ['channel' => 'my-channel', 'name' => 'my_event', 'data' => ['hello' => 'world']];
+$batch[] = ['channel' => 'my-channel', 'name' => 'my_event', 'data' => ['myname' => 'bob']];
 $pusher->triggerBatch($batch);
 ```
 
@@ -140,9 +139,9 @@ promises](https://github.com/guzzle/promises) which can be chained
 with `->then`:
 
 ```php
-$promise = $pusher->triggerAsync( [ 'channel-1', 'channel-2' ], 'my_event', 'hello world' );
+$promise = $pusher->triggerAsync(['channel-1', 'channel-2'], 'my_event', 'hello world');
 
-$promise->then(function ($result) {
+$promise->then(function($result) {
   // do something with $result
   return $result;
 });
@@ -152,7 +151,7 @@ $final_result = $promise->wait();
 
 ### Arrays
 
-Objects are automatically converted to JSON format:
+Arrays are automatically converted to JSON format:
 
 ```php
 $array['name'] = 'joe';
@@ -174,13 +173,13 @@ socket id](https://pusher.com/docs/channels/server_api/excluding-event-recipient
 while triggering an event:
 
 ```php
-$pusher->trigger('my-channel', 'event', 'data', array('socket_id' => $socket_id));
+$pusher->trigger('my-channel', 'event', 'data', ['socket_id' => $socket_id]);
 ```
 
 ```php
-$batch = array();
-$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'), array('socket_id' => $socket_id));
-$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'), array('socket_id' => $socket_id);
+$batch = [];
+$batch[] = ['channel' => 'my-channel', 'name' => 'my_event', 'data' => ['hello' => 'world'], ['socket_id' => $socket_id]];
+$batch[] = ['channel' => 'my-channel', 'name' => 'my_event', 'data' => ['myname' => 'bob'], ['socket_id' => $socket_id]];
 $pusher->triggerBatch($batch);
 ```
 
@@ -191,23 +190,23 @@ published to with the
 [`info` param](https://pusher.com/docs/channels/library_auth_reference/rest-api#request):
 
 ```php
-$result = $pusher->trigger('my-channel', 'my_event', 'hello world', array('info' => 'subscription_count'));
+$result = $pusher->trigger('my-channel', 'my_event', 'hello world', ['info' => 'subscription_count']);
 $subscription_count = $result->channels['my-channel']->subscription_count;
 ```
 
 ```php
-$batch = array();
-$batch[] = array('channel' => 'my-channel', 'name' => 'my_event', 'data' => array('hello' => 'world'), 'info' => 'subscription_count');
-$batch[] = array('channel' => 'presence-my-channel', 'name' => 'my_event', 'data' => array('myname' => 'bob'), 'info' => 'user_count,subscription_count');
+$batch = [];
+$batch[] = ['channel' => 'my-channel', 'name' => 'my_event', 'data' => ['hello' => 'world'], 'info' => 'subscription_count'];
+$batch[] = ['channel' => 'presence-my-channel', 'name' => 'my_event', 'data' => ['myname' => 'bob'], 'info' => 'user_count,subscription_count'];
 $result = $pusher->triggerBatch($batch);
 
 foreach ($result->batch as $i => $attributes) {
   echo "channel: {$batch[$i]['channel']}, name: {$batch[$i]['name']}";
   if (isset($attributes->subscription_count)) {
-	echo ", subscription_count: {$attributes->subscription_count}";
+    echo ", subscription_count: {$attributes->subscription_count}";
   }
   if (isset($attributes->user_count)) {
-	echo ", user_count: {$attributes->user_count}";
+    echo ", user_count: {$attributes->user_count}";
   }
   echo PHP_EOL;
 }
@@ -219,16 +218,16 @@ If your data is already encoded in JSON format, you can avoid a second encoding
 step by setting the sixth argument true, like so:
 
 ```php
-$pusher->trigger('my-channel', 'event', 'data', array(), true)
+$pusher->trigger('my-channel', 'event', 'data', [], true);
 ```
 
 ## Authenticating Private channels
 
 To authorise your users to access private channels on Pusher, you can use the
-`socket_auth` function:
+`socketAuth` function:
 
 ```php
-$pusher->socket_auth('private-my-channel','socket_id');
+$pusher->socketAuth('private-my-channel','socket_id');
 ```
 
 ## Authenticating Presence channels
@@ -237,7 +236,7 @@ Using presence channels is similar to private channels, but you can specify
 extra data to identify that particular user:
 
 ```php
-$pusher->presence_auth('presence-my-channel','socket_id', 'user_id', 'user_info');
+$pusher->presenceAuth('presence-my-channel','socket_id', 'user_id', 'user_info');
 ```
 
 ## Webhooks
@@ -252,7 +251,7 @@ exception is thrown instead.
 ```php
 $webhook = $pusher->webhook($request_headers, $request_body);
 $number_of_events = count($webhook->get_events());
-$time_recieved = $webhook->get_time_ms();
+$time_received = $webhook->get_time_ms();
 ```
 
 ## End to end encryption
@@ -281,14 +280,14 @@ these steps:
 
    ```php
    $pusher = new Pusher\Pusher(
-	   $app_key,
-	   $app_secret,
-	   $app_id,
-	   array(
-		   'cluster' => $app_cluster,
-		   'encryption_master_key_base64' => "<your base64 encoded master key>"
-	   )
-   );
+       $app_key,
+       $app_secret,
+       $app_id,
+       [
+           'cluster' => $app_cluster,
+           'encryption_master_key_base64' => "<your base64 encoded master key>"
+       ]
+    );
    ```
 
 4. Channels where you wish to use end to end encryption should be prefixed with
@@ -309,7 +308,7 @@ call to `trigger`, e.g.
 $data['name'] = 'joe';
 $data['message_count'] = 23;
 
-$pusher->trigger(array('channel-1', 'private-encrypted-channel-2'), 'test_event', $data);
+$pusher->trigger(['channel-1', 'private-encrypted-channel-2'], 'test_event', $data);
 ```
 
 Rationale: the methods in this library map directly to individual Channels HTTP
@@ -322,29 +321,30 @@ is unencrypted for unencrypted channels.
 
 First set this variable in your JS app:
 
-```php
-Pusher.channel_auth_endpoint = '/presence_auth.php';
+```js
+Pusher.channel_auth_endpoint = '/presenceAuth.php';
 ```
 
-Next, create the following in presence_auth.php:
+Next, create the following in presenceAuth.php:
 
 ```php
 <?php
+
+header('Content-Type: application/json');
+
 if (isset($_SESSION['user_id'])) {
   $stmt = $pdo->prepare("SELECT * FROM `users` WHERE id = :id");
   $stmt->bindValue(':id', $_SESSION['user_id'], PDO::PARAM_INT);
   $stmt->execute();
   $user = $stmt->fetch();
 } else {
-  die('aaargh, no-one is logged in');
+  die(json_encode('no-one is logged in'));
 }
 
-header('Content-Type: application/json');
-
 $pusher = new Pusher\Pusher($key, $secret, $app_id);
-$presence_data = array('name' => $user['name']);
+$presence_data = ['name' => $user['name']];
 
-echo $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
+echo $pusher->presenceAuth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
 ```
 
 Note: this assumes that you store your users in a table called `users` and that
@@ -356,13 +356,13 @@ mechanism that stores the `user_id` of the logged in user in the session.
 ### Get information about a channel
 
 ```php
-$pusher->get_channel_info( $name );
+$pusher->getChannelInfo($name);
 ```
 
 It's also possible to get information about a channel from the Channels HTTP API.
 
 ```php
-$info = $pusher->get_channel_info('channel-name');
+$info = $pusher->getChannelInfo('channel-name');
 $channel_occupied = $info->occupied;
 ```
 
@@ -371,7 +371,7 @@ query the number of distinct users currently subscribed to this channel (a
 single user may be subscribed many times, but will only count as one):
 
 ```php
-$info = $pusher->get_channel_info('presence-channel-name', array('info' => 'user_count'));
+$info = $pusher->getChannelInfo('presence-channel-name', ['info' => 'user_count']);
 $user_count = $info->user_count;
 ```
 
@@ -380,28 +380,28 @@ of connections currently subscribed to this channel) then you can query this
 value as follows:
 
 ```php
-$info = $pusher->get_channel_info('presence-channel-name', array('info' => 'subscription_count'));
+$info = $pusher->getChannelInfo('presence-channel-name', ['info' => 'subscription_count']);
 $subscription_count = $info->subscription_count;
 ```
 
 ### Get a list of application channels
 
 ```php
-$pusher->get_channels()
+$pusher->getChannels();
 ```
 
 It's also possible to get a list of channels for an application from the
 Channels HTTP API.
 
 ```php
-$result = $pusher->get_channels();
+$result = $pusher->getChannels();
 $channel_count = count($result->channels); // $channels is an Array
 ```
 
 ### Get a filtered list of application channels
 
 ```php
-$pusher->get_channels( array( 'filter_by_prefix' => 'some_filter' ) )
+$pusher->getChannels(['filter_by_prefix' => 'some_filter']);
 ```
 
 It's also possible to get a list of channels based on their name prefix. To do
@@ -410,30 +410,31 @@ example the call will return a list of all channels with a `presence-` prefix.
 This is idea for fetching a list of all presence channels.
 
 ```php
-$results = $pusher->get_channels( array( 'filter_by_prefix' => 'presence-') );
+$results = $pusher->getChannels(['filter_by_prefix' => 'presence-']);
 $channel_count = count($result->channels); // $channels is an Array
 ```
 
 This can also be achieved using the generic `pusher->get` function:
 
 ```php
-$pusher->get( '/channels', array( 'filter_by_prefix' => 'presence-' ) );
+$pusher->get('/channels', ['filter_by_prefix' => 'presence-']);
 ```
 
 ### Get a list of application channels with subscription counts
 
 The HTTP API returning the channel list does not support returning the
 subscription count along with each channel. Instead, you can fetch this data by
-iterating over each channel and making another request. But be warned: this
+iterating over each channel and making another request. Be warned: this
 approach consumes (number of channels + 1) messages!
 
 ```php
 <?php
-$subscription_counts = array();
-foreach ($pusher->get_channels()->channels as $channel => $v) {
+$subscription_counts = [];
+foreach ($pusher->getChannels()->channels as $channel => $v) {
   $subscription_counts[$channel] =
-	$pusher->get_channel_info(
-	  $channel, array('info' => 'subscription_count'))->subscription_count;
+    $pusher->getChannelInfo(
+      $channel, ['info' => 'subscription_count']
+    )->subscription_count;
 }
 var_dump($subscription_counts);
 ```
@@ -441,14 +442,14 @@ var_dump($subscription_counts);
 ### Get user information from a presence channel
 
 ```php
-$results = $pusher->get_users_info( 'presence-channel-name' );
+$results = $pusher->getPresenceUsers('presence-channel-name');
 $users_count = count($results->users); // $users is an Array
 ```
 
 This can also be achieved using the generic `pusher->get` function:
 
 ```php
-$response = $pusher->get( '/channels/presence-channel-name/users' )
+$response = $pusher->get('/channels/presence-channel-name/users');
 ```
 
 The `$response` is in the format:
@@ -471,7 +472,7 @@ Array (
 ### Generic get function
 
 ```php
-$pusher->get( $path, $params );
+$pusher->get($path, $params);
 ```
 
 Used to make `GET` queries against the Channels HTTP API. Handles authentication.
@@ -482,9 +483,9 @@ property to allow the HTTP status code is always present and a `result`
 property will be set if the status code indicates a successful call to the API.
 
 ```php
-$response = $pusher->get( '/channels' );
-$http_status_code = $response[ 'status' ];
-$result = $response[ 'result' ];
+$response = $pusher->get('/channels');
+$http_status_code = $response['status'];
+$result = $response['result'];
 ```
 
 ## Running the tests

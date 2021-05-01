@@ -1,65 +1,70 @@
 <?php
 
-class PusherConstructorTest extends PHPUnit\Framework\TestCase
+namespace unit;
+
+use PHPUnit\Framework\TestCase;
+use Pusher\Pusher;
+
+class PusherConstructorTest extends TestCase
 {
-    public function testUseTLSOptionWillSetHostAndPort()
+    public function testUseTLSOptionWillSetHostAndPort(): void
     {
-        $options = array('useTLS' => true);
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', $options);
+        $options = ['useTLS' => true];
+        $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
 
         $settings = $pusher->getSettings();
-        $this->assertEquals('https', $settings['scheme'], 'https');
-        $this->assertEquals('api-mt1.pusher.com', $settings['host']);
-        $this->assertEquals('443', $settings['port']);
+        self::assertEquals('https', $settings['scheme'], 'https');
+        self::assertEquals('api-mt1.pusher.com', $settings['host']);
+        self::assertEquals('443', $settings['port']);
     }
 
-    public function testUseTLSOptionWillBeOverwrittenByHostAndPortOptionsSetHostAndPort()
+    public function testUseTLSOptionWillBeOverwrittenByHostAndPortOptionsSetHostAndPort(): void
     {
-        $options = array(
+        $options = [
             'useTLS' => true,
             'host'   => 'test.com',
             'port'   => '3000',
-        );
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', $options);
+        ];
+        $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
 
         $settings = $pusher->getSettings();
-        $this->assertEquals('http', $settings['scheme']);
-        $this->assertEquals($options['host'], $settings['host']);
-        $this->assertEquals($options['port'], $settings['port']);
+        self::assertEquals('http', $settings['scheme']);
+        self::assertEquals($options['host'], $settings['host']);
+        self::assertEquals($options['port'], $settings['port']);
     }
 
-    public function testSchemeIsStrippedAndIgnoredFromHostInOptions()
+    public function testSchemeIsStrippedAndIgnoredFromHostInOptions(): void
     {
-        $options = array(
+        $options = [
             'host' => 'http://test.com',
-        );
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', $options);
+        ];
+        $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
 
         $settings = $pusher->getSettings();
-        $this->assertEquals('https', $settings['scheme']);
-        $this->assertEquals('test.com', $settings['host']);
+        self::assertEquals('https', $settings['scheme']);
+        self::assertEquals('test.com', $settings['host']);
     }
 
-    public function testClusterSetsANewHost()
+    public function testClusterSetsANewHost(): void
     {
-        $options = array(
+        $options = [
             'cluster' => 'eu',
-        );
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', $options);
+        ];
+        $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
 
         $settings = $pusher->getSettings();
-        $this->assertEquals('api-eu.pusher.com', $settings['host']);
+        self::assertEquals('api-eu.pusher.com', $settings['host']);
     }
 
-    public function testClusterOptionIsOverriddenByHostIfItExists()
+    public function testClusterOptionIsOverriddenByHostIfItExists(): void
     {
-        $options = array(
+        $options = [
             'cluster' => 'eu',
             'host'    => 'api.staging.pusher.com',
-        );
-        $pusher = new Pusher\Pusher('app_key', 'app_secret', 'app_id', $options);
+        ];
+        $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
 
         $settings = $pusher->getSettings();
-        $this->assertEquals('api.staging.pusher.com', $settings['host']);
+        self::assertEquals('api.staging.pusher.com', $settings['host']);
     }
 }

@@ -1,88 +1,107 @@
 <?php
 
-class TriggerUnitTest extends PHPUnit\Framework\TestCase
+namespace unit;
+
+use PHPUnit\Framework\TestCase;
+use Pusher\Pusher;
+use Pusher\PusherException;
+
+class TriggerUnitTest extends TestCase
 {
+    /**
+     * @var array
+     */
+    private $localData;
+    /**
+     * @var string
+     */
+    private $eventName;
+    /**
+     * @var Pusher
+     */
+    private $pusher;
+
     protected function setUp(): void
     {
-        $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1);
+        $this->pusher = new Pusher('thisisaauthkey', 'thisisasecret', 1);
         $this->eventName = 'test_event';
-        $this->data = array();
+        $this->localData = [];
     }
 
-    public function testTrailingColonChannelThrowsException()
+    public function testTrailingColonChannelThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger('test_channel:', $this->eventName, $this->data);
+        $this->pusher->trigger('test_channel:', $this->eventName, $this->localData);
     }
 
-    public function testLeadingColonChannelThrowsException()
+    public function testLeadingColonChannelThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger(':test_channel', $this->eventName, $this->data);
+        $this->pusher->trigger(':test_channel', $this->eventName, $this->localData);
     }
 
-    public function testLeadingColonNLChannelThrowsException()
+    public function testLeadingColonNLChannelThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger(':\ntest_channel', $this->eventName, $this->data);
+        $this->pusher->trigger(':\ntest_channel', $this->eventName, $this->localData);
     }
 
-    public function testTrailingColonNLChannelThrowsException()
+    public function testTrailingColonNLChannelThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger('test_channel\n:', $this->eventName, $this->data);
+        $this->pusher->trigger('test_channel\n:', $this->eventName, $this->localData);
     }
 
-    public function testChannelArrayThrowsException()
+    public function testChannelArrayThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger(array('this_one_is_okay', 'test_channel\n:'), $this->eventName, $this->data);
+        $this->pusher->trigger(['this_one_is_okay', 'test_channel\n:'], $this->eventName, $this->localData);
     }
 
-    public function testTrailingColonSocketIDThrowsException()
+    public function testTrailingColonSocketIDThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, array('socket_id' => '1.1:'));
+        $this->pusher->trigger('test_channel:', $this->eventName, $this->localData, ['socket_id' => '1.1:']);
     }
 
-    public function testLeadingColonSocketIDThrowsException()
+    public function testLeadingColonSocketIDThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, array('socket_id' => ':1.1'));
+        $this->pusher->trigger('test_channel:', $this->eventName, $this->localData, ['socket_id' => ':1.1']);
     }
 
-    public function testLeadingColonNLSocketIDThrowsException()
+    public function testLeadingColonNLSocketIDThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, array('socket_id' => ':\n1.1'));
+        $this->pusher->trigger('test_channel:', $this->eventName, $this->localData, ['socket_id' => ':\n1.1']);
     }
 
-    public function testTrailingColonNLSocketIDThrowsException()
+    public function testTrailingColonNLSocketIDThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger('test_channel:', $this->eventName, $this->data, array('socket_id' => '1.1\n:'));
+        $this->pusher->trigger('test_channel:', $this->eventName, $this->localData, ['socket_id' => '1.1\n:']);
     }
 
-    public function testFalseSocketIDThrowsException()
+    public function testFalseSocketIDThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger('test_channel', $this->eventName, $this->data, array('socket_id' => false));
+        $this->pusher->trigger('test_channel', $this->eventName, $this->localData, ['socket_id' => false]);
     }
 
-    public function testEmptyStrSocketIDThrowsException()
+    public function testEmptyStrSocketIDThrowsException(): void
     {
-        $this->expectException(\Pusher\PusherException::class);
+        $this->expectException(PusherException::class);
 
-        $this->pusher->trigger('test_channel', $this->eventName, $this->data, array('socket_id' => ''));
+        $this->pusher->trigger('test_channel', $this->eventName, $this->localData, ['socket_id' => '']);
     }
 }
