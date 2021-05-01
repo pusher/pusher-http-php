@@ -6,6 +6,7 @@
     "require": {
         "php": "^7.2.5|^8.0",
         "ext-curl": "*",
+        "ext-json": "*",
         "guzzlehttp/guzzle": "^7.2",
         "psr/log": "^1.0",
         "paragonie/sodium_compat": "^1.6"

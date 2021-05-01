@@ -4,3 +4,4 @@ tests/config.php
 vendor
 .phpunit.result.cache
 .phplint-cache
+.idea

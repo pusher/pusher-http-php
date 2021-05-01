@@ -1,14 +1,24 @@
 <?php
 
+namespace acceptance;
+
+use Closure;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\CurlHandler;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
+use Pusher\Pusher;
 
-class MiddlewareTest extends PHPUnit\Framework\TestCase
+class MiddlewareTest extends TestCase
 {
     private $count = 0;
-    function increment()
+    /**
+     * @var Pusher
+     */
+    private $pusher;
+
+    public function increment(): Closure
     {
         return function (callable $handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
@@ -21,7 +31,7 @@ class MiddlewareTest extends PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         if (PUSHERAPP_AUTHKEY === '' || PUSHERAPP_SECRET === '' || PUSHERAPP_APPID === '') {
-            $this->markTestSkipped('Please set the
+            self::markTestSkipped('Please set the
             PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET and
             PUSHERAPP_APPID keys.');
         } else {
@@ -29,14 +39,14 @@ class MiddlewareTest extends PHPUnit\Framework\TestCase
             $stack->setHandler(new CurlHandler());
             $stack->push($this->increment());
             $client = new Client(['handler' => $stack]);
-            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, ['host' => PUSHERAPP_HOST], $client);
+            $this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, ['cluster' => PUSHERAPP_CLUSTER], $client);
         }
     }
 
-    public function testStringPush()
+    public function testStringPush(): void
     {
-        $this->assertEquals(0, $this->count);
+        self::assertEquals(0, $this->count);
         $result = $this->pusher->trigger('test_channel', 'my_event', 'Test string');
-        $this->assertEquals(1, $this->count);
+        self::assertEquals(1, $this->count);
     }
 }

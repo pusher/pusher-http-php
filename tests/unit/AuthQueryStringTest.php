@@ -1,41 +1,51 @@
 <?php
 
-class AuthQueryStringTest extends PHPUnit\Framework\TestCase
+namespace unit;
+
+use PHPUnit\Framework\TestCase;
+use Pusher\Pusher;
+
+class AuthQueryStringTest extends TestCase
 {
+    /**
+     * @var Pusher
+     */
+    private $pusher;
+
     protected function setUp(): void
     {
-        $this->pusher = new Pusher\Pusher('thisisaauthkey', 'thisisasecret', 1);
+        $this->pusher = new Pusher('thisisaauthkey', 'thisisasecret', 1);
     }
 
-    public function testArrayImplode()
+    public function testArrayImplode(): void
     {
-        $val = array('testKey' => 'testValue');
+        $val = ['testKey' => 'testValue'];
 
         $expected = 'testKey=testValue';
-        $actual = Pusher\Pusher::array_implode('=', '&', $val);
+        $actual = Pusher::array_implode('=', '&', $val);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $actual,
             'auth signature valid'
         );
     }
 
-    public function testArrayImplodeWithTwoValues()
+    public function testArrayImplodeWithTwoValues(): void
     {
-        $val = array('testKey' => 'testValue', 'testKey2' => 'testValue2');
+        $val = ['testKey' => 'testValue', 'testKey2' => 'testValue2'];
 
         $expected = 'testKey=testValue&testKey2=testValue2';
-        $actual = Pusher\Pusher::array_implode('=', '&', $val);
+        $actual = Pusher::array_implode('=', '&', $val);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $actual,
             'auth signature valid'
         );
     }
 
-    public function testGenerateSignature()
+    public function testGenerateSignature(): void
     {
         $time = time();
         $auth_version = '1.0';
@@ -43,10 +53,10 @@ class AuthQueryStringTest extends PHPUnit\Framework\TestCase
         $auth_key = 'thisisaauthkey';
         $auth_secret = 'thisisasecret';
         $request_path = '/channels/test_channel/events';
-        $query_params = array(
+        $query_params = [
             'name' => 'an_event',
-        );
-        $auth_query_string = Pusher\Pusher::build_auth_query_params(
+        ];
+        $auth_query_string = Pusher::build_auth_query_params(
             $auth_key,
             $auth_secret,
             $method,
@@ -66,7 +76,7 @@ class AuthQueryStringTest extends PHPUnit\Framework\TestCase
             'name' => 'an_event'
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected_query_params,
             $auth_query_string,
             'auth signature valid'
