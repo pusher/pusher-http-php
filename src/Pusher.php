@@ -46,7 +46,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param string $auth_key
      * @param string $secret
      * @param string $app_id
-     * @param array  $options  [optional]
+     * @param array $options  [optional]
      *                         Options to configure the Pusher instance.
      *                         scheme - e.g. http or https
      *                         host - the host e.g. api-mt1.pusher.com. No trailing forward slash.
@@ -55,11 +55,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *                         useTLS - quick option to use scheme of https and port 443 (default is true).
      *                         cluster - cluster name to connect to.
      *                         encryption_master_key_base64 - a 32 byte key, encoded as base64. This key, along with the channel name, are used to derive per-channel encryption keys. Per-channel keys are used to encrypt event data on encrypted channels.
-     * @param ClientInterface $client [optional] - a Guzzle client to use for all HTTP requests
+     * @param ClientInterface|null $client [optional] - a Guzzle client to use for all HTTP requests
      *
      * @throws PusherException Throws exception if any required dependencies are missing
      */
-    public function __construct(string $auth_key, string $secret, string $app_id, $options = [], $client = null)
+    public function __construct(string $auth_key, string $secret, string $app_id, array $options = [], ClientInterface $client = null)
     {
         $this->check_compatibility();
 
@@ -157,7 +157,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             $replacement['{' . $k . '}'] = $v;
         }
 
-        $this->logger->log($level,strtr($msg, $replacement));
+        $this->logger->log($level, strtr($msg, $replacement));
     }
 
     /**
@@ -227,11 +227,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @param string $path
      * @param string $request_method
-     * @param array [optional]  $query_params
+     * @param array $query_params [optional]
      *
      * @return array
      */
-    private function sign(string $path, $request_method = 'GET', $query_params = []): array
+    private function sign(string $path, string $request_method = 'GET', array $query_params = []): array
     {
         return self::build_auth_query_params(
             $this->settings['auth_key'],
@@ -355,10 +355,21 @@ class Pusher implements LoggerAwareInterface, PusherInterface
                 // For rationale, see limitations of end-to-end encryption in the README
                 throw new PusherException('You cannot trigger to multiple channels when using encrypted channels');
             } else {
-                $data_encoded = $this->crypto->encrypt_payload($channels[0], $already_encoded ? $data : json_encode($data));
+                try {
+                    $data_encoded = $this->crypto->encrypt_payload(
+                        $channels[0],
+                        $already_encoded ? $data : json_encode($data, JSON_THROW_ON_ERROR)
+                    );
+                } catch (\JsonException $e) {
+                    throw new PusherException('Data encoding error.');
+                }
             }
         } else {
-            $data_encoded = $already_encoded ? $data : json_encode($data);
+            try {
+                $data_encoded = $already_encoded ? $data : json_encode($data, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                throw new PusherException('Data encoding error.');
+            }
         }
 
         $query_params = [];
@@ -379,7 +390,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
         $all_params = array_merge($post_params, $params);
 
-        $post_value = json_encode($all_params);
+        try {
+            $post_value = json_encode($all_params, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data encoding error.');
+        }
 
         $query_params['body_md5'] = md5($post_value);
 
@@ -429,7 +444,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             throw new ApiErrorException($body, $status);
         }
 
-        $result = json_decode($response->getBody(), false);
+        try {
+            $result = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data encoding error.');
+        }
 
         if (property_exists($result, 'channels')) {
             $result->channels = get_object_vars($result->channels);
@@ -466,7 +485,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
                 throw new ApiErrorException($body, $status);
             }
 
-            $result = json_decode($response->getBody());
+            $result = json_decode($response->getBody(), null, 512, JSON_THROW_ON_ERROR);
 
             if (property_exists($result, 'channels')) {
                 $result->channels = get_object_vars($result->channels);
@@ -497,7 +516,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
             $data = $event['data'];
             if (!is_string($data)) {
-                $data = $already_encoded ? $data : json_encode($data);
+                try {
+                    $data = $already_encoded ? $data : json_encode($data, JSON_THROW_ON_ERROR);
+                } catch (\JsonException $e) {
+                    throw new PusherException('Data encoding error.');
+                }
             }
 
             if (PusherCrypto::is_encrypted_channel($event['channel'])) {
@@ -509,7 +532,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
         $post_params = [];
         $post_params['batch'] = $batch;
-        $post_value = json_encode($post_params);
+        try {
+            $post_value = json_encode($post_params, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data encoding error.');
+        }
 
         $query_params = [];
         $query_params['body_md5'] = md5($post_value);
@@ -557,7 +584,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             throw new ApiErrorException($body, $status);
         }
 
-        $result = json_decode($response->getBody(), false);
+        try {
+            $result = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data encoding error.');
+        }
 
         if (property_exists($result, 'channels')) {
             $result->channels = get_object_vars($result->channels);
@@ -590,7 +621,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
                 throw new ApiErrorException($body, $status);
             }
 
-            $result = json_decode($response->getBody(), false);
+            $result = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
 
             if (property_exists($result, 'channels')) {
                 $result->channels = get_object_vars($result->channels);
@@ -662,6 +693,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      * @throws GuzzleException
+     * @throws PusherException
      *
      * @return mixed See Pusher API docs
      */
@@ -690,7 +722,13 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             throw new ApiErrorException($body, $status);
         }
 
-        return json_decode($response->getBody(), $associative);
+        try {
+            $body = json_decode($response->getBody(), $associative, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data decoding error.');
+        }
+
+        return $body;
     }
 
     /**
@@ -728,7 +766,13 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             }
         }
 
-        return json_encode($signature, JSON_UNESCAPED_SLASHES);
+        try {
+            $response = json_encode($signature, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data encoding error.');
+        }
+
+        return $response;
     }
 
     /**
@@ -749,7 +793,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             $user_data['user_info'] = $user_info;
         }
 
-        return $this->socket_auth($channel, $socket_id, json_encode($user_data));
+        try {
+            return $this->socket_auth($channel, $socket_id, json_encode($user_data, JSON_THROW_ON_ERROR));
+        } catch (\JsonException $e) {
+            throw new PusherException('Data encoding error.');
+        }
     }
 
     /**
@@ -767,7 +815,13 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         $this->ensure_valid_signature($headers, $body);
 
         $decoded_events = [];
-        $decoded_json = json_decode($body, false);
+        try {
+            $decoded_json = json_decode($body, false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $this->log('Unable to decrypt webhook event payload.', null, LogLevel::WARNING);
+            throw new PusherException('Data encoding error.');
+        }
+
         foreach ($decoded_json->events as $key => $event) {
             if (PusherCrypto::is_encrypted_channel($event->channel)) {
                 if (!is_null($this->crypto)) {
@@ -795,7 +849,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @param array  $headers an array of headers from the request (for example, from getallheaders())
      * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
      *
-     * @throws PusherException if signature is inccorrect.
+     * @throws PusherException if signature is incorrect.
      */
     public function ensure_valid_signature(array $headers, string $body): void
     {

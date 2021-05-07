@@ -47,14 +47,14 @@ class WebhookTest extends TestCase
             'X-Pusher-Key'       => $this->auth_key,
             'X-Pusher-Signature' => $signature,
         ];
-        $wrong_signature = $this->pusher->ensure_valid_signature($headers, $body);
+        $this->pusher->ensure_valid_signature($headers, $body);
     }
 
     public function testDecodeWebhook(): void
     {
         $headers_json = '{"X-Pusher-Key":"' . $this->auth_key . '","X-Pusher-Signature":"a19cab2af3ca1029257570395e78d5d675e9e700ca676d18a375a7083178df1c"}';
         $body = '{"time_ms":1530710011901,"events":[{"name":"client_event","channel":"private-my-channel","event":"client-event","data":"Unencrypted","socket_id":"240621.35780774"}]}';
-        $headers = json_decode($headers_json, true);
+        $headers = json_decode($headers_json, true, 512, JSON_THROW_ON_ERROR);
 
         $decodedWebhook = $this->pusher->webhook($headers, $body);
         self::assertEquals(1530710011901, $decodedWebhook->get_time_ms());

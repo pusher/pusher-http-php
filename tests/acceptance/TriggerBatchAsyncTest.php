@@ -219,7 +219,7 @@ class TriggerBatchAsyncTest extends TestCase
         self::assertEquals(new stdClass(), $result);
     }
 
-    public function testSendingOver10kBMessageReturns413()
+    public function testSendingOver10kBMessageReturns413(): void
     {
         $this->expectException(\Pusher\ApiErrorException::class);
         $this->expectExceptionMessage('content of this event');
@@ -231,7 +231,7 @@ class TriggerBatchAsyncTest extends TestCase
         $this->pusher->triggerBatchAsync($batch, true)->wait();
     }
 
-    public function testSendingOver10messagesReturns400()
+    public function testSendingOver10messagesReturns400(): void
     {
         $this->expectException(\Pusher\ApiErrorException::class);
         $this->expectExceptionMessage('Batch too large');

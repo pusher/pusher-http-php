@@ -115,7 +115,11 @@ class PusherCrypto
         $shared_secret = $this->generate_shared_secret($channel);
         $cipher_text = sodium_crypto_secretbox($plaintext, $nonce, $shared_secret);
 
-        return $this->format_encrypted_message($nonce, $cipher_text);
+        try {
+            return $this->format_encrypted_message($nonce, $cipher_text);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data encoding error.');
+        }
     }
 
     /**
@@ -141,18 +145,19 @@ class PusherCrypto
     /**
      * Formats an encrypted message ready for broadcast.
      *
-     * @param string $nonce      the nonce used in the encryption process (bytes)
+     * @param string $nonce the nonce used in the encryption process (bytes)
      * @param string $ciphertext the ciphertext (bytes)
      *
      * @return string JSON with base64 encoded nonce and ciphertext`
+     * @throws \JsonException
      */
-    private function format_encrypted_message(string $nonce, string $ciphertext)
+    private function format_encrypted_message(string $nonce, string $ciphertext): string
     {
         $encrypted_message = new \stdClass();
         $encrypted_message->nonce = base64_encode($nonce);
         $encrypted_message->ciphertext = base64_encode($ciphertext);
 
-        return json_encode($encrypted_message);
+        return json_encode($encrypted_message, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -166,7 +171,12 @@ class PusherCrypto
      */
     private function parse_encrypted_message(string $payload): object
     {
-        $decoded_payload = json_decode($payload, false);
+        try {
+            $decoded_payload = json_decode($payload, false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data decoding error.');
+        }
+
         $decoded_payload->nonce = base64_decode($decoded_payload->nonce);
         $decoded_payload->ciphertext = base64_decode($decoded_payload->ciphertext);
         if ($decoded_payload->ciphertext === '' || strlen($decoded_payload->nonce) !== SODIUM_CRYPTO_SECRETBOX_NONCEBYTES) {
