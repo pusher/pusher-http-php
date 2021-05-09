@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.0.0
+* [CHANGED] Possible backwards compatible break in initiating the `$app_id`  parameter of the `new Pusher()` object
+    caused by adding types to the code. It was decided to change it from `int` to `string` to match the examples
+    in the documentation.
+
 ## 6.1.0
 
 * [ADDED] triggerAsync and triggerBatchAsync using the Guzzle async interface.
