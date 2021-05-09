@@ -4,6 +4,7 @@
 * [CHANGED] Possible backwards compatible break in initiating the `$app_id`  parameter of the `new Pusher()` object
     caused by adding types to the code. It was decided to change it from `int` to `string` to match the examples
     in the documentation.
+* [CHANGED] added return types, namespacing, psr-12 formatting.
 
 ## 6.1.0
 
