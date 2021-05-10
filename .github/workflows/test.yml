@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [7.2, 7.3, 7.4, 8.0]
+        php: [7.3, 7.4, 8.0]
         stability: [prefer-lowest, prefer-stable]
 
     name: PHP ${{ matrix.php }} - ${{ matrix.stability }} Test
@@ -42,5 +42,5 @@ jobs:
           PUSHERAPP_APPID: ${{ secrets.CI_APP_ID }}
           PUSHERAPP_AUTHKEY: ${{ secrets.CI_APP_KEY }}
           PUSHERAPP_SECRET: ${{ secrets.CI_APP_SECRET }}
-          PUSHERAPP_HOST: http://api-${{ secrets.CI_APP_CLUSTER }}.pusher.com
+          PUSHERAPP_CLUSTER: ${{ secrets.CI_APP_CLUSTER }}
         run: composer exec phpunit tests/acceptance

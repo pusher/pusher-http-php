@@ -1,6 +1,6 @@
 <?php
 
-define('PUSHERAPP_APPID', '');
-define('PUSHERAPP_AUTHKEY', '');
-define('PUSHERAPP_SECRET', '');
-define('PUSHERAPP_HOST', 'http://api.pusherapp.com');
+const PUSHERAPP_APPID = '';
+const PUSHERAPP_AUTHKEY = '';
+const PUSHERAPP_SECRET = '';
+const PUSHERAPP_CLUSTER = 'eu';

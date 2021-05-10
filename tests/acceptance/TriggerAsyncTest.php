@@ -1,42 +1,53 @@
 <?php
 
-class TriggerAsyncTest extends PHPUnit\Framework\TestCase
+namespace acceptance;
+
+use PHPUnit\Framework\TestCase;
+use Pusher\Pusher;
+use stdClass;
+
+class TriggerAsyncTest extends TestCase
 {
+    /**
+     * @var Pusher
+     */
+    private $pusher;
+
     protected function setUp(): void
     {
         if (PUSHERAPP_AUTHKEY === '' || PUSHERAPP_SECRET === '' || PUSHERAPP_APPID === '') {
-            $this->markTestSkipped('Please set the
+            self::markTestSkipped('Please set the
             PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET and
             PUSHERAPP_APPID keys.');
         } else {
-            $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, ['host' => PUSHERAPP_HOST]);
+            $this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, ['cluster' => PUSHERAPP_CLUSTER]);
         }
     }
 
-    public function testObjectConstruct()
+    public function testObjectConstruct(): void
     {
-        $this->assertNotNull($this->pusher, 'Created new Pusher\Pusher object');
+        self::assertNotNull($this->pusher, 'Created new \Pusher\Pusher object');
     }
 
-    public function testStringPush()
+    public function testStringPush(): void
     {
         $result = $this->pusher->triggerAsync('test_channel', 'my_event', 'Test string')->wait();
-        $this->assertEquals(new stdClass(), $result);
+        self::assertEquals(new stdClass(), $result);
     }
 
-    public function testArrayPush()
+    public function testArrayPush(): void
     {
-        $result = $this->pusher->triggerAsync('test_channel', 'my_event', array('test' => 1))->wait();
-        $this->assertEquals(new stdClass(), $result);
+        $result = $this->pusher->triggerAsync('test_channel', 'my_event', ['test' => 1])->wait();
+        self::assertEquals(new stdClass(), $result);
     }
 
-    public function testPushWithSocketId()
+    public function testPushWithSocketId(): void
     {
-        $result = $this->pusher->triggerAsync('test_channel', 'my_event', array('test' => 1), array('socket_id' => '123.456'))->wait();
-        $this->assertEquals(new stdClass(), $result);
+        $result = $this->pusher->triggerAsync('test_channel', 'my_event', ['test' => 1], ['socket_id' => '123.456'])->wait();
+        self::assertEquals(new stdClass(), $result);
     }
 
-    public function testPushWithInfo()
+    public function testPushWithInfo(): void
     {
         $expectedMyChannel = new stdClass();
         $expectedMyChannel->subscription_count = 1;
@@ -44,78 +55,78 @@ class TriggerAsyncTest extends PHPUnit\Framework\TestCase
         $expectedPresenceMyChannel->user_count = 0;
         $expectedPresenceMyChannel->subscription_count = 0;
         $expectedResult = new stdClass();
-        $expectedResult->channels = array(
+        $expectedResult->channels = [
             "my-channel" => $expectedMyChannel,
             "presence-my-channel" => $expectedPresenceMyChannel,
-        );
+        ];
 
-        $result = $this->pusher->triggerAsync(['my-channel', 'presence-my-channel'], 'my_event', array('test' => 1), array('info' => 'user_count,subscription_count'))->wait();
-        $this->assertEquals($expectedResult, $result);
+        $result = $this->pusher->triggerAsync(['my-channel', 'presence-my-channel'], 'my_event', ['test' => 1], ['info' => 'user_count,subscription_count'])->wait();
+        self::assertEquals($expectedResult, $result);
     }
 
-    public function testTLSPush()
+    public function testTLSPush(): void
     {
-        $options = array(
+        $options = [
             'useTLS' => true,
-            'host'   => PUSHERAPP_HOST,
-        );
-        $pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
+            'cluster' => PUSHERAPP_CLUSTER
+        ];
+        $pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
 
-        $result = $pusher->triggerAsync('test_channel', 'my_event', array('encrypted' => 1))->wait();
-        $this->assertEquals(new stdClass(), $result);
+        $result = $pusher->triggerAsync('test_channel', 'my_event', ['encrypted' => 1])->wait();
+        self::assertEquals(new stdClass(), $result);
     }
 
-    public function testSendingOver10kBMessageReturns413()
+    public function testSendingOver10kBMessageReturns413(): void
     {
         $this->expectException(\Pusher\ApiErrorException::class);
         $this->expectExceptionCode('413');
 
         $data = str_pad('', 11 * 1024, 'a');
-        $this->pusher->triggerAsync('test_channel', 'my_event', $data, array(), true)->wait();
+        $this->pusher->triggerAsync('test_channel', 'my_event', $data, [], true)->wait();
     }
 
-    public function testTriggeringEventOnOver100ChannelsThrowsException()
+    public function testTriggeringEventOnOver100ChannelsThrowsException(): void
     {
         $this->expectException(\Pusher\PusherException::class);
 
-        $channels = array();
+        $channels = [];
         while (count($channels) <= 101) {
-            $channels[] = ('channel-'.count($channels));
+            $channels[] = ('channel-' . count($channels));
         }
-        $data = array('event_name' => 'event_data');
+        $data = ['event_name' => 'event_data'];
         $this->pusher->triggerAsync($channels, 'my_event', $data)->wait();
     }
 
-    public function testTriggeringEventOnMultipleChannels()
+    public function testTriggeringEventOnMultipleChannels(): void
     {
-        $data = array('event_name' => 'event_data');
-        $channels = array('test_channel_1', 'test_channel_2');
+        $data = ['event_name' => 'event_data'];
+        $channels = ['test_channel_1', 'test_channel_2'];
         $result = $this->pusher->triggerAsync($channels, 'my_event', $data)->wait();
-        $this->assertEquals(new stdClass(), $result);
+        self::assertEquals(new stdClass(), $result);
     }
 
-    public function testTriggeringEventOnPrivateEncryptedChannelSuccess()
+    public function testTriggeringEventOnPrivateEncryptedChannelSuccess(): void
     {
         $options = ['encryption_master_key_base64' => 'Y0F6UkgzVzlGWk0zaVhxU05JR3RLenR3TnVDejl4TVY=',
-                    'host' => PUSHERAPP_HOST];
-        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
+                    'cluster' => PUSHERAPP_CLUSTER];
+        $this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
 
-        $data = array('event_name' => 'event_data');
-        $channels = array('private-encrypted-ceppaio');
+        $data = ['event_name' => 'event_data'];
+        $channels = ['private-encrypted-ceppaio'];
         $result = $this->pusher->triggerAsync($channels, 'my_event', $data)->wait();
-        $this->assertEquals(new stdClass(), $result);
+        self::assertEquals(new stdClass(), $result);
     }
 
-    public function testTriggeringEventOnMultipleChannelsWithEncryptedChannelPresentError()
+    public function testTriggeringEventOnMultipleChannelsWithEncryptedChannelPresentError(): void
     {
         $this->expectException(\Pusher\PusherException::class);
 
         $options = ['encryption_master_key_base64' => 'Y0F6UkgzVzlGWk0zaVhxU05JR3RLenR3TnVDejl4TVY=',
-                    'host' => PUSHERAPP_HOST];
-        $this->pusher = new Pusher\Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
+                    'cluster' => PUSHERAPP_CLUSTER];
+        $this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
 
-        $data = array('event_name' => 'event_data');
-        $channels = array('my-chan-ceppaio', 'private-encrypted-ceppaio');
+        $data = ['event_name' => 'event_data'];
+        $channels = ['my-chan-ceppaio', 'private-encrypted-ceppaio'];
         $this->pusher->triggerAsync($channels, 'my_event', $data)->wait();
     }
 }
