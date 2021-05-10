@@ -1,5 +1,14 @@
 # Changelog
 
+## 7.0.0
+
+* [DEPRECATED] `get_channel_info`, `get_channels`, `socket_auth`, `presence_auth` in favour of camelCased versions
+* [DEPRECATED] `get_users_info` in favour of `getPresenceUsers`
+* [DEPRECATED] `ensure_valid_signature` in favour of `verifySignature`
+* [CHANGED] Restrict `$app_id` parameter of the `Pusher()` object to `string` (`int` was possible).
+* [ADDED] Return types.
+* [ADDED] Namespacing, PSR-12 formatting.
+
 ## 6.1.0
 
 * [ADDED] triggerAsync and triggerBatchAsync using the Guzzle async interface.
@@ -14,7 +23,7 @@
 * [CHANGED] internal HTTP client to Guzzle
 * [ADDED] optional client parameter to constructor
 * [CHANGED] useTLS is true by default
-* [REMOVED]  from options
+* [REMOVED] `curl_options` from options
 * [REMOVED] customer logger
 * [REMOVED] host, port and timeout constructor parameters
 * [REMOVED] support for PHP 7.1

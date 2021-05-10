@@ -18,7 +18,7 @@ Or add to `composer.json`:
 
 ```json
 "require": {
-    "pusher/pusher-php-server": "^6.1"
+    "pusher/pusher-php-server": "^7.0"
 }
 ```
 
