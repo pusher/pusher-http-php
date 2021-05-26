@@ -18,7 +18,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     /**
      * @var string Version
      */
-    public static $VERSION = '7.0.0';
+    public static $VERSION = '7.0.1';
 
     /**
      * @var null|PusherCrypto
@@ -837,7 +837,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function presence_auth(string $channel, string $socket_id, string $user_id, $user_info = null): string
     {
-        return $this->presence_auth($channel, $socket_id, $user_id, $user_info);
+        return $this->presenceAuth($channel, $socket_id, $user_id, $user_info);
     }
 
     /**
