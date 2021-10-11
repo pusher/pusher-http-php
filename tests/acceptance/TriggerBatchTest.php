@@ -244,4 +244,15 @@ class TriggerBatchTest extends TestCase
         }
         $this->pusher->triggerBatch($batch, false);
     }
+
+    public function testTriggeringApiExceptionIfConnectionErrorOcurred(): void
+    {
+        $this->expectException(ApiErrorException::class);
+
+        $options = ['host' => 'invalidhost'];
+        $this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
+
+        $batch = [['channel' => 'test_channel', 'name' => 'my_event', 'data' => ['index' => 0]]];
+        $this->pusher->triggerBatch($batch);
+    }
 }
