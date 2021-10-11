@@ -639,6 +639,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             }
 
             return $result;
+        }, function (ConnectException $e) {
+            throw new ApiErrorException($e->getMessage());
         });
 
         return $promise;
