@@ -129,4 +129,14 @@ class TriggerAsyncTest extends TestCase
         $channels = ['my-chan-ceppaio', 'private-encrypted-ceppaio'];
         $this->pusher->triggerAsync($channels, 'my_event', $data)->wait();
     }
+
+    public function testTriggeringApiExceptionIfConnectionErrorOcurred(): void
+    {
+        $this->expectException(\Pusher\ApiErrorException::class);
+
+        $options = ['host' => 'invalidhost'];
+        $this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
+
+        $this->pusher->triggerAsync('test_channel', 'my_event', 'event_data')->wait();
+    }
 }

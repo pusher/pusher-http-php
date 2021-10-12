@@ -3,6 +3,7 @@
 namespace Pusher;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -432,10 +433,14 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     {
         $request = $this->make_request($channels, $event, $data, $params, $already_encoded);
 
-        $response = $this->client->send($request, [
-            'http_errors' => false,
-            'base_uri' => $this->channels_url_prefix()
-        ]);
+        try {
+            $response = $this->client->send($request, [
+                'http_errors' => false,
+                'base_uri' => $this->channels_url_prefix()
+            ]);
+        } catch (ConnectException $e) {
+            throw new ApiErrorException($e->getMessage());
+        }
 
         $status = $response->getStatusCode();
 
@@ -492,6 +497,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             }
 
             return $result;
+        }, function (ConnectException $e) {
+            throw new ApiErrorException($e->getMessage());
         });
 
         return $promise;
@@ -572,10 +579,14 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     {
         $request = $this->make_batch_request($batch, $already_encoded);
 
-        $response = $this->client->send($request, [
-            'http_errors' => false,
-            'base_uri' => $this->channels_url_prefix()
-        ]);
+        try {
+            $response = $this->client->send($request, [
+                'http_errors' => false,
+                'base_uri' => $this->channels_url_prefix()
+            ]);
+        } catch (ConnectException $e) {
+            throw new ApiErrorException($e->getMessage());
+        }
 
         $status = $response->getStatusCode();
 
@@ -628,6 +639,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             }
 
             return $result;
+        }, function (ConnectException $e) {
+            throw new ApiErrorException($e->getMessage());
         });
 
         return $promise;

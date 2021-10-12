@@ -131,4 +131,14 @@ class TriggerTest extends TestCase
         $channels = ['my-chan-ceppaio', 'private-encrypted-ceppaio'];
         $this->pusher->trigger($channels, 'my_event', $data);
     }
+
+    public function testTriggeringApiExceptionIfConnectionErrorOcurred(): void
+    {
+        $this->expectException(ApiErrorException::class);
+
+        $options = ['host' => 'invalidhost'];
+        $this->pusher = new Pusher(PUSHERAPP_AUTHKEY, PUSHERAPP_SECRET, PUSHERAPP_APPID, $options);
+
+        $this->pusher->trigger('test_channel', 'my_event', 'event_data');
+    }
 }
