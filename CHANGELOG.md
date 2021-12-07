@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.2
+
+* [CHANGED] Add psr/log v2.0 and v3.0 compatibility
+
 ## 7.0.1
 
 * [FIXED] Infinite recursion in `presence_auth`.
