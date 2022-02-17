@@ -455,7 +455,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             throw new PusherException('Data encoding error.');
         }
 
-        if (property_exists($result, 'channels')) {
+        if (property_exists($result, 'channels') && is_object($result->channels)) {
             $result->channels = get_object_vars($result->channels);
         }
 
@@ -492,7 +492,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
             $result = json_decode($response->getBody(), null, 512, JSON_THROW_ON_ERROR);
 
-            if (property_exists($result, 'channels')) {
+            if (property_exists($result, 'channels') && is_object($result->channels)) {
                 $result->channels = get_object_vars($result->channels);
             }
 
@@ -601,7 +601,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             throw new PusherException('Data encoding error.');
         }
 
-        if (property_exists($result, 'channels')) {
+        if (property_exists($result, 'channels') && is_object($result->channels)) {
             $result->channels = get_object_vars($result->channels);
         }
 
@@ -634,7 +634,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
             $result = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
 
-            if (property_exists($result, 'channels')) {
+            if (property_exists($result, 'channels') && is_object($result->channels)) {
                 $result->channels = get_object_vars($result->channels);
             }
 
