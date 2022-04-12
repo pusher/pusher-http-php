@@ -702,22 +702,23 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * Fetch user ids currently subscribed to a presence channel.
      *
      * @param string $channel The name of the channel
+     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
      *
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
      * @throws GuzzleException
      *
      */
-    public function getPresenceUsers(string $channel): object
+    public function getPresenceUsers(string $channel, array $params = []): object
     {
-        return $this->get('/channels/' . $channel . '/users');
+        return $this->get('/channels/' . $channel . '/users', $params);
     }
 
     /**
      * @deprecated in favour of getPresenceUsers
      */
-    public function get_users_info(string $channel): object
+    public function get_users_info(string $channel, array $params = []): object
     {
-        return $this->getPresenceUsers($channel);
+        return $this->getPresenceUsers($channel, $params);
     }
 
     /**
