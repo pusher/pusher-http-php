@@ -224,6 +224,20 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     }
 
     /**
+     * Ensure an user id is valid based on our spec.
+     *
+     * @param string $user_id The user id to validate
+     *
+     * @throws PusherException If $user_id is invalid
+     */
+    private function validate_user_id(string $user_id): void
+    {
+        if ($user_id === null || empty($user_id)) {
+            throw new PusherException('Invalid user id ' . $user_id);
+        }
+    }
+
+    /**
      * Utility function used to generate signing headers
      *
      * @param string $path
@@ -647,6 +661,40 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     }
 
     /**
+     * Terminates all connections established by the user with the given user id.
+     *
+     * @param string $userId 
+     *
+     * @throws PusherException   If $userId is invalid
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     *
+     * @return object response body
+     *
+     */
+    public function terminateUserConnections(string $userId): object
+    {
+        $this->validate_user_id($userId);
+        return $this->post("/users/" . $userId . "/terminate_connections", "{}");
+    }
+
+    /**
+     * Asynchronous request to terminates all connections established by the user with the given user id.
+     *
+     * @param string $userId 
+     *
+     * @throws PusherException   If $userId is invalid
+     *
+     * @return PromiseInterface promise wrapping response body
+     *
+     */
+    public function terminateUserConnectionsAsync(string $userId): PromiseInterface
+    {
+        $this->validate_user_id($userId);
+        return $this->postAsync("/users/" . $userId . "/terminate_connections", "{}");
+    }
+
+
+    /**
      * Fetch channel information for a specific channel.
      *
      * @param string $channel The name of the channel
@@ -766,6 +814,106 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         }
 
         return $body;
+    }
+
+    /**
+     * POST arbitrary REST API resource using a synchronous http client.
+     * All request signing is handled automatically.
+     *
+     * @param string $path        Path excluding /apps/APP_ID
+     * @param mixed  $body        Request payload (see http://pusher.com/docs/rest_api)
+     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
+     *
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
+     * @throws PusherException
+     *
+     * @return mixed Post response body
+     */
+    public function post(string $path, $body, array $params = [])
+    {
+        $path = $this->settings['base_path'] . $path;
+
+        $params['body_md5'] = md5($body);
+
+        $params_with_signature = $this->sign($path, 'POST', $params);
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'X-Pusher-Library' => 'pusher-http-php ' . self::$VERSION
+        ];
+
+        $response = $this->client->request('POST', $path, [
+            'query' => $params_with_signature,
+            'body' => $body,
+            'http_errors' => false,
+            'headers' => $headers,
+            'base_uri' => $this->channels_url_prefix()
+        ]);
+
+        $status = $response->getStatusCode();
+
+        if ($status !== 200) {
+            $body = (string) $response->getBody();
+            throw new ApiErrorException($body, $status);
+        }
+
+        try {
+            $response_body = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data decoding error.');
+        }
+
+        return $response_body;
+    }
+
+    /**
+     * Asynchronously POST arbitrary REST API resource using a synchronous http client.
+     * All request signing is handled automatically.
+     *
+     * @param string $path        Path excluding /apps/APP_ID
+     * @param mixed  $body        Request payload (see http://pusher.com/docs/rest_api)
+     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
+     *
+     * @return PromiseInterface Promise wrapping POST response body
+     */
+    public function postAsync(string $path, $body, array $params = []): PromiseInterface
+    {
+        $path = $this->settings['base_path'] . $path;
+
+        $params['body_md5'] = md5($body);
+
+        $params_with_signature = $this->sign($path, 'POST', $params);
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'X-Pusher-Library' => 'pusher-http-php ' . self::$VERSION
+        ];
+
+        return $this->client->requestAsync('POST', $path, [
+            'query' => $params_with_signature,
+            'body' => $body,
+            'http_errors' => false,
+            'headers' => $headers,
+            'base_uri' => $this->channels_url_prefix()
+        ])->then(function ($response) {
+            $status = $response->getStatusCode();
+
+            if ($status !== 200) {
+                $body = (string) $response->getBody();
+                throw new ApiErrorException($body, $status);
+            }
+
+            try {
+                $response_body = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                throw new PusherException('Data decoding error.');
+            }
+
+            return $response_body;
+        }, function (ConnectExpcetion $e) {
+            throw new ApiErrorException($e->getMessage()); 
+        });
     }
 
     /**
