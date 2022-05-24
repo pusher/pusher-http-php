@@ -1,6 +1,6 @@
 <?php
 
-namespace acceptance;
+namespace unit;
 
 use GuzzleHttp;
 use GuzzleHttp\Psr7\Response;
