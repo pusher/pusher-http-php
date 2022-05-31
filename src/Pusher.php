@@ -850,7 +850,29 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     }
 
     /**
-     * Creates a socket signature.
+     * Creates a user authentication signature.
+     *
+     * @param string $socket_id
+     * @param array $user_data
+     *
+     * @return string Json encoded authentication string.
+     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
+     */
+    public function authenticateUser(string $socket_id, array $user_data): string
+    {
+        $this->validate_socket_id($socket_id);
+        $this->validate_user_data($user_data);
+        $serialized_user_data = json_encode($user_data, JSON_THROW_ON_ERROR);
+        $signature = hash_hmac('sha256', "$socket_id::user::$serialized_user_data", $this->settings['secret'], false);
+
+        return json_encode(
+            ['auth' => $signature, 'user_data' => $serialized_user_data],
+            JSON_THROW_ON_ERROR
+        );
+    }
+
+    /**
+     * Creates a channel authorization signature.
      *
      * @param string $channel
      * @param string $socket_id
@@ -859,7 +881,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @return string Json encoded authentication string.
      * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      */
-    public function socketAuth(string $channel, string $socket_id, string $custom_data = null): string
+    public function authorizeChannel(string $channel, string $socket_id, string $custom_data = null): string
     {
         $this->validate_channel($channel);
         $this->validate_socket_id($socket_id);
@@ -893,16 +915,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $response;
     }
 
-    /**
-     * @deprecated in favour of socketAuth
-     */
-    public function socket_auth(string $channel, string $socket_id, string $custom_data = null): string
-    {
-        return $this->socketAuth($channel, $socket_id, $custom_data);
-    }
-
-    /**
-     * Creates a presence signature (an extension of socket signing).
+     /**
+     * Convenience function for presence channel authorization.
+     *
+     * Equivalent to authorizeChannel($channel, $socket_id, json_encode(['user_id' => $user_id, 'user_info' => $user_info], JSON_THROW_ON_ERROR))
      *
      * @param string $channel
      * @param string $socket_id
@@ -912,7 +928,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @return string
      * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      */
-    public function presenceAuth(string $channel, string $socket_id, string $user_id, $user_info = null): string
+    public function authorizePresenceChannel(string $channel, string $socket_id, string $user_id, $user_info = null): string
     {
         $user_data = ['user_id' => $user_id];
         if ($user_info) {
@@ -920,10 +936,35 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         }
 
         try {
-            return $this->socket_auth($channel, $socket_id, json_encode($user_data, JSON_THROW_ON_ERROR));
+            return $this->authorizeChannel($channel, $socket_id, json_encode($user_data, JSON_THROW_ON_ERROR));
         } catch (\JsonException $e) {
             throw new PusherException('Data encoding error.');
         }
+    }
+
+
+    /**
+     * @deprecated in favour of authorizeChannel
+     */
+    public function socketAuth(string $channel, string $socket_id, string $custom_data = null): string
+    {
+        return $this->authorizeChannel($channel, $socket_id, $custom_data);
+    }
+
+    /**
+     * @deprecated in favour of authorizeChannel
+     */
+    public function socket_auth(string $channel, string $socket_id, string $custom_data = null): string
+    {
+        return $this->socketAuth($channel, $socket_id, $custom_data);
+    }
+
+    /**
+     * @deprecated in favour of authorizePresenceChannel
+     */
+    public function presenceAuth(string $channel, string $socket_id, string $user_id, $user_info = null): string
+    {
+        return $this->authorizePresenceChannel($channel, $socket_id, $user_id, $user_info);
     }
 
     /**
@@ -1154,5 +1195,16 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         }
 
         return $result;
+    }
+
+    private function validate_user_data(array $user_data): void
+    {
+        if (is_null($user_data)) {
+            throw new PusherException('user_data is null');
+        }
+        if (!array_key_exists('id', $user_data)) {
+            throw new PusherException('user_data has no id field');
+        }
+        $this->validate_user_id($user_data['id']);
     }
 }
