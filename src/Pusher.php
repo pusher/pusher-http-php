@@ -956,7 +956,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function socket_auth(string $channel, string $socket_id, string $custom_data = null): string
     {
-        return $this->socketAuth($channel, $socket_id, $custom_data);
+        return $this->autorizeChannel($channel, $socket_id, $custom_data);
     }
 
     /**
@@ -968,11 +968,11 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     }
 
     /**
-     * @deprecated in favour of presenceAuth
+     * @deprecated in favour of authorizePresenceChannel
      */
     public function presence_auth(string $channel, string $socket_id, string $user_id, $user_info = null): string
     {
-        return $this->presenceAuth($channel, $socket_id, $user_id, $user_info);
+        return $this->authorizePresenceChannel($channel, $socket_id, $user_id, $user_info);
     }
 
     /**
