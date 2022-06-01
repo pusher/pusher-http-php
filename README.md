@@ -221,22 +221,22 @@ step by setting the sixth argument true, like so:
 $pusher->trigger('my-channel', 'event', 'data', [], true);
 ```
 
-## Authenticating Private channels
+## Authorizing Private channels
 
-To authorise your users to access private channels on Pusher, you can use the
-`socketAuth` function:
+To authorize your users to access private channels on Pusher, you can use the
+`authorizeChannel` function:
 
 ```php
-$pusher->socketAuth('private-my-channel','socket_id');
+$pusher->authorizeChannel('private-my-channel','socket_id');
 ```
 
-## Authenticating Presence channels
+## Authorizing Presence channels
 
 Using presence channels is similar to private channels, but you can specify
 extra data to identify that particular user:
 
 ```php
-$pusher->presenceAuth('presence-my-channel','socket_id', 'user_id', 'user_info');
+$pusher->authorizePresenceChannel('presence-my-channel','socket_id', 'user_id', 'user_info');
 ```
 
 ## Webhooks
@@ -344,7 +344,7 @@ if (isset($_SESSION['user_id'])) {
 $pusher = new Pusher\Pusher($key, $secret, $app_id);
 $presence_data = ['name' => $user['name']];
 
-echo $pusher->presenceAuth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
+echo $pusher->authorizePresenceChannel($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
 ```
 
 Note: this assumes that you store your users in a table called `users` and that
