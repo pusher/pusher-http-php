@@ -221,23 +221,37 @@ step by setting the sixth argument true, like so:
 $pusher->trigger('my-channel', 'event', 'data', [], true);
 ```
 
-## Authenticating Private channels
+## Authenticating users
 
-To authorise your users to access private channels on Pusher, you can use the
-`socketAuth` function:
+To authenticate users on Pusher Channels on your application, you can use the `authenticateUser` function:
 
 ```php
-$pusher->socketAuth('private-my-channel','socket_id');
+$pusher->authenticateUser('socket_id', 'user-id');
 ```
 
-## Authenticating Presence channels
+For  more information see [authenticating users](https://pusher.com/docs/channels/server_api/authenticating-users/).
+
+## Authorizing Private channels
+
+To authorize your users to access private channels on Pusher, you can use the
+`authorizeChannel` function:
+
+```php
+$pusher->authorizeChannel('private-my-channel','socket_id');
+```
+
+For more information see [authorizing users](https://pusher.com/docs/channels/server_api/authorizing-users/).
+
+## Authorizing Presence channels
 
 Using presence channels is similar to private channels, but you can specify
 extra data to identify that particular user:
 
 ```php
-$pusher->presenceAuth('presence-my-channel','socket_id', 'user_id', 'user_info');
+$pusher->authorizePresenceChannel('presence-my-channel','socket_id', 'user_id', 'user_info');
 ```
+
+For more information see [authorizing users](https://pusher.com/docs/channels/server_api/authorizing-users/).
 
 ## Webhooks
 
@@ -262,8 +276,8 @@ messages. Pusher cannot decrypt them. You can enable this feature by following
 these steps:
 
 1. You should first set up Private channels. This involves [creating an
-   authentication endpoint on your
-   server](https://pusher.com/docs/authenticating_users).
+   authorization endpoint on your
+   server](https://pusher.com/docs/authorizing_users).
 
 2. Next, generate your 32 byte master encryption key, base64 encode it and
    store it securely.  This is secret and you should never share this with
@@ -319,10 +333,15 @@ is unencrypted for unencrypted channels.
 
 ### Presence example
 
-First set this variable in your JS app:
+First set the channel authorization endpoint in your JS app when creating the Pusher object:
 
 ```js
-Pusher.channel_auth_endpoint = '/presenceAuth.php';
+var pusher = new Pusher("app_key",
+  // ...
+  channelAuthorization: {
+    endpoint: "/presenceAuth.php",
+  },
+);
 ```
 
 Next, create the following in presenceAuth.php:
@@ -344,7 +363,7 @@ if (isset($_SESSION['user_id'])) {
 $pusher = new Pusher\Pusher($key, $secret, $app_id);
 $presence_data = ['name' => $user['name']];
 
-echo $pusher->presenceAuth($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
+echo $pusher->authorizePresenceChannel($_POST['channel_name'], $_POST['socket_id'], $user['id'], $presence_data);
 ```
 
 Note: this assumes that you store your users in a table called `users` and that
