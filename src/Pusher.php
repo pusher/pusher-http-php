@@ -954,7 +954,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function socket_auth(string $channel, string $socket_id, string $custom_data = null): string
     {
-        return $this->autorizeChannel($channel, $socket_id, $custom_data);
+        return $this->authorizeChannel($channel, $socket_id, $custom_data);
     }
 
     /**
