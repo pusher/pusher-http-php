@@ -5,6 +5,7 @@
 * [ADDED] `authenticateUser`, `authorizeChannel` and `authorizePresenceChannel`
 * [ADDED] `sendToUser` and `sendToUserAsync`
 * [ADDED] `terminateUserConnections` and `terminateUserConnectionsAsync`
+* [FIXED] `get_object_vars()` error on `/src/Pusher.php`
 * [DEPRECATED] `socketAuth` and `presenceAuth` in favour of `authorizeChannel` and `authorizePresenceChannel`
 * [DEPRECATED] Internal functions `make_request` and `make_batch_request` that were exposed as public
 
