@@ -1,5 +1,14 @@
 # Changelog
 
+## 7.1.0-beta
+
+* [ADDED] `authenticateUser`, `authorizeChannel` and `authorizePresenceChannel`
+* [ADDED] `sendToUser` and `sendToUserAsync`
+* [ADDED] `terminateUserConnections` and `terminateUserConnectionsAsync`
+* [FIXED] `get_object_vars()` error on `/src/Pusher.php`
+* [DEPRECATED] `socketAuth` and `presenceAuth` in favour of `authorizeChannel` and `authorizePresenceChannel`
+* [DEPRECATED] Internal functions `make_request` and `make_batch_request` that were exposed as public
+
 ## 7.0.2
 
 * [CHANGED] Add psr/log v2.0 and v3.0 compatibility
