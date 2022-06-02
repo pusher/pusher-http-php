@@ -204,7 +204,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     private function validate_channel(string $channel): void
     {
-        if (!preg_match('/\A[-a-zA-Z0-9_=@,.;]+\z/', $channel)) {
+        if (!preg_match('/\A#?[-a-zA-Z0-9_=@,.;]+\z/', $channel)) {
             throw new PusherException('Invalid channel name ' . $channel);
         }
     }
@@ -220,6 +220,20 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     {
         if ($socket_id !== null && !preg_match('/\A\d+\.\d+\z/', $socket_id)) {
             throw new PusherException('Invalid socket ID ' . $socket_id);
+        }
+    }
+
+    /**
+     * Ensure an user id is valid based on our spec.
+     *
+     * @param string $user_id The user id to validate
+     *
+     * @throws PusherException If $user_id is invalid
+     */
+    private function validate_user_id(string $user_id): void
+    {
+        if ($user_id === null || empty($user_id)) {
+            throw new PusherException('Invalid user id ' . $user_id);
         }
     }
 
@@ -320,17 +334,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     }
 
     /**
-     * Helper function to prepare trigger request. Takes the same
-     * parameters as the public trigger functions.
-     *
-     * @param array|string $channels A channel name or an array of channel names to publish the event on.
-     * @param string $event
-     * @param mixed $data Event data
-     * @param array $params [optional]
-     * @param bool $already_encoded [optional]
-     *
-     * @return Request
-     * @throws PusherException Throws PusherException if $channels is an array of size 101 or above or $socket_id is invalid
+     * @deprecated in favour of of trigger and triggerAsync
      */
     public function make_request($channels, string $event, $data, array $params = [], bool $already_encoded = false): Request
     {
@@ -431,35 +435,9 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function trigger($channels, string $event, $data, array $params = [], bool $already_encoded = false): object
     {
-        $request = $this->make_request($channels, $event, $data, $params, $already_encoded);
-
-        try {
-            $response = $this->client->send($request, [
-                'http_errors' => false,
-                'base_uri' => $this->channels_url_prefix()
-            ]);
-        } catch (ConnectException $e) {
-            throw new ApiErrorException($e->getMessage());
-        }
-
-        $status = $response->getStatusCode();
-
-        if ($status !== 200) {
-            $body = (string) $response->getBody();
-            throw new ApiErrorException($body, $status);
-        }
-
-        try {
-            $result = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new PusherException('Data encoding error.');
-        }
-
-        if (property_exists($result, 'channels') && is_object($result->channels)) {
-            $result->channels = get_object_vars($result->channels);
-        }
-
-        return $result;
+        $post_value = $this->make_trigger_body($channels, $event, $data, $params, $already_encoded);
+        $this->log('trigger POST: {post_value}', compact('post_value'));
+        return $this->process_trigger_result($this->post('/events', $post_value));
     }
 
     /**
@@ -477,41 +455,50 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function triggerAsync($channels, string $event, $data, array $params = [], bool $already_encoded = false): PromiseInterface
     {
-        $request = $this->make_request($channels, $event, $data, $params, $already_encoded);
-
-        $promise = $this->client->sendAsync($request, [
-            'http_errors' => false,
-            'base_uri' => $this->channels_url_prefix()
-        ])->then(function ($response) {
-            $status = $response->getStatusCode();
-
-            if ($status !== 200) {
-                $body = (string) $response->getBody();
-                throw new ApiErrorException($body, $status);
-            }
-
-            $result = json_decode($response->getBody(), null, 512, JSON_THROW_ON_ERROR);
-
-            if (property_exists($result, 'channels') && is_object($result->channels)) {
-                $result->channels = get_object_vars($result->channels);
-            }
-
-            return $result;
-        }, function (ConnectException $e) {
-            throw new ApiErrorException($e->getMessage());
+        $post_value = $this->make_trigger_body($channels, $event, $data, $params, $already_encoded);
+        $this->log('trigger POST: {post_value}', compact('post_value'));
+        return $this->postAsync('/events', $post_value)->then(function ($result) {
+            return $this->process_trigger_result($result);
         });
-
-        return $promise;
     }
 
     /**
-     * Helper function to prepare batch trigger request. Takes the same                                                                                                                                               * parameters as the public batch trigger functions.
+     * Send an event to a user.
      *
-     * @param array $batch [optional] An array of events to send
+     * @param string $user_id
+     * @param string $event
+     * @param mixed $data Event data
      * @param bool $already_encoded [optional]
      *
-     * @return Request
+     * @return object
      * @throws PusherException
+     */
+    public function sendToUser(string $user_id, string $event, $data, bool $already_encoded = false): object
+    {
+      $this->validate_user_id($user_id);
+      return $this->trigger(["#server-to-user-$user_id"], $event, $data, [], $already_encoded);
+    }
+
+    /**
+     * Asynchronously send an event to a user.
+     *
+     * @param string $user_id
+     * @param string $event
+     * @param mixed $data Event data
+     * @param bool $already_encoded [optional]
+     *
+     * @return PromiseInterface
+     * @throws PusherException
+     */
+    public function sendToUserAsync(string $user_id, string $event, $data, bool $already_encoded = false): PromiseInterface
+    {
+      $this->validate_user_id($user_id);
+      return $this->triggerAsync(["#server-to-user-$user_id"], $event, $data, [], $already_encoded);
+    }
+
+
+    /**
+     * @deprecated in favour of of trigger and triggerAsync
      */
     public function make_batch_request(array $batch = [], bool $already_encoded = false): Request
     {
@@ -577,35 +564,9 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function triggerBatch(array $batch = [], bool $already_encoded = false): object
     {
-        $request = $this->make_batch_request($batch, $already_encoded);
-
-        try {
-            $response = $this->client->send($request, [
-                'http_errors' => false,
-                'base_uri' => $this->channels_url_prefix()
-            ]);
-        } catch (ConnectException $e) {
-            throw new ApiErrorException($e->getMessage());
-        }
-
-        $status = $response->getStatusCode();
-
-        if ($status !== 200) {
-            $body = (string) $response->getBody();
-            throw new ApiErrorException($body, $status);
-        }
-
-        try {
-            $result = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new PusherException('Data encoding error.');
-        }
-
-        if (property_exists($result, 'channels') && is_object($result->channels)) {
-            $result->channels = get_object_vars($result->channels);
-        }
-
-        return $result;
+        $post_value = $this->make_trigger_batch_body($batch, $already_encoded);
+        $this->log('trigger POST: {post_value}', compact('post_value'));
+        return $this->process_trigger_result($this->post('/batch_events', $post_value));
     }
 
     /**
@@ -619,32 +580,46 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function triggerBatchAsync(array $batch = [], bool $already_encoded = false): PromiseInterface
     {
-        $request = $this->make_batch_request($batch, $already_encoded);
-
-        $promise = $this->client->sendAsync($request, [
-            'http_errors' => false,
-            'base_uri' => $this->channels_url_prefix()
-        ])->then(function ($response) {
-            $status = $response->getStatusCode();
-
-            if ($status !== 200) {
-                $body = (string) $response->getBody();
-                throw new ApiErrorException($body, $status);
-            }
-
-            $result = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
-
-            if (property_exists($result, 'channels') && is_object($result->channels)) {
-                $result->channels = get_object_vars($result->channels);
-            }
-
-            return $result;
-        }, function (ConnectException $e) {
-            throw new ApiErrorException($e->getMessage());
+        $post_value = $this->make_trigger_batch_body($batch, $already_encoded);
+        $this->log('trigger POST: {post_value}', compact('post_value'));
+        return $this->postAsync('/batch_events', $post_value)->then(function ($result) {
+            return $this->process_trigger_result($result);
         });
-
-        return $promise;
     }
+
+    /**
+     * Terminates all connections established by the user with the given user id.
+     *
+     * @param string $user_id
+     *
+     * @throws PusherException   If $user_id is invalid
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     *
+     * @return object response body
+     *
+     */
+    public function terminateUserConnections(string $user_id): object
+    {
+        $this->validate_user_id($user_id);
+        return $this->post("/users/$user_id/terminate_connections", "{}");
+    }
+
+    /**
+     * Asynchronous request to terminates all connections established by the user with the given user id.
+     *
+     * @param string $user_id
+     *
+     * @throws PusherException   If $userId is invalid
+     *
+     * @return PromiseInterface promise wrapping response body
+     *
+     */
+    public function terminateUserConnectionsAsync(string $user_id): PromiseInterface
+    {
+        $this->validate_user_id($user_id);
+        return $this->postAsync("/users/$user_id/terminate_connections", "{}");
+    }
+
 
     /**
      * Fetch channel information for a specific channel.
@@ -769,7 +744,133 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     }
 
     /**
-     * Creates a socket signature.
+     * POST arbitrary REST API resource using a synchronous http client.
+     * All request signing is handled automatically.
+     *
+     * @param string $path        Path excluding /apps/APP_ID
+     * @param mixed  $body        Request payload (see http://pusher.com/docs/rest_api)
+     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
+     *
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
+     * @throws PusherException
+     *
+     * @return mixed Post response body
+     */
+    public function post(string $path, $body, array $params = [])
+    {
+        $path = $this->settings['base_path'] . $path;
+
+        $params['body_md5'] = md5($body);
+
+        $params_with_signature = $this->sign($path, 'POST', $params);
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'X-Pusher-Library' => 'pusher-http-php ' . self::$VERSION
+        ];
+
+        try {
+            $response = $this->client->request('POST', $path, [
+                'query' => $params_with_signature,
+                'body' => $body,
+                'http_errors' => false,
+                'headers' => $headers,
+                'base_uri' => $this->channels_url_prefix()
+            ]);
+        } catch (ConnectException $e) {
+            throw new ApiErrorException($e->getMessage());
+        }
+
+        $status = $response->getStatusCode();
+
+        if ($status !== 200) {
+            $body = (string) $response->getBody();
+            throw new ApiErrorException($body, $status);
+        }
+
+        try {
+            $response_body = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data decoding error.');
+        }
+
+        return $response_body;
+    }
+
+    /**
+     * Asynchronously POST arbitrary REST API resource using a synchronous http client.
+     * All request signing is handled automatically.
+     *
+     * @param string $path        Path excluding /apps/APP_ID
+     * @param mixed  $body        Request payload (see http://pusher.com/docs/rest_api)
+     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
+     *
+     * @return PromiseInterface Promise wrapping POST response body
+     */
+    public function postAsync(string $path, $body, array $params = []): PromiseInterface
+    {
+        $path = $this->settings['base_path'] . $path;
+
+        $params['body_md5'] = md5($body);
+
+        $params_with_signature = $this->sign($path, 'POST', $params);
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'X-Pusher-Library' => 'pusher-http-php ' . self::$VERSION
+        ];
+
+        return $this->client->requestAsync('POST', $path, [
+            'query' => $params_with_signature,
+            'body' => $body,
+            'http_errors' => false,
+            'headers' => $headers,
+            'base_uri' => $this->channels_url_prefix()
+        ])->then(function ($response) {
+            $status = $response->getStatusCode();
+
+            if ($status !== 200) {
+                $body = (string) $response->getBody();
+                throw new ApiErrorException($body, $status);
+            }
+
+            try {
+                $response_body = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                throw new PusherException('Data decoding error.');
+            }
+
+            return $response_body;
+        }, function (ConnectException $e) {
+            throw new ApiErrorException($e->getMessage());
+        });
+    }
+
+    /**
+     * Creates a user authentication signature.
+     *
+     * @param string $socket_id
+     * @param array $user_data
+     *
+     * @return string Json encoded authentication string.
+     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
+     */
+    public function authenticateUser(string $socket_id, array $user_data): string
+    {
+        $this->validate_socket_id($socket_id);
+        $this->validate_user_data($user_data);
+        $serialized_user_data = json_encode($user_data, JSON_THROW_ON_ERROR);
+        $signature = hash_hmac('sha256', "$socket_id::user::$serialized_user_data", $this->settings['secret'], false);
+
+        return json_encode(
+            ['auth' => $signature, 'user_data' => $serialized_user_data],
+            JSON_THROW_ON_ERROR
+        );
+    }
+
+    /**
+     * Creates a channel authorization signature.
      *
      * @param string $channel
      * @param string $socket_id
@@ -778,7 +879,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @return string Json encoded authentication string.
      * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      */
-    public function socketAuth(string $channel, string $socket_id, string $custom_data = null): string
+    public function authorizeChannel(string $channel, string $socket_id, string $custom_data = null): string
     {
         $this->validate_channel($channel);
         $this->validate_socket_id($socket_id);
@@ -812,16 +913,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $response;
     }
 
-    /**
-     * @deprecated in favour of socketAuth
-     */
-    public function socket_auth(string $channel, string $socket_id, string $custom_data = null): string
-    {
-        return $this->socketAuth($channel, $socket_id, $custom_data);
-    }
-
-    /**
-     * Creates a presence signature (an extension of socket signing).
+     /**
+     * Convenience function for presence channel authorization.
+     *
+     * Equivalent to authorizeChannel($channel, $socket_id, json_encode(['user_id' => $user_id, 'user_info' => $user_info], JSON_THROW_ON_ERROR))
      *
      * @param string $channel
      * @param string $socket_id
@@ -831,7 +926,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * @return string
      * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      */
-    public function presenceAuth(string $channel, string $socket_id, string $user_id, $user_info = null): string
+    public function authorizePresenceChannel(string $channel, string $socket_id, string $user_id, $user_info = null): string
     {
         $user_data = ['user_id' => $user_id];
         if ($user_info) {
@@ -839,18 +934,43 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         }
 
         try {
-            return $this->socket_auth($channel, $socket_id, json_encode($user_data, JSON_THROW_ON_ERROR));
+            return $this->authorizeChannel($channel, $socket_id, json_encode($user_data, JSON_THROW_ON_ERROR));
         } catch (\JsonException $e) {
             throw new PusherException('Data encoding error.');
         }
     }
 
+
     /**
-     * @deprecated in favour of presenceAuth
+     * @deprecated in favour of authorizeChannel
+     */
+    public function socketAuth(string $channel, string $socket_id, string $custom_data = null): string
+    {
+        return $this->authorizeChannel($channel, $socket_id, $custom_data);
+    }
+
+    /**
+     * @deprecated in favour of authorizeChannel
+     */
+    public function socket_auth(string $channel, string $socket_id, string $custom_data = null): string
+    {
+        return $this->autorizeChannel($channel, $socket_id, $custom_data);
+    }
+
+    /**
+     * @deprecated in favour of authorizePresenceChannel
+     */
+    public function presenceAuth(string $channel, string $socket_id, string $user_id, $user_info = null): string
+    {
+        return $this->authorizePresenceChannel($channel, $socket_id, $user_id, $user_info);
+    }
+
+    /**
+     * @deprecated in favour of authorizePresenceChannel
      */
     public function presence_auth(string $channel, string $socket_id, string $user_id, $user_info = null): string
     {
-        return $this->presenceAuth($channel, $socket_id, $user_id, $user_info);
+        return $this->authorizePresenceChannel($channel, $socket_id, $user_id, $user_info);
     }
 
     /**
@@ -924,5 +1044,165 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     public function ensure_valid_signature(array $headers, string $body): void
     {
         $this->verifySignature($headers, $body);
+    }
+
+    /**
+     * Returns an event represented by an associative array to be used in creating events and batch_events requests
+     *
+     * @param array|string $channels A channel name or an array of channel names to publish the event on.
+     * @param string $event
+     * @param mixed $data Event data
+     * @param array $params [optional]
+     * @param bool $already_encoded [optional]
+     *
+     * @throws PusherException
+     *
+     * @return array Event associative array
+     */
+    private function make_event(array $channels, string $event, $data, array $params = [], ?string $info = null, bool $already_encoded = false): array
+    {
+      $has_encrypted_channel = false;
+        foreach ($channels as $chan) {
+            if (PusherCrypto::is_encrypted_channel($chan)) {
+                $has_encrypted_channel = true;
+                break;
+            }
+        }
+
+        if ($has_encrypted_channel) {
+            if (count($channels) > 1) {
+                // For rationale, see limitations of end-to-end encryption in the README
+                throw new PusherException('You cannot trigger to multiple channels when using encrypted channels');
+            } else {
+                try {
+                    $data_encoded = $this->crypto->encrypt_payload(
+                        $channels[0],
+                        $already_encoded ? $data : json_encode($data, JSON_THROW_ON_ERROR)
+                    );
+                } catch (\JsonException $e) {
+                    throw new PusherException('Data encoding error.');
+                }
+            }
+        } else {
+            try {
+                $data_encoded = $already_encoded ? $data : json_encode($data, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                throw new PusherException('Data encoding error.');
+            }
+        }
+
+        // json_encode might return false on failure
+        if (!$data_encoded) {
+            $this->log('Failed to perform json_encode on the the provided data: {error}', [
+                'error' => print_r($data, true),
+            ], LogLevel::ERROR);
+        }
+
+        $post_params = [];
+        $post_params['name'] = $event;
+        $post_params['data'] = $data_encoded;
+        $channel_values = array_values($channels);
+        if (count($channel_values) == 1) {
+          $post_params['channel'] = $channel_values[0];
+        } else {
+          $post_params['channels'] = $channel_values;
+        }
+        if (!is_null($info)) {
+          $post_params['info'] = $info;
+        }
+
+        return array_merge($post_params, $params);
+    }
+
+    /**
+     * Returns the body of a trigger events request serialized as string ready to be sent in a request
+     *
+     * @param array|string $channels A channel name or an array of channel names to publish the event on.
+     * @param string $event
+     * @param mixed $data Event data
+     * @param array $params [optional]
+     * @param bool $already_encoded [optional]
+     *
+     * @throws PusherException
+     *
+     * @return string
+     */
+    private function make_trigger_body($channels, string $event, $data, array $params = [], bool $already_encoded = false): string
+    {
+        if (is_string($channels) === true) {
+            $channels = [$channels];
+        }
+
+        $this->validate_channels($channels);
+        if (isset($params['socket_id'])) {
+            $this->validate_socket_id($params['socket_id']);
+        }
+
+        try {
+            return json_encode(
+                $this->make_event($channels, $event, $data, $params, null, $already_encoded),
+                JSON_THROW_ON_ERROR
+            );
+        } catch (\JsonException $e) {
+            throw new PusherException('Data encoding error.');
+        }
+    }
+
+    /**
+     * Returns the body of a trigger batch events request serialized as string ready to be sent in a request
+     *
+     * @param array|string $channels A channel name or an array of channel names to publish the event on.
+     * @param string $event
+     * @param mixed $data Event data
+     * @param array $params [optional]
+     * @param bool $already_encoded [optional]
+     *
+     * @throws PusherException
+     *
+     * @return string
+     */
+    private function make_trigger_batch_body(array $batch = [], bool $already_encoded = false): string
+    {
+        foreach ($batch as $key => $event) {
+            $this->validate_channel($event['channel']);
+            if (isset($event['socket_id'])) {
+                $this->validate_socket_id($event['socket_id']);
+            }
+
+            $batch[$key] = $this->make_event([$event['channel']], $event['name'], $event['data'], [], $event['info'] ?? null, $already_encoded);
+        }
+
+        try {
+            return json_encode(['batch' => $batch], JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new PusherException('Data encoding error.');
+        }
+    }
+
+    /**
+     * Mutates the result of a trigger (batch) request to replace channel names with channel objects
+     *
+     * @param object $result result of the trigger (batch) request
+     *
+     * @return object
+     */
+    private function process_trigger_result(object $result): object
+    {
+        if (property_exists($result, 'channels') && is_object($result->channels)) {
+            $result->channels = get_object_vars($result->channels);
+        }
+
+        return $result;
+    }
+
+    private function validate_user_data(array $user_data): void
+    {
+        if (is_null($user_data)) {
+            throw new PusherException('user_data is null');
+        }
+        if (!array_key_exists('id', $user_data)) {
+            throw new PusherException('user_data has no id field');
+        }
+        $this->validate_user_id($user_data['id']);
     }
 }
