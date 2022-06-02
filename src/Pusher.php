@@ -565,7 +565,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     public function triggerBatch(array $batch = [], bool $already_encoded = false): object
     {
         $post_value = $this->make_trigger_batch_body($batch, $already_encoded);
-
         $this->log('trigger POST: {post_value}', compact('post_value'));
         return $this->process_trigger_result($this->post('/batch_events', $post_value));
     }
@@ -583,7 +582,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     {
         $post_value = $this->make_trigger_batch_body($batch, $already_encoded);
         $this->log('trigger POST: {post_value}', compact('post_value'));
-
         return $this->postAsync('/batch_events', $post_value)->then(function ($result) {
             return $this->process_trigger_result($result);
         });
@@ -1190,7 +1188,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     private function process_trigger_result(object $result): object
     {
-        if (property_exists($result, 'channels')) {
+        if (property_exists($result, 'channels') && is_object($result->channels)) {
             $result->channels = get_object_vars($result->channels);
         }
 
