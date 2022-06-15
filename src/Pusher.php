@@ -414,7 +414,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
         $params = array_merge($signature, $query_params);
         $query_string = self::array_implode('=', '&', $params);
-        $full_path = $path . "?" . $query_string;
+        $full_path = ltrim($path, '/') . "?" . $query_string;
         return new Request('POST', $full_path, $headers, $post_value);
     }
 
@@ -720,7 +720,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             'X-Pusher-Library' => 'pusher-http-php ' . self::$VERSION
         ];
 
-        $response = $this->client->get($path, [
+        $response = $this->client->get(ltrim($path, '/'), [
             'query' => $signature,
             'http_errors' => false,
             'headers' => $headers,
@@ -771,7 +771,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         ];
 
         try {
-            $response = $this->client->request('POST', $path, [
+            $response = $this->client->post(ltrim($path, '/'), [
                 'query' => $params_with_signature,
                 'body' => $body,
                 'http_errors' => false,
@@ -821,7 +821,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             'X-Pusher-Library' => 'pusher-http-php ' . self::$VERSION
         ];
 
-        return $this->client->requestAsync('POST', $path, [
+        return $this->client->postAsync(ltrim($path, '/'), [
             'query' => $params_with_signature,
             'body' => $body,
             'http_errors' => false,
@@ -985,7 +985,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function webhook(array $headers, string $body): object
     {
-        $this->ensure_valid_signature($headers, $body);
+        $this->verifySignature($headers, $body);
 
         $decoded_events = [];
         try {
@@ -995,7 +995,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             throw new PusherException('Data encoding error.');
         }
 
-        foreach ($decoded_json->events as $key => $event) {
+        foreach ($decoded_json->events as $event) {
             if (PusherCrypto::is_encrypted_channel($event->channel)) {
                 if (!is_null($this->crypto)) {
                     $decryptedEvent = $this->crypto->decrypt_event($event);
@@ -1007,7 +1007,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
                     $decoded_events[] = $decryptedEvent;
                 } else {
                     $this->log('Got an encrypted webhook event payload, but no master key specified. Ignoring.', null, LogLevel::WARNING);
-                    continue;
                 }
             } else {
                 $decoded_events[] = $event;
