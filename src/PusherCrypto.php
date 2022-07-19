@@ -22,26 +22,33 @@ class PusherCrypto
     }
 
     /**
-     * Checks if channels are mix of encrypted and non-encrypted types.
+     * Checks if channels are a mix of encrypted and non-encrypted types.
      *
      * @param  array  $channels
      * @return bool true when mixed channel types are discovered
      */
     public static function has_mixed_channels(array $channels): bool
     {
-        $encrypted = 0;
+        $unencrypted_seen = false;
+        $encrypted_seen = false;
 
         foreach ($channels as $channel) {
             if(self::is_encrypted_channel($channel)) {
-                $encrypted++;
+                if ($unencrypted_seen) {
+                    return true;
+                } else {
+                    $encrypted_seen = true;
+                }
+            } else {
+                if ($encrypted_seen) {
+                    return true;
+                } else {
+                    $unencrypted_seen = true;
+                }
             }
         }
-
-        if($encrypted === 0 || $encrypted === count($channels)) {
-            return false;
-        }
-
-        return true;
+        
+        return false;
     }
 
     /**
