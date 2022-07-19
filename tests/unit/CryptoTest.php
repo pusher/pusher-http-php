@@ -101,6 +101,15 @@ class CryptoTest extends TestCase
         self::assertEquals(false, PusherCrypto::is_encrypted_channel('test-private-encrypted'));
     }
 
+    public function testHasMixedChannels(): void
+    {
+        self::assertEquals(false, PusherCrypto::has_mixed_channels(['private-encrypted-test']));
+        self::assertEquals(false, PusherCrypto::has_mixed_channels(['another']));
+        self::assertEquals(true, PusherCrypto::has_mixed_channels(['private-encrypted-test', 'another']));
+        self::assertEquals(false, PusherCrypto::has_mixed_channels(['private-encrypted-test', 'private-encrypted-another']));
+        self::assertEquals(false, PusherCrypto::has_mixed_channels(['test', 'another']));
+    }
+
     public function testEncryptDecryptEventValid(): void
     {
         $channel = 'private-encrypted-bla';
