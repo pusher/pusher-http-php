@@ -315,8 +315,8 @@ these steps:
 **Important note: This will __not__ encrypt messages on channels that are not
 prefixed by `private-encrypted-`.**
 
-**Limitation**: you cannot trigger a single event on multiple channels in a
-call to `trigger`, e.g.
+**Limitation**: you cannot trigger a single event on a mixture of unencrypted 
+and encrypted channels in a call to `trigger`, e.g.
 
 ```php
 $data['name'] = 'joe';
