@@ -7,3 +7,4 @@
 /.gitignore export-ignore
 /phpunit.xml.dist export-ignore
 /README.md export-ignore
+/pull_request_template.md export-ignore
