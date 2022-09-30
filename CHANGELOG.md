@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.2.0
+
+* [CHANGED] explicit support for 8.1
+* [CHANGED] Ignore pull_request_template.md on vendor
+* [ADDED] has_mixed_channels method to allow triggering a single event on multiple channels
+* [FIXED] path option can be used for proxied servers under subdirectory.
+* [CHANGED] base_path's leading slash is trimmed on every call to Guzzle.
+
 ## 7.1.0-beta
 
 * [ADDED] `authenticateUser`, `authorizeChannel` and `authorizePresenceChannel`
