@@ -18,7 +18,7 @@ Or add to `composer.json`:
 
 ```json
 "require": {
-    "pusher/pusher-php-server": "^7.0"
+    "pusher/pusher-php-server": "^7.2"
 }
 ```
 
@@ -26,7 +26,7 @@ then run `composer update`.
 
 ## Supported platforms
 
-* PHP - supports PHP versions 7.3, 7.4 and 8.0.
+* PHP - supports PHP versions 7.3, 7.4, 8.0, and 8.1.
 * Laravel - version 8.29 and above has built-in support for Pusher Channels as a [Broadcasting backend](https://laravel.com/docs/master/broadcasting).
 * Other PHP frameworks - supported provided you are using a supported version of PHP.
 
@@ -315,7 +315,7 @@ these steps:
 **Important note: This will __not__ encrypt messages on channels that are not
 prefixed by `private-encrypted-`.**
 
-**Limitation**: you cannot trigger a single event on a mixture of unencrypted 
+**Limitation**: you cannot trigger a single event on a mixture of unencrypted
 and encrypted channels in a call to `trigger`, e.g.
 
 ```php
