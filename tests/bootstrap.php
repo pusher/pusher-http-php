@@ -12,4 +12,5 @@ if (file_exists(__DIR__ . '/config.php') === true) {
     define('PUSHERAPP_CLUSTER', getenv('PUSHERAPP_CLUSTER'));
 
     define('TEST_CHANNEL', getenv('TEST_CHANNEL'));
+    define('CHANNEL_PREFIX', substr(TEST_CHANNEL, 0, 10))
 }

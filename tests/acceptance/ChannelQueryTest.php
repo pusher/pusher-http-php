@@ -54,7 +54,7 @@ class ChannelQueryTest extends TestCase
     public function testFilterByPrefixOneChannel(): void
     {
         $options = [
-            'filter_by_prefix' => 'my-',
+            'filter_by_prefix' => CHANNEL_PREFIX,
         ];
         $result = $this->pusher->get_channels($options);
 
@@ -98,7 +98,7 @@ class ChannelQueryTest extends TestCase
 
     public function testChannelListUsingGenericGetAndPrefixParam(): void
     {
-        $result = $this->pusher->get('/channels', ['filter_by_prefix' => 'my-'], true);
+        $result = $this->pusher->get('/channels', ['filter_by_prefix' => CHANNEL_PREFIX], true);
 
         $channels = $result['channels'];
 
