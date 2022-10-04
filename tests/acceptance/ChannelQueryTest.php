@@ -98,6 +98,8 @@ class ChannelQueryTest extends TestCase
 
     public function testChannelListUsingGenericGetAndPrefixParam(): void
     {
+        self::assertEqual("test", CHANNEL_PREFIX);
+
         $result = $this->pusher->get('/channels', ['filter_by_prefix' => CHANNEL_PREFIX], true);
 
         $channels = $result['channels'];
