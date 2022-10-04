@@ -54,5 +54,6 @@ jobs:
           TEST_CHANNEL: ${{ github.job_id }}
         run: |
           echo "$PUSHER_API_KEY" | pusher login
+          echo $TEST_CHANNEL
           pusher channels apps subscribe --app-id "$PUSHERAPP_APPID" --channel 'my-channel' &
           composer exec phpunit tests/acceptance
