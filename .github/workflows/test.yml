@@ -50,6 +50,8 @@ jobs:
           PUSHERAPP_AUTHKEY: ${{ secrets.CI_APP_KEY }}
           PUSHERAPP_SECRET: ${{ secrets.CI_APP_SECRET }}
           PUSHERAPP_CLUSTER: ${{ secrets.CI_APP_CLUSTER }}
+          PUSHER_API_KEY: ${{ secrets.CI_API_KEY }}
         run: |
-          pusher channels apps subscribe --app-id $PUSHERAPP_APPID --channel 'my-channel' &
+          echo "$PUSHER_API_KEY" | pusher login
+          pusher channels apps subscribe --app-id "$PUSHERAPP_APPID" --channel 'my-channel' &
           composer exec phpunit tests/acceptance
