@@ -60,7 +60,7 @@ class TriggerAsyncTest extends TestCase
             "presence-my-channel" => $expectedPresenceMyChannel,
         ];
 
-        $result = $this->pusher->triggerAsync(['my-channel', 'presence-my-channel'], 'my_event', ['test' => 1], ['info' => 'user_count,subscription_count'])->wait();
+        $result = $this->pusher->triggerAsync([TEST_CHANNEL, 'presence-my-channel'], 'my_event', ['test' => 1], ['info' => 'user_count,subscription_count'])->wait();
         self::assertEquals($expectedResult, $result);
     }
 

@@ -53,5 +53,6 @@ jobs:
           PUSHER_API_KEY: ${{ secrets.CI_API_KEY }}
         run: |
           echo "$PUSHER_API_KEY" | pusher login
+          export TEST_CHANNEL=my-channel
           pusher channels apps subscribe --app-id "$PUSHERAPP_APPID" --channel 'my-channel' &
           composer exec phpunit tests/acceptance

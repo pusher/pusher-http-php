@@ -103,7 +103,7 @@ class TriggerBatchAsyncTest extends TestCase
         ];
 
         $batch = [];
-        $batch[] = ['channel' => 'my-channel', 'name' => 'my_event', 'data' => 'test-string', 'info' => 'subscription_count'];
+        $batch[] = ['channel' => TEST_CHANNEL, 'name' => 'my_event', 'data' => 'test-string', 'info' => 'subscription_count'];
         $batch[] = ['channel' => 'my-channel-2', 'name' => 'my_event', 'data' => 'test-string'];
         $batch[] = ['channel' => 'presence-my-channel', 'name' => 'my_event', 'data' => 'test-string', 'info' => 'user_count,subscription_count'];
         $result = $pc->triggerBatchAsync($batch)->wait();

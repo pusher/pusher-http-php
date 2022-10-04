@@ -91,7 +91,7 @@ class ChannelQueryTest extends TestCase
         self::assertCount(1, $channels,
             'channels have a single my-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
 
-        $my_channel = $channels['my-channel'];
+        $my_channel = $channels[TEST_CHANNEL];
 
         self::assertCount(0, $my_channel);
     }
@@ -105,7 +105,7 @@ class ChannelQueryTest extends TestCase
         self::assertCount(1, $channels,
             'channels have a single my-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
 
-        $my_channel = $channels['my-channel'];
+        $my_channel = $channels[TEST_CHANNEL];
 
         self::assertCount(0, $my_channel);
     }

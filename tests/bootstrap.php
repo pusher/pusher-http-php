@@ -10,4 +10,6 @@ if (file_exists(__DIR__ . '/config.php') === true) {
     define('PUSHERAPP_APPID', getenv('PUSHERAPP_APPID'));
 
     define('PUSHERAPP_CLUSTER', getenv('PUSHERAPP_CLUSTER'));
+
+    define('TEST_CHANNEL', getenv('TEST_CHANNEL'));
 }
