@@ -58,7 +58,7 @@ class TriggerTest extends TestCase
         $expectedPresenceMyChannel->subscription_count = 0;
         $expectedResult = new stdClass();
         $expectedResult->channels = [
-            "my-channel" => $expectedMyChannel,
+            TEST_CHANNEL => $expectedMyChannel,
             "presence-my-channel" => $expectedPresenceMyChannel,
         ];
 
