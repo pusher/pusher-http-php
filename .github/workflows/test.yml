@@ -51,7 +51,7 @@ jobs:
           PUSHERAPP_SECRET: ${{ secrets.CI_APP_SECRET }}
           PUSHERAPP_CLUSTER: ${{ secrets.CI_APP_CLUSTER }}
           PUSHER_API_KEY: ${{ secrets.CI_API_KEY }}
-          TEST_CHANNEL: ${{ github.job }}
+          TEST_CHANNEL: ${{ github.run_id }}
         run: |
           echo "$PUSHER_API_KEY" | pusher login
           echo $TEST_CHANNEL
