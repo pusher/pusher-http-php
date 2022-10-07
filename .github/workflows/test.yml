@@ -55,6 +55,6 @@ jobs:
           echo "$PUSHER_API_KEY" | pusher login
           export TEST_CHANNEL="test-${RANDOM}-${RANDOM}"
           echo $TEST_CHANNEL
-          sleep 5
+          sleep 10
           pusher channels apps subscribe --app-id "$PUSHERAPP_APPID" --channel $TEST_CHANNEL &
           composer exec phpunit tests/acceptance

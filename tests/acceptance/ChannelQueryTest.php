@@ -53,8 +53,6 @@ class ChannelQueryTest extends TestCase
 
     public function testFilterByPrefixOneChannel(): void
     {
-        self::assertEquals('test', CHANNEL_PREFIX);
-        self::assertEquals('test-chnnale', TEST_CHANNEL);
         $options = [
             'filter_by_prefix' => CHANNEL_PREFIX,
         ];
