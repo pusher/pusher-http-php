@@ -53,8 +53,9 @@ class ChannelQueryTest extends TestCase
 
     public function testFilterByPrefixOneChannel(): void
     {
+        $channel_prefix = substr(TEST_CHANNEL, 0, 10);
         $options = [
-            'filter_by_prefix' => 'my-',
+            'filter_by_prefix' => $channel_prefix,
         ];
         $result = $this->pusher->get_channels($options);
 
@@ -88,24 +89,25 @@ class ChannelQueryTest extends TestCase
 
         $channels = $result['channels'];
 
-        self::assertCount(1, $channels,
+        self::assertGreaterThanOrEqual(1, $channels,
             'channels have a single my-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
 
-        $my_channel = $channels['my-channel'];
+        $my_channel = $channels[TEST_CHANNEL];
 
         self::assertCount(0, $my_channel);
     }
 
     public function testChannelListUsingGenericGetAndPrefixParam(): void
     {
-        $result = $this->pusher->get('/channels', ['filter_by_prefix' => 'my-'], true);
+        $channel_prefix = substr(TEST_CHANNEL, 0, 10);
+        $result = $this->pusher->get('/channels', ['filter_by_prefix' => $channel_prefix], true);
 
         $channels = $result['channels'];
 
         self::assertCount(1, $channels,
             'channels have a single my-channel present. For this test to pass you must have the "Getting Started" page open on the dashboard for the app you are testing against');
 
-        $my_channel = $channels['my-channel'];
+        $my_channel = $channels[TEST_CHANNEL];
 
         self::assertCount(0, $my_channel);
     }
