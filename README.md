@@ -525,7 +525,7 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit).
 ## License
 
 Copyright 2014, Pusher. Licensed under the MIT license:
-http://www.opensource.org/licenses/mit-license.php
+https://www.opensource.org/licenses/mit-license.php
 
 Copyright 2010, Squeeks. Licensed under the MIT license:
-http://www.opensource.org/licenses/mit-license.php
+https://www.opensource.org/licenses/mit-license.php
