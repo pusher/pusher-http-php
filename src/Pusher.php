@@ -862,9 +862,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         $this->validate_user_data($user_data);
         $serialized_user_data = json_encode($user_data, JSON_THROW_ON_ERROR);
         $signature = hash_hmac('sha256', "$socket_id::user::$serialized_user_data", $this->settings['secret'], false);
+        $auth = $this->settings['auth_key'] . ':' . $signature;
 
         return json_encode(
-            ['auth' => $signature, 'user_data' => $serialized_user_data],
+            ['auth' => $auth, 'user_data' => $serialized_user_data],
             JSON_THROW_ON_ERROR
         );
     }
