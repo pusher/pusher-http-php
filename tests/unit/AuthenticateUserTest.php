@@ -27,7 +27,7 @@ class AuthenticateUserTest extends TestCase
     {
         $auth_string = $this->pusher->authenticateUser('12345.6789', ['id' => '123']);
         self::assertEquals(
-            '{"auth":"fc713f433deb729d0d96f9e26ef054285cbc3e833ebe840b93722a2fa16a6a18","user_data":"{\"id\":\"123\"}"}',
+            '{"auth":"thisisaauthkey:fc713f433deb729d0d96f9e26ef054285cbc3e833ebe840b93722a2fa16a6a18","user_data":"{\"id\":\"123\"}"}',
             $auth_string,
             'Auth string valid'
         );
@@ -37,7 +37,7 @@ class AuthenticateUserTest extends TestCase
     {
         $auth_string = $this->pusher->authenticateUser('12345.6789', ['id' => '123', 'name' => 'John Smith']);
         self::assertEquals(
-            '{"auth":"0dddb208b53c7649f3fbbb86254a6e1986bc6f8b566423ea690c9ca773497373","user_data":"{\"id\":\"123\",\"name\":\"John Smith\"}"}',
+            '{"auth":"thisisaauthkey:0dddb208b53c7649f3fbbb86254a6e1986bc6f8b566423ea690c9ca773497373","user_data":"{\"id\":\"123\",\"name\":\"John Smith\"}"}',
             $auth_string,
             'Auth string valid'
         );
