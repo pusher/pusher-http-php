@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.2.1
+
+* [FIXED] authenticateUser returns correct auth value
+
 ## 7.2.0
 
 * [CHANGED] explicit support for 8.1
