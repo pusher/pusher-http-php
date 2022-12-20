@@ -66,6 +66,7 @@ $options = [
   'cluster' => $app_cluster,
   'useTLS' => false
 ];
+
 $pusher = new Pusher\Pusher($app_key, $app_secret, $app_id, $options);
 ```
 
