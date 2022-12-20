@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.2.2
+
+* [FIXED] composer.phar file removed from package
+
 ## 7.2.1
 
 * [FIXED] authenticateUser returns correct auth value
