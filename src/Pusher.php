@@ -97,9 +97,9 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
         // handle the case when 'host' and 'cluster' are specified in the options.
         if (!array_key_exists('host', $this->settings)) {
-            if (array_key_exists('host', $options)) {
+            if (array_key_exists('host', $options) && $options['host']) {
                 $this->settings['host'] = $options['host'];
-            } elseif (array_key_exists('cluster', $options)) {
+            } elseif (array_key_exists('cluster', $options) && $option['cluster']) {
                 $this->settings['host'] = 'api-' . $options['cluster'] . '.pusher.com';
             } else {
                 $this->settings['host'] = 'api-mt1.pusher.com';
