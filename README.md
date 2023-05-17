@@ -54,7 +54,7 @@ The fourth parameter is an `$options` array. The additional options are:
 * `timeout` - the HTTP timeout
 * `useTLS` - quick option to use scheme of https and port 443.
 * `cluster` - specify the cluster where the application is running from.
-* `encryption_master_key` - a 32 char long key. This key, along with the
+* `encryption_master_key_base64` - a 32 char long key. This key, along with the
   channel name, are used to derive per-channel encryption keys. Per-channel
   keys are used encrypt event data on encrypted channels.
 
