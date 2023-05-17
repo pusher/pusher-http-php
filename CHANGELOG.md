@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.2.3
+
+* [Fixed] Include socket_id in batch trigger if included.
+
 ## 7.2.2
 
 * [FIXED] composer.phar file removed from package

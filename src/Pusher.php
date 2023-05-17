@@ -19,7 +19,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     /**
      * @var string Version
      */
-    public static $VERSION = '7.2.2';
+    public static $VERSION = '7.2.3';
 
     /**
      * @var null|PusherCrypto
@@ -475,8 +475,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function sendToUser(string $user_id, string $event, $data, bool $already_encoded = false): object
     {
-      $this->validate_user_id($user_id);
-      return $this->trigger(["#server-to-user-$user_id"], $event, $data, [], $already_encoded);
+        $this->validate_user_id($user_id);
+        return $this->trigger(["#server-to-user-$user_id"], $event, $data, [], $already_encoded);
     }
 
     /**
@@ -492,8 +492,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     public function sendToUserAsync(string $user_id, string $event, $data, bool $already_encoded = false): PromiseInterface
     {
-      $this->validate_user_id($user_id);
-      return $this->triggerAsync(["#server-to-user-$user_id"], $event, $data, [], $already_encoded);
+        $this->validate_user_id($user_id);
+        return $this->triggerAsync(["#server-to-user-$user_id"], $event, $data, [], $already_encoded);
     }
 
 
@@ -914,7 +914,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $response;
     }
 
-     /**
+    /**
      * Convenience function for presence channel authorization.
      *
      * Equivalent to authorizeChannel($channel, $socket_id, json_encode(['user_id' => $user_id, 'user_info' => $user_info], JSON_THROW_ON_ERROR))
@@ -1061,7 +1061,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     private function make_event(array $channels, string $event, $data, array $params = [], ?string $info = null, bool $already_encoded = false): array
     {
-      $has_encrypted_channel = false;
+        $has_encrypted_channel = false;
         foreach ($channels as $chan) {
             if (PusherCrypto::is_encrypted_channel($chan)) {
                 $has_encrypted_channel = true;
@@ -1102,12 +1102,12 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         $post_params['data'] = $data_encoded;
         $channel_values = array_values($channels);
         if (count($channel_values) == 1) {
-          $post_params['channel'] = $channel_values[0];
+            $post_params['channel'] = $channel_values[0];
         } else {
-          $post_params['channels'] = $channel_values;
+            $post_params['channels'] = $channel_values;
         }
         if (!is_null($info)) {
-          $post_params['info'] = $info;
+            $post_params['info'] = $info;
         }
 
         return array_merge($post_params, $params);
@@ -1166,9 +1166,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             $this->validate_channel($event['channel']);
             if (isset($event['socket_id'])) {
                 $this->validate_socket_id($event['socket_id']);
+                $batch[$key] = $this->make_event([$event['channel']], $event['name'], $event['data'], ['socket_id' => $event['socket_id']], $event['info'] ?? null, $already_encoded);
+            } else {
+                $batch[$key] = $this->make_event([$event['channel']], $event['name'], $event['data'], [], $event['info'] ?? null, $already_encoded);
             }
-
-            $batch[$key] = $this->make_event([$event['channel']], $event['name'], $event['data'], [], $event['info'] ?? null, $already_encoded);
         }
 
         try {
