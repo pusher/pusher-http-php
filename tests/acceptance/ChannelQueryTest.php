@@ -26,8 +26,7 @@ class ChannelQueryTest extends TestCase
     public function testChannelInfo(): void
     {
         $result = $this->pusher->get_channel_info('channel-test');
-
-        self::assertObjectHasAttribute('occupied', $result, 'class has occupied attribute');
+        self::assertNotNull($result->occupied, 'class has occupied attribute');
     }
 
     public function testChannelList(): void
@@ -68,8 +67,7 @@ class ChannelQueryTest extends TestCase
     public function testUsersInfo(): void
     {
         $result = $this->pusher->get_users_info('presence-channel-test');
-
-        $this->assertObjectHasAttribute('users', $result, 'class has users attribute');
+        self::assertNotNull($result->users, 'class has users attribute');
     }
 
     public function testProvidingInfoParameterWithPrefixQueryFailsForPublicChannel(): void
@@ -115,7 +113,6 @@ class ChannelQueryTest extends TestCase
     public function testSingleChannelInfoUsingGenericGet(): void
     {
         $result = $this->pusher->get('/channels/channel-test');
-
-        self::assertObjectHasAttribute('occupied', $result, 'class has occupied attribute');
+        self::assertNotNull($result->occupied, 'class has occupied attribute');
     }
 }
