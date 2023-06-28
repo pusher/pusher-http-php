@@ -790,7 +790,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         }
 
         try {
-            $response_body = json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR);
+            $response_body = json_decode((string)$response->getBody(), false, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             throw new PusherException('Data decoding error.');
         }
