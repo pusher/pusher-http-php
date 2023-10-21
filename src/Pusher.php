@@ -121,11 +121,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         }
     }
 
-    /**
-     * Fetch the settings.
-     *
-     * @return array
-     */
     public function getSettings(): array
     {
         return $this->settings;
@@ -418,21 +413,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return new Request('POST', $full_path, $headers, $post_value);
     }
 
-    /**
-     * Trigger an event by providing event name and payload.
-     * Optionally provide a socket ID to exclude a client (most likely the sender).
-     *
-     * @param array|string $channels A channel name or an array of channel names to publish the event on.
-     * @param string $event
-     * @param mixed $data Event data
-     * @param array $params [optional]
-     * @param bool $already_encoded [optional]
-     *
-     * @return object
-     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
-     * @throws GuzzleException
-     * @throws PusherException Throws PusherException if $channels is an array of size 101 or above or $socket_id is invalid
-     */
     public function trigger($channels, string $event, $data, array $params = [], bool $already_encoded = false): object
     {
         $post_value = $this->make_trigger_body($channels, $event, $data, $params, $already_encoded);
@@ -440,19 +420,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $this->process_trigger_result($this->post('/events', $post_value));
     }
 
-    /**
-     * Asynchronously trigger an event by providing event name and payload.
-     * Optionally provide a socket ID to exclude a client (most likely the sender).
-     *
-     * @param array|string $channels A channel name or an array of channel names to publish the event on.
-     * @param string $event
-     * @param mixed $data Event data
-     * @param array $params [optional]
-     * @param bool $already_encoded [optional]
-     *
-     * @return PromiseInterface
-     * @throws PusherException
-     */
     public function triggerAsync($channels, string $event, $data, array $params = [], bool $already_encoded = false): PromiseInterface
     {
         $post_value = $this->make_trigger_body($channels, $event, $data, $params, $already_encoded);
@@ -462,34 +429,12 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         });
     }
 
-    /**
-     * Send an event to a user.
-     *
-     * @param string $user_id
-     * @param string $event
-     * @param mixed $data Event data
-     * @param bool $already_encoded [optional]
-     *
-     * @return object
-     * @throws PusherException
-     */
     public function sendToUser(string $user_id, string $event, $data, bool $already_encoded = false): object
     {
         $this->validate_user_id($user_id);
         return $this->trigger(["#server-to-user-$user_id"], $event, $data, [], $already_encoded);
     }
 
-    /**
-     * Asynchronously send an event to a user.
-     *
-     * @param string $user_id
-     * @param string $event
-     * @param mixed $data Event data
-     * @param bool $already_encoded [optional]
-     *
-     * @return PromiseInterface
-     * @throws PusherException
-     */
     public function sendToUserAsync(string $user_id, string $event, $data, bool $already_encoded = false): PromiseInterface
     {
         $this->validate_user_id($user_id);
@@ -551,17 +496,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return new Request('POST', $full_path, $headers, $post_value);
     }
 
-    /**
-     * Trigger multiple events at the same time.
-     *
-     * @param array $batch [optional] An array of events to send
-     * @param bool $already_encoded [optional]
-     *
-     * @return object
-     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
-     * @throws GuzzleException
-     * @throws PusherException
-     */
     public function triggerBatch(array $batch = [], bool $already_encoded = false): object
     {
         $post_value = $this->make_trigger_batch_body($batch, $already_encoded);
@@ -569,15 +503,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $this->process_trigger_result($this->post('/batch_events', $post_value));
     }
 
-    /**
-     * Asynchronously trigger multiple events at the same time.
-     *
-     * @param array $batch [optional] An array of events to send
-     * @param bool $already_encoded [optional]
-     *
-     * @return PromiseInterface
-     * @throws PusherException
-     */
     public function triggerBatchAsync(array $batch = [], bool $already_encoded = false): PromiseInterface
     {
         $post_value = $this->make_trigger_batch_body($batch, $already_encoded);
@@ -587,51 +512,18 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         });
     }
 
-    /**
-     * Terminates all connections established by the user with the given user id.
-     *
-     * @param string $user_id
-     *
-     * @throws PusherException   If $user_id is invalid
-     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
-     *
-     * @return object response body
-     *
-     */
     public function terminateUserConnections(string $user_id): object
     {
         $this->validate_user_id($user_id);
         return $this->post("/users/$user_id/terminate_connections", "{}");
     }
 
-    /**
-     * Asynchronous request to terminates all connections established by the user with the given user id.
-     *
-     * @param string $user_id
-     *
-     * @throws PusherException   If $userId is invalid
-     *
-     * @return PromiseInterface promise wrapping response body
-     *
-     */
     public function terminateUserConnectionsAsync(string $user_id): PromiseInterface
     {
         $this->validate_user_id($user_id);
         return $this->postAsync("/users/$user_id/terminate_connections", "{}");
     }
 
-
-    /**
-     * Fetch channel information for a specific channel.
-     *
-     * @param string $channel The name of the channel
-     * @param array  $params  Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
-     *
-     * @throws PusherException   If $channel is invalid
-     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
-     * @throws GuzzleException
-     *
-     */
     public function getChannelInfo(string $channel, array $params = []): object
     {
         $this->validate_channel($channel);
@@ -647,15 +539,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $this->getChannelInfo($channel, $params);
     }
 
-    /**
-     * Fetch a list containing all channels.
-     *
-     * @param array $params Additional parameters for the query e.g. $params = array( 'info' => 'connection_count' )
-     *
-     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
-     * @throws GuzzleException
-     *
-     */
     public function getChannels(array $params = []): object
     {
         $result = $this->get('/channels', $params);
@@ -673,15 +556,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $this->getChannels($params);
     }
 
-    /**
-     * Fetch user ids currently subscribed to a presence channel.
-     *
-     * @param string $channel The name of the channel
-     *
-     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
-     * @throws GuzzleException
-     *
-     */
     public function getPresenceUsers(string $channel): object
     {
         return $this->get('/channels/' . $channel . '/users');
@@ -695,20 +569,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $this->getPresenceUsers($channel);
     }
 
-    /**
-     * GET arbitrary REST API resource using a synchronous http client.
-     * All request signing is handled automatically.
-     *
-     * @param string $path        Path excluding /apps/APP_ID
-     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
-     * @param bool   $associative When true, return the response body as an associative array, else return as an object
-     *
-     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
-     * @throws GuzzleException
-     * @throws PusherException
-     *
-     * @return mixed See Pusher API docs
-     */
     public function get(string $path, array $params = [], $associative = false)
     {
         $path = $this->settings['base_path'] . $path;
@@ -743,20 +603,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $body;
     }
 
-    /**
-     * POST arbitrary REST API resource using a synchronous http client.
-     * All request signing is handled automatically.
-     *
-     * @param string $path        Path excluding /apps/APP_ID
-     * @param mixed  $body        Request payload (see http://pusher.com/docs/rest_api)
-     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
-     *
-     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
-     * @throws GuzzleException
-     * @throws PusherException
-     *
-     * @return mixed Post response body
-     */
     public function post(string $path, $body, array $params = [])
     {
         $path = $this->settings['base_path'] . $path;
@@ -798,16 +644,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $response_body;
     }
 
-    /**
-     * Asynchronously POST arbitrary REST API resource using a synchronous http client.
-     * All request signing is handled automatically.
-     *
-     * @param string $path        Path excluding /apps/APP_ID
-     * @param mixed  $body        Request payload (see http://pusher.com/docs/rest_api)
-     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
-     *
-     * @return PromiseInterface Promise wrapping POST response body
-     */
     public function postAsync(string $path, $body, array $params = []): PromiseInterface
     {
         $path = $this->settings['base_path'] . $path;
@@ -847,15 +683,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         });
     }
 
-    /**
-     * Creates a user authentication signature.
-     *
-     * @param string $socket_id
-     * @param array $user_data
-     *
-     * @return string Json encoded authentication string.
-     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
-     */
     public function authenticateUser(string $socket_id, array $user_data): string
     {
         $this->validate_socket_id($socket_id);
@@ -870,16 +697,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         );
     }
 
-    /**
-     * Creates a channel authorization signature.
-     *
-     * @param string $channel
-     * @param string $socket_id
-     * @param string|null $custom_data
-     *
-     * @return string Json encoded authentication string.
-     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
-     */
     public function authorizeChannel(string $channel, string $socket_id, string $custom_data = null): string
     {
         $this->validate_channel($channel);
@@ -914,19 +731,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $response;
     }
 
-    /**
-     * Convenience function for presence channel authorization.
-     *
-     * Equivalent to authorizeChannel($channel, $socket_id, json_encode(['user_id' => $user_id, 'user_info' => $user_info], JSON_THROW_ON_ERROR))
-     *
-     * @param string $channel
-     * @param string $socket_id
-     * @param string $user_id
-     * @param mixed $user_info
-     *
-     * @return string
-     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
-     */
     public function authorizePresenceChannel(string $channel, string $socket_id, string $user_id, $user_info = null): string
     {
         $user_data = ['user_id' => $user_id];
@@ -974,16 +778,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return $this->authorizePresenceChannel($channel, $socket_id, $user_id, $user_info);
     }
 
-    /**
-     * Verify that a webhook actually came from Pusher, decrypts any encrypted events, and marshals them into a PHP object.
-     *
-     * @param array  $headers a array of headers from the request (for example, from getallheaders())
-     * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
-     *
-     * @throws PusherException
-     *
-     * @return Webhook marshalled object with the properties time_ms (an int) and events (an array of event objects)
-     */
     public function webhook(array $headers, string $body): object
     {
         $this->verifySignature($headers, $body);
@@ -1016,14 +810,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         return new Webhook($decoded_json->time_ms, $decoded_events);
     }
 
-    /**
-     * Verify that a given Pusher Signature is valid.
-     *
-     * @param array  $headers an array of headers from the request (for example, from getallheaders())
-     * @param string $body    the body of the request (for example, from file_get_contents('php://input'))
-     *
-     * @throws PusherException if signature is incorrect.
-     */
     public function verifySignature(array $headers, string $body): void
     {
         $x_pusher_key = $headers['X-Pusher-Key'];
