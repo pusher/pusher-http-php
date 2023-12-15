@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.2.4
+
+* [Fixed] Timeout option is propagated to guzzle client
+
 ## 7.2.3
 
 * [Fixed] Include socket_id in batch trigger if included.
