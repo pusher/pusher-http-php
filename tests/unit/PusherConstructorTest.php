@@ -22,8 +22,8 @@ class PusherConstructorTest extends TestCase
     {
         $options = [
             'useTLS' => true,
-            'host'   => 'test.com',
-            'port'   => '3000',
+            'host' => 'test.com',
+            'port' => '3000',
         ];
         $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
 
@@ -60,11 +60,22 @@ class PusherConstructorTest extends TestCase
     {
         $options = [
             'cluster' => 'eu',
-            'host'    => 'api.staging.pusher.com',
+            'host' => 'api.staging.pusher.com',
         ];
         $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
 
         $settings = $pusher->getSettings();
         self::assertEquals('api.staging.pusher.com', $settings['host']);
+    }
+
+    public function testSetTimeoutOption(): void
+    {
+        $options = [
+            'timeout' => 10,
+        ];
+        $pusher = new Pusher('app_key', 'app_secret', 'app_id', $options);
+
+        $settings = $pusher->getSettings();
+        self::assertEquals(10, $settings['timeout']);
     }
 }

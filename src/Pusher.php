@@ -19,7 +19,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     /**
      * @var string Version
      */
-    public static $VERSION = '7.2.3';
+    public static $VERSION = '7.2.4';
 
     /**
      * @var null|PusherCrypto
@@ -63,12 +63,6 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     public function __construct(string $auth_key, string $secret, string $app_id, array $options = [], ClientInterface $client = null)
     {
         $this->check_compatibility();
-
-        if (!is_null($client)) {
-            $this->client = $client;
-        } else {
-            $this->client = new \GuzzleHttp\Client();
-        }
 
         $useTLS = true;
         if (isset($options['useTLS'])) {
@@ -118,6 +112,13 @@ class Pusher implements LoggerAwareInterface, PusherInterface
                 $options['encryption_master_key_base64']
             );
             $this->crypto = new PusherCrypto($parsedKey);
+        }
+
+
+        if (!is_null($client)) {
+            $this->client = $client;
+        } else {
+            $this->client = new \GuzzleHttp\Client(['timeout'  => $this->settings['timeout'],]);
         }
     }
 
@@ -724,7 +725,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             'query' => $signature,
             'http_errors' => false,
             'headers' => $headers,
-            'base_uri' => $this->channels_url_prefix()
+            'base_uri' => $this->channels_url_prefix(),
+            'timeout' => $this->settings['timeout']
         ]);
 
         $status = $response->getStatusCode();
@@ -776,7 +778,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
                 'body' => $body,
                 'http_errors' => false,
                 'headers' => $headers,
-                'base_uri' => $this->channels_url_prefix()
+                'base_uri' => $this->channels_url_prefix(),
+                'timeout' => $this->settings['timeout']
             ]);
         } catch (ConnectException $e) {
             throw new ApiErrorException($e->getMessage());
@@ -826,7 +829,8 @@ class Pusher implements LoggerAwareInterface, PusherInterface
             'body' => $body,
             'http_errors' => false,
             'headers' => $headers,
-            'base_uri' => $this->channels_url_prefix()
+            'base_uri' => $this->channels_url_prefix(),
+            'timeout' => $this->settings['timeout'],
         ])->then(function ($response) {
             $status = $response->getStatusCode();
 
