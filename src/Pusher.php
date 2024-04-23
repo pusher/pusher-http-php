@@ -358,8 +358,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
 
         if ($has_encrypted_channel) {
             if (count($channels) > 1) {
-                // For rationale, see limitations of end-to-end encryption in the README
-                throw new PusherException('You cannot trigger to multiple channels when using encrypted channels');
+                $data_encoded = $this->crypto->encrypt_payload_multi(
+                    $channels,
+                    $already_encoded ? $data : json_encode($data, JSON_THROW_ON_ERROR)
+                );
             } else {
                 try {
                     $data_encoded = $this->crypto->encrypt_payload(
