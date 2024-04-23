@@ -9,6 +9,8 @@ class PusherCrypto
     // The prefix any e2e channel must have
     public const ENCRYPTED_PREFIX = 'private-encrypted-';
 
+    public const MULTI_PREFIX = 'private-encrypted-multi-';
+
     /**
      * Checks if a given channel is an encrypted channel.
      *
@@ -19,6 +21,18 @@ class PusherCrypto
     public static function is_encrypted_channel(string $channel): bool
     {
         return strpos($channel, self::ENCRYPTED_PREFIX) === 0;
+    }
+
+    /**
+     * Checks if a given channel is an encrypted channel.
+     *
+     * @param string $channel the name of the channel
+     *
+     * @return bool true if channel is an encrypted channel
+     */
+    public static function is_multi_encrypted_channel(string $channel): bool
+    {
+        return strpos($channel, self::MULTI_PREFIX) === 0;
     }
 
     /**
@@ -47,7 +61,7 @@ class PusherCrypto
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -98,8 +112,13 @@ class PusherCrypto
      */
     public function decrypt_event(object $event): object
     {
-        $parsed_payload = $this->parse_encrypted_message($event->data);
-        $shared_secret = $this->generate_shared_secret($event->channel);
+        if (self::is_multi_encrypted_channel($event->data)) {
+            $parsed_payload = $this->parse_multi_encrypted_message($event->data);
+            $shared_secret = $this->multi_channel_secret($parsed_payload->channels, $parsed_payload->random);
+        } else {
+            $parsed_payload = $this->parse_encrypted_message($event->data);
+            $shared_secret = $this->generate_shared_secret($event->channel);
+        }
         $decrypted_payload = $this->decrypt_payload($parsed_payload->ciphertext, $parsed_payload->nonce, $shared_secret);
         if (!$decrypted_payload) {
             throw new PusherException('Decryption of the payload failed. Wrong key?');
@@ -107,6 +126,111 @@ class PusherCrypto
         $event->data = $decrypted_payload;
 
         return $event;
+    }
+
+    /**
+     * Encode multiple channel names into a parseable header
+     *
+     * @param array $channels
+     * @param string $random
+     * @return string
+     *
+     * @throws \SodiumException
+     */
+    public function multi_channel_encode(array $channels, string $random = ''): string
+    {
+        // Determine a stable order of channel names:
+        $sorted = array_values($channels);
+        sort($sorted);
+
+        $list = [];
+        $pos = strlen(self::ENCRYPTED_PREFIX);
+        foreach ($sorted as $ch) {
+            if (!self::is_encrypted_channel($ch)) {
+                continue;
+            }
+            // Strip off encrypted prefix:
+            $list []= substr($ch, $pos);
+        }
+        $flat = json_encode(['c' => $list, 'r' => base64_decode($random)]);
+        return self::MULTI_PREFIX . sodium_bin2hex(pack('J', strlen($flat)) . $flat);
+    }
+
+    /**
+     * Decode the header into a list of encrypted channel names
+     *
+     * @param string $header
+     * @return array
+     * @throws PusherException
+     * @throws \SodiumException
+     */
+    public function multi_channel_decode(string $header): array
+    {
+        // multi-{hex}, validate "multi-"
+        $len = strlen(self::MULTI_PREFIX);
+        $multi = substr($header, 0, $len);
+        if (!hash_equals($multi, self::MULTI_PREFIX)) {
+            throw new PusherException('Not a multi-channel');
+        }
+        // decode {hex}
+        $hex_decoded = sodium_hex2bin(substr($header, $len));
+        if (strlen($hex_decoded) < 8) {
+            throw new PusherException('Multi-channel name must be at least 8 characters');
+        }
+
+        // |json|, json
+        $json_len = unpack('J', substr($hex_decoded, 0, 8))[1];
+        $json = substr($hex_decoded,  8);
+        if (strlen($json) !== $json_len) {
+            throw new PusherException('Invalid channel length');
+        }
+        // JSON-decode
+        $decoded = json_decode($json, JSON_THROW_ON_ERROR);
+        $random = base64_decode($decoded['r'] ?? '');
+        // Re-assemble actual channel names:
+        $channels = [];
+        foreach ($decoded['c'] as $c) {
+            $channels [] = self::ENCRYPTED_PREFIX . $c;
+        }
+        return [$channels, $random];
+    }
+
+    /**
+     * Derive a secret for broadcasting to multiple channels
+     *
+     * Algorithm: HMAC-SHA256
+     *
+     * @param string[] $channels
+     * @param string|null $random
+     * @return string
+     * @throws PusherException
+     */
+    public function multi_channel_secret(array $channels, ?string $random = ''): string
+    {
+        // Determine a stable order of channel names:
+        $sorted = array_values($channels);
+        sort($sorted);
+        $secrets = [];
+
+        // Get the secret for each channel:
+        foreach ($sorted as $channel) {
+            $secrets []= self::generate_shared_secret($channel);
+        }
+        $count = count($sorted);
+        $sha = hash_init('sha256', HASH_HMAC, $this->encryption_master_key);
+        // Begin with randomness:
+        hash_update($sha, pack('J', strlen($random)));
+        hash_update($sha, $random);
+        // Prepend the hash of the number of elements:
+        hash_update($sha, pack('J', $count));
+        for ($i = 0; $i < $count; ++$i) {
+            // update hash with ... |channelname|, channelname, |secret|, secret
+            hash_update($sha, pack('J', strlen($sorted[$i])));
+            hash_update($sha, $sorted[$i]);
+            hash_update($sha, pack('J', strlen($secrets[$i])));
+            hash_update($sha, $secrets[$i]);
+        }
+        return hash_final($sha, true);
     }
 
     /**
@@ -124,6 +248,27 @@ class PusherCrypto
         }
 
         return hash('sha256', $channel . $this->encryption_master_key, true);
+    }
+
+    /**
+     * Encrypts a given plaintext for broadcast on a particular channel.
+     *
+     * @param string[] $channels the names of the channel the payloads event will be broadcast on
+     * @param string $plaintext the data to encrypt
+     *
+     * @return string a string ready to be sent as the data of an event.
+     * @throws PusherException
+     * @throws \SodiumException
+     * @throws \JsonException
+     */
+    public function encrypt_payload_multi(array $channels, string $plaintext): string
+    {
+        $secret = $this->multi_channel_secret($channels);
+        $header = $this->multi_channel_encode($channels);
+        $nonce = $this->generate_nonce();
+        $cipher_text = sodium_crypto_secretbox($plaintext, $nonce, $secret);
+
+        return $header . ':' . $this->format_encrypted_message($nonce, $cipher_text);
     }
 
     /**
@@ -188,6 +333,29 @@ class PusherCrypto
         $encrypted_message->ciphertext = base64_encode($ciphertext);
 
         return json_encode($encrypted_message, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * @param string $payload
+     * @return object
+     * @throws PusherException
+     * @throws \SodiumException
+     */
+    private function parse_multi_encrypted_message(string $payload): object
+    {
+        $split = strpos($payload, ':');
+        $header = substr($payload, 0, $split);
+        $payload = substr($payload,  $split + 1);
+        $decoded = $this->parse_encrypted_message($payload);
+        if (!is_object($decoded)) {
+            throw new PusherException(
+                'Invalid encrypted message: expected an object, got ' . gettype($decoded)
+            );
+        }
+        [$channels, $random] = $this->multi_channel_decode($header);
+        $decoded->channels = $channels;
+        $decoded->random = $random;
+        return $decoded;
     }
 
     /**
