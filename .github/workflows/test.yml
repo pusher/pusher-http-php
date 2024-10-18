@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -36,7 +36,7 @@ jobs:
       - name: Run unit tests
         run: composer exec phpunit tests/unit
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           repository: pusher/public_actions
           path: .github/actions
