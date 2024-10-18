@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.2.5
+
+* [CHANGED] Describe your change here. Look at CHANGELOG.md to see the format.
+
 ## 7.2.4
 
 * [Fixed] Timeout option is propagated to guzzle client
