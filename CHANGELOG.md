@@ -2,7 +2,7 @@
 
 ## 7.2.5
 
-* [CHANGED] Describe your change here. Look at CHANGELOG.md to see the format.
+* Bump supported versions to include PHP8.2, 8.3.
 
 ## 7.2.4
 
