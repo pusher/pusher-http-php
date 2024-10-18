@@ -26,7 +26,7 @@ then run `composer update`.
 
 ## Supported platforms
 
-* PHP - supports PHP versions 7.3, 7.4, 8.0, and 8.1.
+* PHP - supports PHP versions 7.3, 7.4, 8.0, 8.1, 8.2, and 8.3.
 * Laravel - version 8.29 and above has built-in support for Pusher Channels as a [Broadcasting backend](https://laravel.com/docs/master/broadcasting).
 * Other PHP frameworks - supported provided you are using a supported version of PHP.
 
@@ -514,7 +514,7 @@ Requires [phpunit](https://github.com/sebastianbergmann/phpunit).
 
 * Run `composer install`
 * Go to the `tests` directory
-* Rename `config.example.php` and replace the values with valid Channels
+* Rename `config.example.php` to `config.php` and replace the values with valid Channels
   credentials **or** create environment variables.
 * Some tests require a client to be connected to the app you defined in the
   config; you can do this by opening
