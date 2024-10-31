@@ -37,9 +37,9 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     ];
 
     /**
-     * @var null|resource
+     * @var null|ClientInterface Guzzle client
      */
-    private $client = null; // Guzzle client
+    private $client = null;
 
     /**
      * Initializes a new Pusher instance with key, secret, app ID and channel.
@@ -136,7 +136,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * Log a string.
      *
      * @param string           $msg     The message to log
-     * @param array|\Exception $context [optional] Any extraneous information that does not fit well in a string.
+     * @param array $context [optional] Any extraneous information that does not fit well in a string.
      * @param string           $level   [optional] Importance of log message, highly recommended to use Psr\Log\LogLevel::{level}
      */
     private function log(string $msg, array $context = [], string $level = LogLevel::DEBUG): void
@@ -1053,7 +1053,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     /**
      * Returns an event represented by an associative array to be used in creating events and batch_events requests
      *
-     * @param array|string $channels A channel name or an array of channel names to publish the event on.
+     * @param array $channels An array of channel names to publish the event on.
      * @param string $event
      * @param mixed $data Event data
      * @param array $params [optional]
@@ -1154,10 +1154,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     /**
      * Returns the body of a trigger batch events request serialized as string ready to be sent in a request
      *
-     * @param array|string $channels A channel name or an array of channel names to publish the event on.
-     * @param string $event
-     * @param mixed $data Event data
-     * @param array $params [optional]
+     * @param array $batch [optional]
      * @param bool $already_encoded [optional]
      *
      * @throws PusherException
