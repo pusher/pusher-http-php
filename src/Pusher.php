@@ -996,7 +996,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         try {
             $decoded_json = json_decode($body, false, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            $this->log('Unable to decrypt webhook event payload.', null, LogLevel::WARNING);
+            $this->log('Unable to decrypt webhook event payload.', [], LogLevel::WARNING);
             throw new PusherException('Data encoding error.');
         }
 
@@ -1006,12 +1006,12 @@ class Pusher implements LoggerAwareInterface, PusherInterface
                     $decryptedEvent = $this->crypto->decrypt_event($event);
 
                     if ($decryptedEvent === false) {
-                        $this->log('Unable to decrypt webhook event payload. Wrong key? Ignoring.', null, LogLevel::WARNING);
+                        $this->log('Unable to decrypt webhook event payload. Wrong key? Ignoring.', [], LogLevel::WARNING);
                         continue;
                     }
                     $decoded_events[] = $decryptedEvent;
                 } else {
-                    $this->log('Got an encrypted webhook event payload, but no master key specified. Ignoring.', null, LogLevel::WARNING);
+                    $this->log('Got an encrypted webhook event payload, but no master key specified. Ignoring.', [], LogLevel::WARNING);
                 }
             } else {
                 $decoded_events[] = $event;
