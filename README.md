@@ -6,6 +6,8 @@ PHP library for interacting with the Pusher Channels HTTP API.
 
 Register at <https://pusher.com> and use the application credentials within your app as shown below.
 
+For reporting issues, bugs, and feature requests, please feel free to open a pull request or open an issue. If you do not receive a timely response, feel free to check our [support portal](https://docs.bird.com/pusher).
+
 ## Installation
 
 You can get the Pusher Channels PHP library via a composer package called `pusher-php-server`. See <https://packagist.org/packages/pusher/pusher-php-server>
