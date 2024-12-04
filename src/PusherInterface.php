@@ -130,7 +130,7 @@ interface PusherInterface
      * @return string Json encoded authentication string.
      * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      */
-    public function socketAuth(string $channel, string $socket_id, string $custom_data = null): string;
+    public function socketAuth(string $channel, string $socket_id, ?string $custom_data = null): string;
 
     /**
      * Creates a presence signature (an extension of socket signing).
@@ -229,7 +229,7 @@ interface PusherInterface
      * @return string Json encoded authentication string.
      * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
      */
-    public function socket_auth(string $channel, string $socket_id, string $custom_data = null): string;
+    public function socket_auth(string $channel, string $socket_id, ?string $custom_data = null): string;
 
     /**
      * Creates a presence signature (an extension of socket signing).
