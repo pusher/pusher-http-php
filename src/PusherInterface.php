@@ -44,6 +44,33 @@ interface PusherInterface
     public function triggerAsync($channels, string $event, $data, array $params = [], bool $already_encoded = false): PromiseInterface;
 
     /**
+     * Send an event to a user.
+     *
+     * @param string $user_id
+     * @param string $event
+     * @param mixed $data Event data
+     * @param bool $already_encoded [optional]
+     *
+     * @return object
+     * @throws PusherException
+     */
+    public function sendToUser(string $user_id, string $event, $data, bool $already_encoded = false): object;
+
+    /**
+     * Asynchronously send an event to a user.
+     *
+     * @param string $user_id
+     * @param string $event
+     * @param mixed $data Event data
+     * @param bool $already_encoded [optional]
+     *
+     * @return PromiseInterface
+     * @throws PusherException
+     */
+    public function sendToUserAsync(string $user_id, string $event, $data, bool $already_encoded = false): PromiseInterface;
+
+
+    /**
      * Trigger multiple events at the same time.
      *
      * @param array $batch           [optional] An array of events to send
@@ -67,6 +94,31 @@ interface PusherInterface
      *
      */
     public function triggerBatchAsync(array $batch = [], bool $already_encoded = false): PromiseInterface;
+
+    /**
+     * Terminates all connections established by the user with the given user id.
+     *
+     * @param string $user_id
+     *
+     * @throws PusherException   If $user_id is invalid
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     *
+     * @return object response body
+     *
+     */
+    public function terminateUserConnections(string $user_id): object;
+
+    /**
+     * Asynchronous request to terminates all connections established by the user with the given user id.
+     *
+     * @param string $user_id
+     *
+     * @throws PusherException   If $userId is invalid
+     *
+     * @return PromiseInterface promise wrapping response body
+     *
+     */
+    public function terminateUserConnectionsAsync(string $user_id): PromiseInterface;
 
     /**
      * Get information, such as subscriber and user count, for a channel.
@@ -120,6 +172,72 @@ interface PusherInterface
      * @return mixed See Pusher API docs
      */
     public function get(string $path, array $params = [], bool $associative = false);
+
+    /**
+     * POST arbitrary REST API resource using a synchronous http client.
+     * All request signing is handled automatically.
+     *
+     * @param string $path        Path excluding /apps/APP_ID
+     * @param mixed  $body        Request payload (see http://pusher.com/docs/rest_api)
+     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
+     *
+     * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
+     * @throws GuzzleException
+     * @throws PusherException
+     *
+     * @return mixed Post response body
+     */
+    public function post(string $path, $body, array $params = []);
+
+    /**
+     * Asynchronously POST arbitrary REST API resource using a synchronous http client.
+     * All request signing is handled automatically.
+     *
+     * @param string $path        Path excluding /apps/APP_ID
+     * @param mixed  $body        Request payload (see http://pusher.com/docs/rest_api)
+     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
+     *
+     * @return PromiseInterface Promise wrapping POST response body
+     */
+    public function postAsync(string $path, $body, array $params = []): PromiseInterface;
+
+    /**
+     * Creates a user authentication signature.
+     *
+     * @param string $socket_id
+     * @param array $user_data
+     *
+     * @return string Json encoded authentication string.
+     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
+     */
+    public function authenticateUser(string $socket_id, array $user_data): string;
+
+    /**
+     * Creates a channel authorization signature.
+     *
+     * @param string $channel
+     * @param string $socket_id
+     * @param string|null $custom_data
+     *
+     * @return string Json encoded authentication string.
+     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
+     */
+    public function authorizeChannel(string $channel, string $socket_id, string $custom_data = null): string;
+
+    /**
+     * Convenience function for presence channel authorization.
+     *
+     * Equivalent to authorizeChannel($channel, $socket_id, json_encode(['user_id' => $user_id, 'user_info' => $user_info], JSON_THROW_ON_ERROR))
+     *
+     * @param string $channel
+     * @param string $socket_id
+     * @param string $user_id
+     * @param mixed $user_info
+     *
+     * @return string
+     * @throws PusherException Throws exception if $channel is invalid or above or $socket_id is invalid
+     */
+    public function authorizePresenceChannel(string $channel, string $socket_id, string $user_id, $user_info = null): string;
 
     /**
      * Creates a socket signature.
