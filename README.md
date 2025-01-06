@@ -28,7 +28,7 @@ then run `composer update`.
 
 ## Supported platforms
 
-* PHP - supports PHP versions 7.3, 7.4, 8.0, 8.1, 8.2, and 8.3.
+* PHP - supports PHP versions 7.3, 7.4, 8.0, 8.1, 8.2, 8.3 and 8.4
 * Laravel - version 8.29 and above has built-in support for Pusher Channels as a [Broadcasting backend](https://laravel.com/docs/master/broadcasting).
 * Other PHP frameworks - supported provided you are using a supported version of PHP.
 
