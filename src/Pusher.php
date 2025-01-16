@@ -80,7 +80,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         $this->settings['auth_key'] = $auth_key;
         $this->settings['secret'] = $secret;
         $this->settings['app_id'] = $app_id;
-        $this->settings['base_path'] = '/apps/' . $this->settings['app_id'];
+        $this->settings['base_path'] = (isset($options['path']) ? $options['path'] : '') . '/apps/' . $this->settings['app_id'];
 
         foreach ($options as $key => $value) {
             // only set if valid setting/option
@@ -217,7 +217,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      *
      * @throws PusherException If $socket_id is invalid
      */
-    private function validate_socket_id(string $socket_id): void
+    protected function validate_socket_id(string $socket_id): void
     {
         if ($socket_id !== null && !preg_match('/\A\d+\.\d+\z/', $socket_id)) {
             throw new PusherException('Invalid socket ID ' . $socket_id);
@@ -265,7 +265,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     private function channels_url_prefix(): string
     {
-        return $this->settings['scheme'] . '://' . $this->settings['host'] . ':' . $this->settings['port'] . $this->settings['path'];
+        return $this->settings['scheme'] . '://' . $this->settings['host'] . ':' . $this->settings['port'];
     }
 
     /**
