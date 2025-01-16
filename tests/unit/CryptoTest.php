@@ -87,6 +87,21 @@ class CryptoTest extends TestCase
         self::assertNotEquals($expected, base64_encode($crypto2->generate_shared_secret('private-encrypted-channel-a')));
     }
 
+    public function testMultiChannelSecret(): void
+    {
+        $expected = 'kTv4FchvZyR8lIc0l0M4F9/3HSpIFlfdrzNQibk032U=';
+        $first = base64_encode($this->crypto->multi_channel_secret([
+            'private-encrypted-test',
+            'private-encrypted-another'
+        ]));
+        $second = base64_encode($this->crypto->multi_channel_secret([
+            'private-encrypted-another',
+            'private-encrypted-test'
+        ]));
+        self::assertEquals($expected, $first);
+        self::assertEquals($expected, $second);
+    }
+
     public function testGenerateSharedSecretNoChannel(): void
     {
         $this->expectException(\Pusher\PusherException::class);
@@ -108,6 +123,25 @@ class CryptoTest extends TestCase
         self::assertEquals(true, PusherCrypto::has_mixed_channels(['private-encrypted-test', 'another']));
         self::assertEquals(false, PusherCrypto::has_mixed_channels(['private-encrypted-test', 'private-encrypted-another']));
         self::assertEquals(false, PusherCrypto::has_mixed_channels(['test', 'another']));
+    }
+
+    public function testEncryptDecryptMultiEventValid(): void
+    {
+        $channels = [
+            'private-encrypted-bla',
+            'private-encrypted-foo',
+            'private-encrypted-bar'
+        ];
+        $payload = "now that's what I call a payload!";
+        $encrypted_payload = $this->crypto->encrypt_payload_multi($channels, $payload);
+        self::assertNotNull($encrypted_payload);
+
+        // Create a mock Event object
+        $event = new stdClass();
+        $event->data = $encrypted_payload;
+        $decrypted_event = $this->crypto->decrypt_event($event);
+        $decrypted_payload = $decrypted_event->data;
+        self::assertEquals($payload, $decrypted_payload);
     }
 
     public function testEncryptDecryptEventValid(): void
