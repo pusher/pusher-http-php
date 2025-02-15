@@ -701,7 +701,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      * All request signing is handled automatically.
      *
      * @param string $path        Path excluding /apps/APP_ID
-     * @param array  $params      API params (see http://pusher.com/docs/rest_api)
+     * @param array  $params      API params (see http://pusher.com/docs/rest-api)
      * @param bool   $associative When true, return the response body as an associative array, else return as an object
      *
      * @throws ApiErrorException Throws ApiErrorException if the Channels HTTP API responds with an error
