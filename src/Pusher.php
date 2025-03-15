@@ -80,7 +80,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
         $this->settings['auth_key'] = $auth_key;
         $this->settings['secret'] = $secret;
         $this->settings['app_id'] = $app_id;
-        $this->settings['base_path'] = '/apps/' . $this->settings['app_id'];
+        $this->settings['base_path'] = ($options['path'] ?? '') . '/apps/' . $this->settings['app_id'];
 
         foreach ($options as $key => $value) {
             // only set if valid setting/option
@@ -265,7 +265,7 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     private function channels_url_prefix(): string
     {
-        return $this->settings['scheme'] . '://' . $this->settings['host'] . ':' . $this->settings['port'] . $this->settings['path'];
+        return $this->settings['scheme'] . '://' . $this->settings['host'] . ':' . $this->settings['port'];
     }
 
     /**
