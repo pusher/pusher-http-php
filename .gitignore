@@ -1,3 +1,4 @@
+.idea
 composer.lock
 phpunit.xml
 tests/config.php
