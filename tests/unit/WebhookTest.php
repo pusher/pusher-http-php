@@ -65,7 +65,7 @@ class WebhookTest extends TestCase
     public function testInvalidJsonBodyLogsWithArrayContext(): void
     {
         $logger = new class extends AbstractLogger {
-            public array $logs = [];
+            public $logs = [];
             public function log($level, $message, array $context = []): void
             {
                 $this->logs[] = ['level' => $level, 'message' => $message, 'context' => $context];
@@ -90,7 +90,7 @@ class WebhookTest extends TestCase
     public function testEncryptedEventWithNoMasterKeyLogsWithArrayContext(): void
     {
         $logger = new class extends AbstractLogger {
-            public array $logs = [];
+            public $logs = [];
             public function log($level, $message, array $context = []): void
             {
                 $this->logs[] = ['level' => $level, 'message' => $message, 'context' => $context];
