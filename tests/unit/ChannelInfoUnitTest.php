@@ -69,4 +69,39 @@ class ChannelInfoUnitTest extends TestCase
 
         self::assertEquals(new stdClass(), $pusher->getChannelInfo('test_channel'));
     }
+
+    public function getChannelsResponseProvider(): array
+    {
+        return [
+            'channels object' => ['{"channels":{"presence-room":{},"private-orders":{}}}', ['presence-room', 'private-orders']],
+            'empty channels object' => ['{"channels":{}}', []],
+            'empty channels array' => ['{"channels":[]}', []],
+        ];
+    }
+
+    /**
+     * @dataProvider getChannelsResponseProvider
+     */
+    public function testGetChannelsReturnsChannelsKeyedByName(string $body, array $expectedChannels): void
+    {
+        $httpClient = $this->createMock(ClientInterface::class);
+
+        $httpClient->expects(self::once())
+            ->method('request')
+            ->with(
+                'GET',
+                'apps/appid/channels',
+                self::callback(function (array $options): bool {
+                    return $options['query']['filter_by_prefix'] === 'presence-';
+                })
+            )
+            ->willReturn(new Response(200, [], $body));
+
+        $pusher = new Pusher('auth-key', 'secret', 'appid', ['cluster' => 'test1'], $httpClient);
+
+        $channels = $pusher->getChannels(['filter_by_prefix' => 'presence-'])->channels;
+
+        self::assertIsArray($channels);
+        self::assertSame($expectedChannels, array_keys($channels));
+    }
 }

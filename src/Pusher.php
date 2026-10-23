@@ -661,7 +661,10 @@ class Pusher implements LoggerAwareInterface, PusherInterface
     {
         $result = $this->get('/channels', $params);
 
-        $result->channels = get_object_vars($result->channels);
+        // Some servers encode an empty channel list as [] instead of {}
+        if (is_object($result->channels)) {
+            $result->channels = get_object_vars($result->channels);
+        }
 
         return $result;
     }
