@@ -15,7 +15,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.3",
-        "overtrue/phplint": "^2.3"
+        "overtrue/phplint": "^3.0",
+        "symfony/yaml": "^5.4"
     },
     "autoload": {
         "psr-4": {
