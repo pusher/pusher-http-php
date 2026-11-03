@@ -265,7 +265,15 @@ class Pusher implements LoggerAwareInterface, PusherInterface
      */
     private function channels_url_prefix(): string
     {
-        return $this->settings['scheme'] . '://' . $this->settings['host'] . ':' . $this->settings['port'] . $this->settings['path'];
+        $path = $this->settings['path'];
+
+        // Guzzle resolves the relative request path against base_uri (RFC 3986),
+        // which drops the last segment of the path unless it ends with a slash.
+        if ($path !== '') {
+            $path = rtrim($path, '/') . '/';
+        }
+
+        return $this->settings['scheme'] . '://' . $this->settings['host'] . ':' . $this->settings['port'] . $path;
     }
 
     /**
