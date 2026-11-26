@@ -51,6 +51,35 @@ class WebhookTest extends TestCase
         $this->pusher->ensure_valid_signature($headers, $body);
     }
 
+    public function testWebhookSignatureWithCorrectPrefixIsRejected(): void
+    {
+        $this->expectException(PusherException::class);
+
+        // A signature that shares a leading prefix with the valid one but differs
+        // in the final character must still be rejected.
+        $signature = '40e0ad3b9aa49529322879e84de1aaaf18bde1efe839ca263d540cc865510d26';
+        $body = '{"hello":"world"}';
+        $headers = [
+            'X-Pusher-Key'       => $this->auth_key,
+            'X-Pusher-Signature' => $signature,
+        ];
+        $this->pusher->ensure_valid_signature($headers, $body);
+    }
+
+    public function testWebhookSignatureWithTruncatedSignatureIsRejected(): void
+    {
+        $this->expectException(PusherException::class);
+
+        // A correct prefix of the valid signature, but truncated, must be rejected.
+        $signature = '40e0ad3b9aa49529322879e84de1aaaf';
+        $body = '{"hello":"world"}';
+        $headers = [
+            'X-Pusher-Key'       => $this->auth_key,
+            'X-Pusher-Signature' => $signature,
+        ];
+        $this->pusher->ensure_valid_signature($headers, $body);
+    }
+
     public function testDecodeWebhook(): void
     {
         $headers_json = '{"X-Pusher-Key":"' . $this->auth_key . '","X-Pusher-Signature":"a19cab2af3ca1029257570395e78d5d675e9e700ca676d18a375a7083178df1c"}';
